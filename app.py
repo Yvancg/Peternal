@@ -25,7 +25,7 @@ app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
 # Configure the use SQLite database
-db = SQL.connect("sqlite:///fitness.db")
+db = SQL.connect("fitness.db")
 
 # Custom error handler
 @app.errorhandler(429)
