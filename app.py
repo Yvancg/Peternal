@@ -1,6 +1,6 @@
 import os
 
-import cs50 import SQL
+import sqlite3 as SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_login import login_required
 from flask_session import Session
