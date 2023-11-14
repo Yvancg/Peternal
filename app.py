@@ -1,5 +1,6 @@
 import os
 
+import sqlite3 as SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_limiter import Limiter
@@ -12,9 +13,9 @@ app = Flask(__name__)
 
 # Configure the maximum number of login attempts
 limiter = Limiter(
-    app,
+    app=app,
     key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour", "5 per minute"]
+    default_limits=["5 per minute"]
 )
 
 # Configure session to use filesystem (instead of signed cookies)
@@ -28,6 +29,7 @@ db = SQL("sqlite:///fitness.db")
 # Custom error handler
 @app.errorhandler(429)
 def ratelimite_handler(e):
+    """Limits the number of failed logins"""
     return "Number of login attempts exceeded.", 429
 
 @app.after_request
