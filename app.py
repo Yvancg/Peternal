@@ -70,3 +70,56 @@ def login():
     else:
         return render_template("login.html")
 
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
+
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    """Register new users"""
+    # Render the html
+    if request.method == "GET":
+        return render_template("register.html")
+
+    else:
+        username = request.form.get("username")
+        password = request.form.get("password")
+        confirmation = request.form.get("confirmation")
+
+        # Check for username
+        if not username:
+            return apology("Username required")
+
+        # Check for password
+        if not password:
+            return apology("Password required")
+
+        # Check for confirmation password
+        if not confirmation:
+            return apology("Confirmation required")
+
+        # Check for matching passwords
+        if password != confirmation:
+            return apology("Passwords do not match")
+
+        # Stores hash password instead of password
+        hash = generate_password_hash(password)
+
+        # Create new user and checks if already registered
+        try:
+            new_user = db.execute(
+                "INSERT INTO users (username, hash) VALUES (?, ?)", username, hash
+            )
+        except:
+            return apology("Already registered")
+
+        # Starts the session without having to log in
+        session["user_id"] = new_user
+
+        return redirect("/")
