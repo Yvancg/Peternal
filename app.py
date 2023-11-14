@@ -1,13 +1,22 @@
 import os
 
 from cs50 import SQL
-from flask import Flask, flash, redirect, render_template, request, session
+from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
 import datetime
 
 # Configure application
 app = Flask(__name__)
+
+# Configure the maximum number of login attempts
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    default_limits=["200 per day", "50 per hour", "5 per minute"]
+)
 
 # Configure session to use filesystem (instead of signed cookies)
 app.config["SESSION_PERMANENT"] = False
@@ -16,6 +25,11 @@ Session(app)
 
 # Configure CS50 Library to use SQLite database
 db = SQL("sqlite:///fitness.db")
+
+# Custom error handler
+@app.errorhandler(429)
+def ratelimite_handler(e):
+    return "Number of login attempts exceeded.", 429
 
 @app.after_request
 def after_request(response):
@@ -33,6 +47,7 @@ def index():
     user_id = session["user_id"]
 
 @app.route("/login", methods=["GET", "POST"])
+@limiter.limit("5 per minute")
 def login():
     """Log user in"""
 
@@ -43,12 +58,14 @@ def login():
     if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
-            return apology("must provide username", 403)
+            flash("Must provide Username")
+            return redirect(url_for('login'))
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            return apology("must provide password", 403)
-
+            flash("Must provide Password")
+            return redirect(url_for('login'))
+        
         # Query database for username
         rows = db.execute(
             "SELECT * FROM users WHERE username = ?", request.form.get("username")
@@ -58,7 +75,8 @@ def login():
         if len(rows) != 1 or not check_password_hash(
             rows[0]["hash"], request.form.get("password")
         ):
-            return apology("invalid username and/or password", 403)
+            flash("invalid username and/or password")
+            return redirect(url_for('login'))
 
         # Remember which user has logged in
         session["user_id"] = rows[0]["id"]
@@ -94,19 +112,23 @@ def register():
 
         # Check for username
         if not username:
-            return apology("Username required")
+            flash("Username required")
+            return redirect(url_for('register'))
 
         # Check for password
         if not password:
-            return apology("Password required")
+            flash("Invalid password")
+            return redirect(url_for('register'))
 
         # Check for confirmation password
         if not confirmation:
-            return apology("Confirmation required")
+            flash("Confirmation required")
+            return redirect(url_for('register'))
 
         # Check for matching passwords
         if password != confirmation:
-            return apology("Passwords do not match")
+            flash("Passwords do not match")
+            return redirect(url_for('register'))
 
         # Stores hash password instead of password
         hash = generate_password_hash(password)
@@ -117,7 +139,9 @@ def register():
                 "INSERT INTO users (username, hash) VALUES (?, ?)", username, hash
             )
         except:
-            return apology("Already registered")
+            flash("Already registered")
+            return redirect(url_for('/'))
+
 
         # Starts the session without having to log in
         session["user_id"] = new_user

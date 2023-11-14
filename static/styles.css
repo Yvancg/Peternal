@@ -2,3 +2,8 @@
 nav .navbar-brand {
     font-size: xx-large;
 }
+
+/* Error messages */
+.flashes {
+    color: red;
+}
