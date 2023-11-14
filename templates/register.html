@@ -9,13 +9,13 @@
     <br>
     <form action="/register" method="post">
         <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-auto" id="username" name="username" placeholder="Username" type="text">
+            <input autofocus class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'username' }}" id="username" name="username" value="{{ username or '' }}" placeholder="Username" type="text">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="password" name="password" placeholder="Password" type="password">
+            <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'password' }}" id="password" name="password" value="{{ password or '' }}" placeholder="Password" type="password">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto" id="password" name="confirmation" placeholder="Confirm Password" type="password">
+            <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'confirmation' }}" id="password" name="confirmation" value="{{ confirmation or '' }}" placeholder="Confirm Password" type="password">
         </div>
         <button class="btn btn-primary" type="submit">Register</button>
     </form>

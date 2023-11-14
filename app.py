@@ -1,6 +1,5 @@
 import os
 
-from cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_session import Session
 from flask_limiter import Limiter
@@ -58,12 +57,12 @@ def login():
     if request.method == "POST":
         # Ensure username was submitted
         if not request.form.get("username"):
-            flash("Must provide Username")
+            flash("Must provide Username.")
             return redirect(url_for('login'))
 
         # Ensure password was submitted
         elif not request.form.get("password"):
-            flash("Must provide Password")
+            flash("Must provide Password.")
             return redirect(url_for('login'))
         
         # Query database for username
@@ -75,7 +74,7 @@ def login():
         if len(rows) != 1 or not check_password_hash(
             rows[0]["hash"], request.form.get("password")
         ):
-            flash("invalid username and/or password")
+            flash("Invalid username and/or password.")
             return redirect(url_for('login'))
 
         # Remember which user has logged in
@@ -110,25 +109,31 @@ def register():
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
 
+        error_field = None
+
         # Check for username
         if not username:
-            flash("Username required")
-            return redirect(url_for('register'))
+            flash("Username required.")
+            error_field = "username"
+            return render_template("register.html")
 
         # Check for password
         if not password:
-            flash("Invalid password")
-            return redirect(url_for('register'))
+            flash("Invalid password.")
+            error_field = "password"
+            return render_template("register.html", error_field=error_field, username=username)
 
         # Check for confirmation password
         if not confirmation:
-            flash("Confirmation required")
-            return redirect(url_for('register'))
+            flash("Confirmation required.")
+            error_field = "confirmation"
+            return render_template("register.html", error_field=error_field, username=username)
 
         # Check for matching passwords
         if password != confirmation:
-            flash("Passwords do not match")
-            return redirect(url_for('register'))
+            flash("Passwords do not match.")
+            error_field = "password, confirmation"
+            return render_template("register.html", error_field=error_field, username=username)
 
         # Stores hash password instead of password
         hash = generate_password_hash(password)
@@ -139,7 +144,7 @@ def register():
                 "INSERT INTO users (username, hash) VALUES (?, ?)", username, hash
             )
         except:
-            flash("Already registered")
+            flash("Already registered.")
             return redirect(url_for('/'))
 
 
