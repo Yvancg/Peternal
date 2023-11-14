@@ -1,7 +1,8 @@
 import os
 
-import sqlite3 as SQL
+import cs50 import SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask_login import login_required
 from flask_session import Session
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
