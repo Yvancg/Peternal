@@ -14,6 +14,7 @@
         <div class="mb-3">
             <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'password' }}" id="password" name="password" value="{{ password or '' }}" placeholder="Password" type="password">
         </div>
+        <p> Password must be 8 characters long or more and contain at least a digit, an uppercase and lowercase letter, and a special charater.</p>
         <div class="mb-3">
             <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'confirmation' }}" id="password" name="confirmation" value="{{ confirmation or '' }}" placeholder="Confirm Password" type="password">
         </div>

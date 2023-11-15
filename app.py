@@ -7,6 +7,7 @@ from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
+from helpers import is_password_strong
 
 # Configure application
 app = Flask(__name__)
@@ -153,7 +154,7 @@ def register():
             )
             db.commit()
             flash("Registration successful.")
-        except sqlite3.IntegrityError:
+        except SQL.IntegrityError:
             flash("Username already registered.")
             return render_template("register.html", error_field='username', username=username)
         except Exception as e:
