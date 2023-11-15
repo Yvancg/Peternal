@@ -2,12 +2,11 @@ import os
 
 import sqlite3 as SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_login import login_required, LoginManager
-from flask_session import Session
+from flask_login import login_required
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
-import datetime
+from flask_session import Session
 
 # Configure application
 app = Flask(__name__)
@@ -16,6 +15,7 @@ app = Flask(__name__)
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
+    storage_uri="redis://localhost:6379"
     default_limits=["5 per minute"]
 )
 
@@ -111,7 +111,9 @@ def register():
         username = request.form.get("username")
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
-
+        # Stores hash password instead of password
+        hash = generate_password_hash(password)
+        
         error_field = None
 
         # Check for username
@@ -138,20 +140,24 @@ def register():
             error_field = "password, confirmation"
             return render_template("register.html", error_field=error_field, username=username)
 
-        # Stores hash password instead of password
-        hash = generate_password_hash(password)
+        # Check if the password is strong
+        password_strong, message = is_password_strong(password)
+        if not password_strong:
+            flash(message)
+            return render_template("register.html", username=username)
 
         # Create new user and checks if already registered
         try:
-            new_user = db.execute(
-                "INSERT INTO users (username, hash) VALUES (?, ?)", username, hash
+            db.execute(
+                "INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash)
             )
-        except:
-            flash("Already registered.")
-            return redirect(url_for('/'))
+            db.commit()
+            flash("Registration successful.")
+        except sqlite3.IntegrityError:
+            flash("Username already registered.")
+            return render_template("register.html", error_field='username', username=username)
+        except Exception as e:
+            flash(f"An error occurred: {e}")
+            return render_template("register.html", error_field='database_error', username=username)
 
-
-        # Starts the session without having to log in
-        session["user_id"] = new_user
-
-        return redirect("/")
+        return redirect(url_for('login'))
