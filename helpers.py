@@ -18,3 +18,4 @@ def is_password_strong(password):
     if not re.search("[!@#$%^&*(),.?\":{}|<>]", password):
         return False, "Password must contain a special character."
     return True, "Password is strong."
+

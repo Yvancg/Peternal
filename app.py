@@ -2,7 +2,7 @@ import os
 
 import sqlite3 as SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_login import login_required
+from flask_login import login_required, LoginManager
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -11,6 +11,9 @@ from helpers import is_password_strong
 
 # Configure application
 app = Flask(__name__)
+
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 # Configure the maximum number of login attempts
 limiter = Limiter(
@@ -162,3 +165,8 @@ def register():
             return render_template("register.html", error_field='database_error', username=username)
 
         return redirect(url_for('login'))
+
+@login_manager.user_loader
+def load_user(user_id):
+    # Your logic here, e.g., loading user from database
+    return User.get(user_id)
