@@ -1,172 +1,110 @@
 import os
-
-import sqlite3 as SQL
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_login import login_required, LoginManager
+from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_session import Session
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
-from werkzeug.security import check_password_hash, generate_password_hash
-from flask_session import Session
-from helpers import is_password_strong
 
-# Configure application
+# Importing from auth.py
+from auth import User, authenticate_user, register_user, is_password_strong
+
 app = Flask(__name__)
 
+# Configure Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
 
-# Configure the maximum number of login attempts
+# User loader function for Flask-Login
+@login_manager.user_loader
+def load_user(user_id):
+    return User.get(user_id)
+
+# Flask-Limiter configuration
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    storage_uri="redis://localhost:6379",
     default_limits=["5 per minute"]
 )
 
-# Configure session to use filesystem (instead of signed cookies)
+# Flask-Session configuration
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 Session(app)
 
-# Configure the use SQLite database
-db = SQL.connect("fitness.db")
-
-# Custom error handler
+# Custom error handler for rate limiting
 @app.errorhandler(429)
-def ratelimite_handler(e):
-    """Limits the number of failed logins"""
-    return "Number of login attempts exceeded.", 429
+def rate_limit_handler(e):
+    return "Rate limit exceeded", 429
 
-@app.after_request
-def after_request(response):
-    """Ensure responses aren't cached"""
-    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-    response.headers["Expires"] = 0
-    response.headers["Pragma"] = "no-cache"
-    return response
-
-
+# Route for the main page
 @app.route("/")
 @login_required
 def index():
     """Show workout program"""
     user_id = session["user_id"]
+    pass
 
+# Route for user login
 @app.route("/login", methods=["GET", "POST"])
 @limiter.limit("5 per minute")
 def login():
-    """Log user in"""
-
-    # Forget any user_id
-    session.clear()
-
-    # User reached route via POST (as by submitting a form via POST)
     if request.method == "POST":
-        # Ensure username was submitted
-        if not request.form.get("username"):
-            flash("Must provide Username.")
+        username = request.form.get("username")
+        password = request.form.get("password")
+
+        if not username or not password:
+            flash("Username and Password are required.")
             return redirect(url_for('login'))
 
-        # Ensure password was submitted
-        elif not request.form.get("password"):
-            flash("Must provide Password.")
-            return redirect(url_for('login'))
-        
-        # Query database for username
-        rows = db.execute(
-            "SELECT * FROM users WHERE username = ?", request.form.get("username")
-        )
-
-        # Ensure username exists and password is correct
-        if len(rows) != 1 or not check_password_hash(
-            rows[0]["hash"], request.form.get("password")
-        ):
-            flash("Invalid username and/or password.")
+        user = authenticate_user(username, password)
+        if user:
+            login_user(user)
+            return redirect(url_for('index'))
+        else:
+            flash("Invalid username or password.")
             return redirect(url_for('login'))
 
-        # Remember which user has logged in
-        session["user_id"] = rows[0]["id"]
-
-        # Redirect user to home page
-        return redirect("/")
-
-    # User reached route via GET (as by clicking a link or via redirect)
     else:
         return render_template("login.html")
 
+# Route for user logout
 @app.route("/logout")
 def logout():
-    """Log user out"""
+    logout_user()
+    return redirect(url_for('login'))
 
-    # Forget any user_id
-    session.clear()
-
-    # Redirect user to login form
-    return redirect("/")
-
+# Route for user registration
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    """Register new users"""
-    # Render the html
-    if request.method == "GET":
-        return render_template("register.html")
-
-    else:
+    if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
-        # Stores hash password instead of password
-        hash = generate_password_hash(password)
-        
-        error_field = None
 
-        # Check for username
-        if not username:
-            flash("Username required.")
-            error_field = "username"
-            return render_template("register.html")
+        if not username or not password or not confirmation:
+            flash("Username, Password, and Confirmation are required.")
+            return redirect(url_for('register'))
 
-        # Check for password
-        if not password:
-            flash("Invalid password.")
-            error_field = "password"
-            return render_template("register.html", error_field=error_field, username=username)
-
-        # Check for confirmation password
-        if not confirmation:
-            flash("Confirmation required.")
-            error_field = "confirmation"
-            return render_template("register.html", error_field=error_field, username=username)
-
-        # Check for matching passwords
         if password != confirmation:
-            flash("Passwords do not match.")
-            error_field = "password, confirmation"
-            return render_template("register.html", error_field=error_field, username=username)
+            flash("Passwords must match.")
+            return redirect(url_for('register'))
 
-        # Check if the password is strong
-        password_strong, message = is_password_strong(password)
-        if not password_strong:
+        is_strong, message = is_password_strong(password)
+        if not is_strong:
             flash(message)
-            return render_template("register.html", username=username)
+            return redirect(url_for('register'))
 
-        # Create new user and checks if already registered
-        try:
-            db.execute(
-                "INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash)
-            )
-            db.commit()
-            flash("Registration successful.")
-        except SQL.IntegrityError:
-            flash("Username already registered.")
-            return render_template("register.html", error_field='username', username=username)
-        except Exception as e:
-            flash(f"An error occurred: {e}")
-            return render_template("register.html", error_field='database_error', username=username)
+        if register_user(username, password):
+            flash("Registration successful. Please log in.")
+            return redirect(url_for('login'))
+        else:
+            flash("Username already exists.")
+            return redirect(url_for('register'))
 
-        return redirect(url_for('login'))
+    else:
+        return render_template("register.html")
 
-@login_manager.user_loader
-def load_user(user_id):
-    # Your logic here, e.g., loading user from database
-    return User.get(user_id)
+# Other routes and logic as needed...
+
+if __name__ == '__main__':
+    app.run(debug=True)
