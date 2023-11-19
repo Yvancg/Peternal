@@ -1,6 +1,6 @@
 import os
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_login import LoginManager, login_required, login_user, logout_user
+from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_session import Session
@@ -13,6 +13,7 @@ app = Flask(__name__)
 # Configure Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
+login_manager.login_view = "/register"
 
 # User loader function for Flask-Login
 @login_manager.user_loader
@@ -23,7 +24,8 @@ def load_user(user_id):
 limiter = Limiter(
     app=app,
     key_func=get_remote_address,
-    default_limits=["5 per minute"]
+    default_limits=["5 per minute"],
+    storage_uri="redis://localhost:6379"
 )
 
 # Flask-Session configuration
@@ -42,6 +44,9 @@ def rate_limit_handler(e):
 @login_required
 def index():
     """Show workout program"""
+    if not current_user.is_authenticated:
+        return redirect(url_for('register'))
+
     user_id = session["user_id"]
     pass
 
