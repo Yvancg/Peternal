@@ -29,6 +29,7 @@ limiter = Limiter(
 # Flask-Session configuration
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
+app.config['SECRET_KEY'] = ')u:L0V91kOOo<sdT6u0?,|o~DtH?2,(/iPRs5!>T6nDG]$a7>h|8:/S%s$<<k'
 Session(app)
 
 # Custom error handler for rate limiting
