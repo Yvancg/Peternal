@@ -1,9 +1,9 @@
 import os
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, login_required, login_user, logout_user
-from flask_session import Session
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
+from flask_session import Session
 
 # Importing from auth.py
 from auth import User, authenticate_user, register_user, is_password_strong
