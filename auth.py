@@ -41,8 +41,10 @@ def register_user(username, password):
     try:
         cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash_password))
         db.commit()
+        db.close()
         return True
     except sqlite3.IntegrityError:
+        db.close()
         return False
 
 # Password strength checker function

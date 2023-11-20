@@ -13,7 +13,7 @@ app = Flask(__name__)
 # Configure Flask-Login
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "/register"
+login_manager.login_view = "register"
 
 # User loader function for Flask-Login
 @login_manager.user_loader
@@ -34,6 +34,14 @@ app.config["SESSION_TYPE"] = "filesystem"
 app.config['SECRET_KEY'] = ')u:L0V91kOOo<sdT6u0?,|o~DtH?2,(/iPRs5!>T6nDG]$a7>h|8:/S%s$<<k'
 Session(app)
 
+@app.after_request
+def after_request(response):
+    """Ensure responses aren't cached"""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Expires"] = 0
+    response.headers["Pragma"] = "no-cache"
+    return response
+
 # Custom error handler for rate limiting
 @app.errorhandler(429)
 def rate_limit_handler(e):
@@ -48,7 +56,18 @@ def index():
         return redirect(url_for('register'))
 
     user_id = session["user_id"]
-    pass
+
+    fitness_db = db.execute(
+        "SELECT symbol, SUM(shares) AS shares, price FROM transactions WHERE user_id = ? GROUP BY symbol",
+        user_id,
+    )
+
+    return render_template(
+        "index.html",
+        database=fitness_db,
+        cash=formatted_cash,
+        total=formatted_grand_total,
+    )
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
