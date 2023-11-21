@@ -28,12 +28,18 @@ limiter = Limiter(
     storage_uri="redis://localhost:6379"
 )
 
+# Custom error handler for rate limiting
+@app.errorhandler(429)
+def rate_limit_handler(e):
+    return "Rate limit exceeded", 429
+
 # Flask-Session configuration
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SECRET_KEY'] = ')u:L0V91kOOo<sdT6u0?,|o~DtH?2,(/iPRs5!>T6nDG]$a7>h|8:/S%s$<<k'
 Session(app)
 
+# Ensuring server responses are not cached
 @app.after_request
 def after_request(response):
     """Ensure responses aren't cached"""
@@ -41,11 +47,6 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
-
-# Custom error handler for rate limiting
-@app.errorhandler(429)
-def rate_limit_handler(e):
-    return "Rate limit exceeded", 429
 
 # Route for the main page
 @app.route("/")
