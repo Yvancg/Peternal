@@ -59,15 +59,13 @@ def index():
     user_id = session["user_id"]
 
     fitness_db = db.execute(
-        "SELECT symbol, SUM(shares) AS shares, price FROM transactions WHERE user_id = ? GROUP BY symbol",
+        "SELECT date, type, duration, intensity FROM workouts WHERE user_id = ? GROUP BY type",
         user_id,
     )
 
     return render_template(
         "index.html",
         database=fitness_db,
-        cash=formatted_cash,
-        total=formatted_grand_total,
     )
 
 # Route for user login
@@ -104,11 +102,16 @@ def logout():
 def register():
     if request.method == "POST":
         username = request.form.get("username")
+        email = request.form.get("email")
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
 
-        if not username or not password or not confirmation:
-            flash("Username, Password, and Confirmation are required.")
+        if not username or not email or not password or not confirmation:
+            flash("Username, Email, Password, and Confirmation are required.")
+            return redirect(url_for('register'))
+
+        if not is_valid_email(email):
+            flash("Invalid email format.")
             return redirect(url_for('register'))
 
         if password != confirmation:
@@ -120,7 +123,7 @@ def register():
             flash(message)
             return redirect(url_for('register'))
 
-        if register_user(username, password):
+        if register_user(username, email, password):
             flash("Registration successful. Please log in.")
             return redirect(url_for('login'))
         else:

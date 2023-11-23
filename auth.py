@@ -2,7 +2,6 @@
 import sqlite3
 import re
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_login import UserMixin
 
 # User class for Flask-Login
 class User:
@@ -38,18 +37,33 @@ def authenticate_user(username, password):
     return None
 
 # Function to register a new user
-def register_user(username, password):
+def register_user(username, email, password):
     hash_password = generate_password_hash(password)
     db = sqlite3.connect("fitness.db")
     cursor = db.cursor()
+
+    # Check if email already exists
+    cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
+    if cursor.fetchone():
+        db.close()
+        return False, "Email already in use."
+
     try:
-        cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash_password))
+        cursor.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hash_password))
         db.commit()
+
     except sqlite3.IntegrityError:
         db.close()
-        return False
+        return False, "Username already exists."
     db.close()
-    return True
+
+    return True, "Registration successful."
+
+# Functino to check if the email is valid
+def is_valid_email(email):
+    """Validate the email format."""
+    email_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
+    return re.match(email_regex, email) is not None
 
 # Password strength checker function
 def is_password_strong(password):
