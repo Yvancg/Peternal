@@ -4,26 +4,38 @@ import re
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 
-# Database connection
-db = sqlite3.connect("fitness.db")
-
-
 # User class for Flask-Login
-class User(UserMixin):
+class User:
     def __init__(self, id, username):
         self.id = id
         self.username = username
 
+    def get_id(self):
+        return str(self.id)  # Flask-Login expects the user ID to be a string
+
     @staticmethod
     def get(user_id):
-        # Database retrieval logic for user
+        db = sqlite3.connect("fitness.db")
         db.row_factory = sqlite3.Row
         cursor = db.cursor()
         cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
         user_row = cursor.fetchone()
+        db.close()
         if user_row:
             return User(id=user_row['id'], username=user_row['username'])
         return None
+
+def authenticate_user(username, password):
+    db = sqlite3.connect("fitness.db")
+    db.row_factory = sqlite3.Row
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
+    user_row = cursor.fetchone()
+    db.close()
+
+    if user_row and check_password_hash(user_row['hash'], password):
+        return User(id=user_row['id'], username=user_row['username'])
+    return None
 
 # Function to register a new user
 def register_user(username, password):
@@ -33,11 +45,11 @@ def register_user(username, password):
     try:
         cursor.execute("INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash_password))
         db.commit()
-        db.close()
-        return True
     except sqlite3.IntegrityError:
         db.close()
         return False
+    db.close()
+    return True
 
 # Password strength checker function
 def is_password_strong(password):
