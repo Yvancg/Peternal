@@ -1,4 +1,5 @@
 import os
+import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_limiter import Limiter
@@ -6,7 +7,7 @@ from flask_limiter.util import get_remote_address
 from flask_session import Session
 
 # Importing from auth.py
-from auth import User, authenticate_user, register_user, is_password_strong
+from auth import User, authenticate_user, is_valid_email, register_user, is_password_strong
 
 app = Flask(__name__)
 
@@ -58,6 +59,7 @@ def index():
 
     user_id = session["user_id"]
 
+    db = sqlite3.connect("fitness.db")
     fitness_db = db.execute(
         "SELECT date, type, duration, intensity FROM workouts WHERE user_id = ? GROUP BY type",
         user_id,
