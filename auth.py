@@ -24,6 +24,7 @@ class User:
             return User(id=user_row['id'], username=user_row['username'])
         return None
 
+# Authentication function
 def authenticate_user(username, password):
     db = sqlite3.connect("fitness.db")
     db.row_factory = sqlite3.Row
