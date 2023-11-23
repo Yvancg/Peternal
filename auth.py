@@ -4,6 +4,10 @@ import re
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_login import UserMixin
 
+# Database connection
+db = sqlite3.connect("fitness.db")
+
+
 # User class for Flask-Login
 class User(UserMixin):
     def __init__(self, id, username):
@@ -13,7 +17,6 @@ class User(UserMixin):
     @staticmethod
     def get(user_id):
         # Database retrieval logic for user
-        db = sqlite3.connect("fitness.db")
         db.row_factory = sqlite3.Row
         cursor = db.cursor()
         cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
@@ -21,17 +24,6 @@ class User(UserMixin):
         if user_row:
             return User(id=user_row['id'], username=user_row['username'])
         return None
-
-# Function to authenticate a user
-def authenticate_user(username, password):
-    db = sqlite3.connect("fitness.db")
-    db.row_factory = sqlite3.Row
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-    user_row = cursor.fetchone()
-    if user_row and check_password_hash(user_row['hash'], password):
-        return User(id=user_row['id'], username=user_row['username'])
-    return None
 
 # Function to register a new user
 def register_user(username, password):
