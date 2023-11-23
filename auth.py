@@ -46,7 +46,8 @@ def authenticate_user(username, password):
     db.close()
 
     if user_row and check_password_hash(user_row['hash'], password):
-        return User(id=user_row['id'], username=user_row['username'])
+        user = User(id=user_row['id'], username=user_row['username'])
+        return user 
     return None
 
 # Function to register a new user
