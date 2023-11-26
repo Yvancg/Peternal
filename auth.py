@@ -2,78 +2,62 @@
 import sqlite3
 import re
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask import redirect, session
+from functools import wraps
 
-# User class for Flask-Login
-class User:
-    def __init__(self, id, username):
-        self.id = id
-        self.username = username
+# Requires user to be logged in
+def login_required(f):
+    """
+    Decorate routes to require login.
 
-    @property
-    def is_authenticated(self):
-        return True
+    http://flask.pocoo.org/docs/0.12/patterns/viewdecorators/
+    """
 
-    @property
-    def is_active(self):
-        return True
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if session.get("user_id") is None:
+            return redirect("/login")
+        return f(*args, **kwargs)
 
-    @property
-    def is_anonymous(self):
-        return False
-
-    def get_id(self):
-        return str(self.id)  # Flask-Login expects the user ID to be a string
-
-    @staticmethod
-    def get(user_id):
-        db = sqlite3.connect("fitness.db")
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
-        cursor.execute("SELECT * FROM users WHERE id = ?", (user_id,))
-        user_row = cursor.fetchone()
-        db.close()
-        if user_row:
-            return User(id=user_row['id'], username=user_row['username'])
-        return None
+    return decorated_function
 
 # Authentication function
 def authenticate_user(username, password):
-    db = sqlite3.connect("fitness.db")
-    db.row_factory = sqlite3.Row
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM users WHERE username = ?", (username,))
-    user_row = cursor.fetchone()
-    db.close()
+    with sqlite3.connect("fitness.db") as db:
+        cursor = db.cursor()
+        cursor.execute(
+            "SELECT * FROM users WHERE username = ?", (username,)
+        )
+        user_row = cursor.fetchone()
 
     if user_row and check_password_hash(user_row['hash'], password):
-        user = User(id=user_row['id'], username=user_row['username'])
+        user = User(id=user_row['user_id'], username=user_row['username'])
         return user 
     return None
 
 # Function to register a new user
 def register_user(username, email, password):
     hash_password = generate_password_hash(password)
-    db = sqlite3.connect("fitness.db")
-    cursor = db.cursor()
+    with sqlite3.connect("fitness.db") as db:
+        cursor = db.cursor()
+        # Check if email exists
+        cursor.execute(
+            "SELECT user_id FROM users WHERE email = ?", (email,)
+        )
+        if cursor.fetchone():
+            return False, "Email already in use."
 
-    # Check if email already exists
-    cursor.execute("SELECT id FROM users WHERE email = ?", (email,))
-    if cursor.fetchone():
-        db.close()
-        return False, "Email already in use."
-
-    try:
-        cursor.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, hash_password))
-        db.commit()
-
-    except sqlite3.IntegrityError:
-        db.close()
-        return False, "Username already exists."
-    db.close()
+        try:
+            cursor.execute(
+                "INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", 
+                (username, email, hash_password)
+            )
+        except sqlite3.IntegrityError:
+            return False, "Username already exists."
 
     return True, "Registration successful."
 
-# Functino to check if the email is valid
+# Function to check if the email is valid
 def is_valid_email(email):
     """Validate the email format."""
     email_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
@@ -82,13 +66,13 @@ def is_valid_email(email):
 # Password strength checker function
 def is_password_strong(password):
     if len(password) < 8:
-        return False, "Password must be at least 8 characters long."
+        return False, "be at least 8 characters long, "
     if not re.search("[0-9]", password):
-        return False, "Password must contain a digit."
+        return False, "contain a digit, "
     if not re.search("[A-Z]", password):
-        return False, "Password must contain an uppercase letter."
+        return False, "contain an uppercase letter, "
     if not re.search("[a-z]", password):
-        return False, "Password must contain a lowercase letter."
+        return False, "contain a lowercase letter, "
     if not re.search("[!@#$%^&*(),.?\":{}|<>]", password):
-        return False, "Password must contain a special character."
+        return False, "contain a special character."
     return True, "Password is strong."

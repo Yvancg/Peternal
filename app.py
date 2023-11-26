@@ -1,37 +1,18 @@
+import os
+
 import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_login import LoginManager, current_user, login_required, login_user, logout_user
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 from flask_session import Session
+from werkzeug.security import check_password_hash, generate_password_hash
 
 # Importing from auth.py
-from auth import User, authenticate_user, is_valid_email, register_user, is_password_strong
+from auth import login_required, register_user, authenticate_user, is_valid_email, is_password_strong
 
+# Configure application
 app = Flask(__name__)
-
-# Configure Flask-Login
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = "register"
-
-# User loader function for Flask-Login
-@login_manager.user_loader
-def load_user(user_id):
-    return User.get(user_id)
-
-# Flask-Limiter configuration
-limiter = Limiter(
-    app=app,
-    key_func=get_remote_address,
-    default_limits=["5 per minute"],
-    storage_uri="redis://localhost:6379"
-)
-
-# Custom error handler for rate limiting
-@app.errorhandler(429)
-def rate_limit_handler(e):
-    return "Rate limit exceeded", 429
 
 # Flask-Session configuration
 app.config["SESSION_PERMANENT"] = False
@@ -48,46 +29,69 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
+
 # Route for the main page
 @app.route("/")
 @login_required
 def index():
     """Show workout program"""
+    user_id = session["user_id"]
+
     if not current_user.is_authenticated:
         return redirect(url_for('register'))
 
-    user_id = session["user_id"]
+    with sqlite3.connect("fitness.db") as db:
+        cursor = db.cursor()
+        # Display the workout plan
+        cursor.execute(
+            "SELECT date, type, duration, intensity FROM workouts WHERE user_id = ? GROUP BY type",
+            (user_id,)
+        )
+        user_data = cursor.fetchone() 
 
-    db = sqlite3.connect("fitness.db")
-    fitness_db = db.execute(
-        "SELECT date, type, duration, intensity FROM workouts WHERE user_id = ? GROUP BY type",
-        user_id,
-    )
-
-    return render_template(
-        "index.html",
-        database=fitness_db,
-    )
+    return render_template("index.html", user_data=user_data,)
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
-@limiter.limit("5 per minute")
 def login():
+    """User login"""
+    # Forget any user_id
+    session.clear()
+
+    # User reached route via POST 
     if request.method == "POST":
         username = request.form.get("username")
         password = request.form.get("password")
 
-        if not username or not password:
-            flash("Username and Password are required.")
+        if not username:
+            flash("Username is required.")
             return redirect(url_for('login'))
 
-        user = authenticate_user(username, password)
-        if user:
-            login_user(user)
-            return redirect(url_for('index'))
-        else:
-            flash("Invalid username or password.")
+        elif not password:
+            flash("Password is required.")
             return redirect(url_for('login'))
+
+        # Query database for username
+        with sqlite3.connect("fitness.db") as db:
+            cursor = db.cursor()
+            cursor.execute(
+                "SELECT * FROM users WHERE username = ?", 
+                (username,)
+            )
+            rows = cursor.fetchone()
+
+        # Ensure username exists and password is correct
+        if rows is None or not check_password_hash(
+            rows["hash"], password
+            ):
+            flash("Invalid username and/or password.")
+            return redirect(url_for('login'))
+
+        # Remember which user has logged in
+        session["user_id"] = rows["id"]
+
+        # Redirect user to home page
+        return redirect(url_for('index'))
 
     else:
         return render_template("login.html")
@@ -101,40 +105,69 @@ def logout():
 # Route for user registration
 @app.route("/register", methods=["GET", "POST"])
 def register():
-    if request.method == "POST":
+    """Register new users"""
+        # Render the html
+    if request.method == "GET":
+        return render_template("register.html")
+
+    else:
         username = request.form.get("username")
         email = request.form.get("email")
         password = request.form.get("password")
         confirmation = request.form.get("confirmation")
 
-        if not username or not email or not password or not confirmation:
-            flash("Username, Email, Password, and Confirmation are required.")
+        # Check for username
+        if not username:
+            flash("Username required.")
             return redirect(url_for('register'))
 
+        # Check for email
+        if not email:
+            flash("Email required.")
+            return redirect(url_for('register'))
+    
+        # Check for password
+        if not password:
+            flash("Password required.")
+            return redirect(url_for('register'))
+        
+        # Check for confirmation
+        if not confirmation:
+            flash("Confirmation required.")
+            return redirect(url_for('register'))
+        
+        # Check for if email is valid
         if not is_valid_email(email):
             flash("Invalid email format.")
             return redirect(url_for('register'))
 
+        # Check password matches confirmation
         if password != confirmation:
             flash("Passwords must match.")
             return redirect(url_for('register'))
 
+        # Check password strength
         is_strong, message = is_password_strong(password)
         if not is_strong:
-            flash(message)
+            flash("Password must" + message)
             return redirect(url_for('register'))
 
-        if register_user(username, email, password):
-            flash("Registration successful. Please log in.")
+        # Stores hash password instead of password
+        hash = generate_password_hash(password)
+
+        # Create new user and checks if already registered
+        try:
+            with sqlite3.connect("fitness.db") as db:
+                cursor = db.cursor()
+                cursor.execute(
+                    "INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash)
+                )
+                user_id = cursor.lastrowid
+        except sqlite3.IntegrityError:
+            flash("Already registered")
             return redirect(url_for('login'))
-        else:
-            flash("Username already exists.")
-            return redirect(url_for('register'))
 
-    else:
-        return render_template("register.html")
+        # Starts the session without having to log in
+        session["user_id"] = user_id
 
-# Other routes and logic as needed...
-
-if __name__ == '__main__':
-    app.run(debug=True)
+        return redirect("/")
