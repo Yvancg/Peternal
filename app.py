@@ -2,9 +2,7 @@ import os
 
 import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_login import LoginManager, current_user, login_required, login_user, logout_user
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
+from flask_login import current_user, login_required, login_user, logout_user
 from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -37,9 +35,6 @@ def index():
     """Show workout program"""
     user_id = session["user_id"]
 
-    if not current_user.is_authenticated:
-        return redirect(url_for('register'))
-
     with sqlite3.connect("fitness.db") as db:
         cursor = db.cursor()
         # Display the workout plan
@@ -49,7 +44,7 @@ def index():
         )
         user_data = cursor.fetchone() 
 
-    return render_template("index.html", user_data=user_data,)
+    return render_template("index.html", user_id=user_id,)
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
@@ -99,8 +94,13 @@ def login():
 # Route for user logout
 @app.route("/logout")
 def logout():
-    logout_user()
-    return redirect(url_for('login'))
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
 
 # Route for user registration
 @app.route("/register", methods=["GET", "POST"])
