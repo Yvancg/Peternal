@@ -11,6 +11,7 @@
     <table class="table myTable">
         <thead>
             <tr>
+                <th scope="col">Workout</th>
                 <th scope="col">Date</th>
                 <th scope="col">Type</th>
                 <th scope="col">Duration</th>
@@ -18,22 +19,17 @@
             </tr>
         </thead>
         <tbody>
-            {% for row in database %}
+            {% for workout in workouts %}
                 <tr>
-                    <td>{{ row["date"] }}</td>
-                    <td>{{ row["type"] }}</td>
-                    <td>{{ row["duration"] }}</td>
-                    <td>{{ row["intensity"] }} </td>
+                    <td>{{ workout[0] }}</td>
+                    <td>{{ workout[1] }}</td>
+                    <td>{{ workout[2] }}</td>
+                    <td>{{ workout[3] }}</td>
+                    <td>{{ workout[4] }}</td>
                 </tr>
             {% endfor %}
         </tbody>
         <tfoot>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
             <tr>
                 <td></td>
                 <td></td>

@@ -2,9 +2,8 @@ import os
 
 import sqlite3
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_login import current_user, login_required, login_user, logout_user
-from flask_session import Session
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_session import Session
 
 # Importing from auth.py
 from auth import login_required, register_user, authenticate_user, is_valid_email, is_password_strong
@@ -39,12 +38,12 @@ def index():
         cursor = db.cursor()
         # Display the workout plan
         cursor.execute(
-            "SELECT date, type, duration, intensity FROM workouts WHERE user_id = ? GROUP BY type",
+            "SELECT workout_id, date, type, duration, intensity FROM workouts WHERE user_id = ?",
             (user_id,)
         )
-        user_data = cursor.fetchone() 
+        workouts = cursor.fetchall()
 
-    return render_template("index.html", user_id=user_id,)
+    return render_template("index.html", workouts=workouts,)
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
@@ -53,13 +52,14 @@ def login():
     # Forget any user_id
     session.clear()
 
-    # User reached route via POST 
+    # User reached route via POST
     if request.method == "POST":
         username = request.form.get("username")
+        email = request.form.get("email")
         password = request.form.get("password")
 
-        if not username:
-            flash("Username is required.")
+        if not username or not email:
+            flash("Username or email is required.")
             return redirect(url_for('login'))
 
         elif not password:
@@ -70,8 +70,8 @@ def login():
         with sqlite3.connect("fitness.db") as db:
             cursor = db.cursor()
             cursor.execute(
-                "SELECT * FROM users WHERE username = ?", 
-                (username,)
+                "SELECT * FROM users WHERE username = ? OR email = ?", 
+                (username, email,)
             )
             rows = cursor.fetchone()
 
@@ -79,7 +79,7 @@ def login():
         if rows is None or not check_password_hash(
             rows["hash"], password
             ):
-            flash("Invalid username and/or password.")
+            flash("Invalid username/email or password.")
             return redirect(url_for('login'))
 
         # Remember which user has logged in
@@ -88,8 +88,7 @@ def login():
         # Redirect user to home page
         return redirect(url_for('index'))
 
-    else:
-        return render_template("login.html")
+    return render_template("login.html")
 
 # Route for user logout
 @app.route("/logout")
@@ -106,7 +105,7 @@ def logout():
 @app.route("/register", methods=["GET", "POST"])
 def register():
     """Register new users"""
-        # Render the html
+    # Render the html
     if request.method == "GET":
         return render_template("register.html")
 
@@ -125,17 +124,17 @@ def register():
         if not email:
             flash("Email required.")
             return redirect(url_for('register'))
-    
+
         # Check for password
         if not password:
             flash("Password required.")
             return redirect(url_for('register'))
-        
+
         # Check for confirmation
         if not confirmation:
             flash("Confirmation required.")
             return redirect(url_for('register'))
-        
+
         # Check for if email is valid
         if not is_valid_email(email):
             flash("Invalid email format.")
@@ -152,6 +151,18 @@ def register():
             flash("Password must" + message)
             return redirect(url_for('register'))
 
+        # Call the function after the checks
+        user_id = register_user(username, email, password)
+        if user_id:
+            # Starts the session without having to log in
+            session["user_id"] = user_id
+            return redirect(url_for('index'))
+        else:
+            # Sends user to login as user already has credentials
+            flash("Already registered")
+            return redirect(url_for('login'))
+
+"""
         # Stores hash password instead of password
         hash = generate_password_hash(password)
 
@@ -171,3 +182,4 @@ def register():
         session["user_id"] = user_id
 
         return redirect("/")
+"""
