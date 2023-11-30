@@ -14,7 +14,7 @@ from config import SECRET_KEY
 app = Flask(__name__)
 
 # Flask-Session configuration
-app.config["SESSION_PERMANENT"] = True
+app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SECRET_KEY'] = SECRET_KEY
 Session(app)
@@ -82,7 +82,7 @@ def login():
             return redirect(url_for('login'))
 
         # Remember which user has logged in
-        session["user_id"] = rows["id"]
+        session["user_id"] = rows["user_id"]
 
         # Redirect user to home page
         return redirect(url_for('index'))
