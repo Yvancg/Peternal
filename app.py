@@ -64,6 +64,7 @@ def login():
 
         # Query database for username
         with sqlite3.connect("fitness.db") as db:
+            db.row_factory = sqlite3.Row
             cursor = db.cursor()
             cursor.execute(
                 "SELECT * FROM users WHERE username = ? OR email = ?", 
