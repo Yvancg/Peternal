@@ -12,7 +12,7 @@ from auth import login_required, register_user, authenticate_user, is_valid_emai
 app = Flask(__name__)
 
 # Flask-Session configuration
-app.config["SESSION_PERMANENT"] = False
+app.config["SESSION_PERMANENT"] = True
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SECRET_KEY'] = ')u:L0V91kOOo<sdT6u0?,|o~DtH?2,(/iPRs5!>T6nDG]$a7>h|8:/S%s$<<k'
 Session(app)
@@ -31,14 +31,16 @@ def after_request(response):
 @login_required
 def index():
     """Show workout program"""
-    user_id = session["user_id"]
+    user_id = int(session["user_id"])
+    workouts = None
     with sqlite3.connect("fitness.db") as db:
-        workouts_db = db.execute(
+        cursor = db.cursor()
+        cursor.execute(
             "SELECT workout_id, date, type, duration, intensity FROM workouts WHERE user_id = ?",
             (user_id,)
         )
         workouts = cursor.fetchall()
-    return render_template("index.html") #, workouts=workouts
+    return render_template("index.html", workouts=workouts)
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
