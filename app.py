@@ -26,24 +26,19 @@ def after_request(response):
     response.headers["Pragma"] = "no-cache"
     return response
 
-
 # Route for the main page
 @app.route("/")
 @login_required
 def index():
     """Show workout program"""
     user_id = session["user_id"]
-
     with sqlite3.connect("fitness.db") as db:
-        cursor = db.cursor()
-        # Display the workout plan
-        cursor.execute(
+        workouts_db = db.execute(
             "SELECT workout_id, date, type, duration, intensity FROM workouts WHERE user_id = ?",
             (user_id,)
         )
         workouts = cursor.fetchall()
-
-    return render_template("index.html", workouts=workouts,)
+    return render_template("index.html") #, workouts=workouts
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
@@ -54,11 +49,10 @@ def login():
 
     # User reached route via POST
     if request.method == "POST":
-        username = request.form.get("username")
-        email = request.form.get("email")
+        username_email = request.form.get("username")
         password = request.form.get("password")
 
-        if not username or not email:
+        if not username_email:
             flash("Username or email is required.")
             return redirect(url_for('login'))
 
@@ -71,7 +65,7 @@ def login():
             cursor = db.cursor()
             cursor.execute(
                 "SELECT * FROM users WHERE username = ? OR email = ?", 
-                (username, email,)
+                (username_email, username_email,)
             )
             rows = cursor.fetchone()
 
