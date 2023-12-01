@@ -57,12 +57,12 @@ def login():
         password = request.form.get("password")
 
         if not username_email:
-            flash("Username or email is required.")
-            return redirect(url_for('login'))
+            flash("Username or email is required.", "danger")
+            return render_template("login.html")
 
         elif not password:
-            flash("Password is required.")
-            return redirect(url_for('login'))
+            flash("Password is required.", "danger")
+            return render_template("login.html")
 
         # Query database for username
         with sqlite3.connect("fitness.db") as db:
@@ -78,8 +78,8 @@ def login():
         if rows is None or not check_password_hash(
             rows["hash"], password
             ):
-            flash("Invalid username/email or password.")
-            return redirect(url_for('login'))
+            flash("Invalid username/email or password.", "danger")
+            return render_template("login.html")
 
         # Remember which user has logged in
         session["user_id"] = rows["user_id"]
@@ -116,39 +116,39 @@ def register():
 
         # Check for username
         if not username:
-            flash("Username required.")
-            return redirect(url_for('register'))
+            flash("Username required.", "danger")
+            return render_template("register.html")
 
         # Check for email
         if not email:
-            flash("Email required.")
-            return redirect(url_for('register'))
+            flash("Email required.", "danger")
+            return render_template("register.html")
 
         # Check for password
         if not password:
-            flash("Password required.")
-            return redirect(url_for('register'))
+            flash("Password required.", "danger")
+            return render_template("register.html")
 
         # Check for confirmation
         if not confirmation:
-            flash("Confirmation required.")
-            return redirect(url_for('register'))
+            flash("Confirmation required.", "danger")
+            return render_template("register.html")
 
         # Check for if email is valid
         if not is_valid_email(email):
-            flash("Invalid email format.")
-            return redirect(url_for('register'))
+            flash("Invalid email format.", "danger")
+            return render_template("register.html")
 
         # Check password matches confirmation
         if password != confirmation:
-            flash("Passwords must match.")
-            return redirect(url_for('register'))
+            flash("Passwords must match.", "danger")
+            return render_template("register.html")
 
         # Check password strength
         is_strong, message = is_password_strong(password)
         if not is_strong:
-            flash("Password must" + message)
-            return redirect(url_for('register'))
+            flash("Password must" + message, "danger")
+            return render_template("register.html")
 
         # Call the function after the checks
         user_id = register_user(username, email, password)
@@ -158,27 +158,48 @@ def register():
             return redirect(url_for('index'))
         else:
             # Sends user to login as user already has credentials
-            flash("Already registered")
+            flash("Already registered", "danger")
             return redirect(url_for('login'))
 
-"""
-        # Stores hash password instead of password
-        hash = generate_password_hash(password)
+@app.route("/change", methods=["GET", "POST"])
+@login_required
+def change():
+    """Change password"""
+    if request.method == "GET":
+        return render_template("change.html")
 
-        # Create new user and checks if already registered
-        try:
-            with sqlite3.connect("fitness.db") as db:
-                cursor = db.cursor()
-                cursor.execute(
-                    "INSERT INTO users (username, hash) VALUES (?, ?)", (username, hash)
-                )
-                user_id = cursor.lastrowid
-        except sqlite3.IntegrityError:
-            flash("Already registered")
-            return redirect(url_for('login'))
+    old_password = request.form.get("old_password")
+    new_password = request.form.get("new_password")
+    confirmation = request.form.get("confirmation")
 
-        # Starts the session without having to log in
-        session["user_id"] = user_id
+    # Initial form validation
+    if not (old_password and new_password and confirmation):
+        flash("All fields are required.", "danger")
+        return render_template("change.html")
 
-        return redirect("/")
-"""
+    if new_password == old_password:
+        flash("New password must be different from the old password.", "danger")
+        return render_template("change.html")
+
+    if new_password != confirmation:
+        flash("New passwords do not match.", "danger")
+        return render_template("change.html")
+
+    user_id = int(session["user_id"])
+
+    # Database connection for password validation
+    with sqlite3.connect("fitness.db") as db:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        cursor.execute("SELECT hash FROM users WHERE user_id = ?", (user_id,))
+        row = cursor.fetchone()
+
+    if not row or not check_password_hash(row["hash"], old_password):
+        flash("Invalid old password.", "danger")
+        return render_template("change.html")
+
+    # Update the user's password
+    new_hash = generate_password_hash(new_password)
+    cursor.execute("UPDATE users SET hash = ? WHERE user_id = ?", (new_hash, user_id,))
+    flash("Password successfully changed.", "success")
+    return redirect(url_for('index'))
