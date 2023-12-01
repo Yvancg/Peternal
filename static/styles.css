@@ -3,9 +3,14 @@ nav .navbar-brand {
     font-size: xx-large;
 }
 
-.navbar a:hover {
-    background-color: #A51C30;
-    color: white !important;
+.navbar-brand:hover {
+    color: greenyellow;
+}
+
+.navbar a:not(.navbar-brand):hover {
+    background-color: greenyellow;
+    color: black;
+    font-weight: bold;
     padding: auto;
     margin: auto;
 }

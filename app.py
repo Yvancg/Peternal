@@ -1,6 +1,7 @@
 import os
 
 import sqlite3
+from datetime import timedelta
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
@@ -17,6 +18,9 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SECRET_KEY'] = SECRET_KEY
+app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)  # Remember login for 30 days
+app.config['REMEMBER_COOKIE_SECURE'] = True
+app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 Session(app)
 
 # Ensuring server responses are not cached
@@ -43,63 +47,6 @@ def index():
         )
         workouts = cursor.fetchall()
     return render_template("index.html", workouts=workouts)
-
-# Route for user login
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    """User login"""
-    # Forget any user_id
-    session.clear()
-
-    # User reached route via POST
-    if request.method == "POST":
-        username_email = request.form.get("username")
-        password = request.form.get("password")
-
-        if not username_email:
-            flash("Username or email is required.", "danger")
-            return render_template("login.html")
-
-        elif not password:
-            flash("Password is required.", "danger")
-            return render_template("login.html")
-
-        # Query database for username
-        with sqlite3.connect("fitness.db") as db:
-            db.row_factory = sqlite3.Row
-            cursor = db.cursor()
-            cursor.execute(
-                "SELECT * FROM users WHERE username = ? OR email = ?", 
-                (username_email, username_email,)
-            )
-            rows = cursor.fetchone()
-
-        # Ensure username exists and password is correct
-        if rows is None or not check_password_hash(
-            rows["hash"], password
-            ):
-            flash("Invalid username/email or password.", "danger")
-            return render_template("login.html")
-
-        # Remember which user has logged in
-        session["user_id"] = rows["user_id"]
-
-        # Redirect user to home page
-        flash("Login succesful.", "success")
-        return redirect(url_for('index'))
-
-    return render_template("login.html")
-
-# Route for user logout
-@app.route("/logout")
-def logout():
-    """Log user out"""
-
-    # Forget any user_id
-    session.clear()
-
-    # Redirect user to login form
-    return redirect("/")
 
 # Route for user registration
 @app.route("/register", methods=["GET", "POST"])
@@ -163,6 +110,56 @@ def register():
             flash("Already registered", "danger")
             return redirect(url_for('login'))
 
+# Route for user login
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    """User login"""
+    # Forget any user_id
+    session.clear()
+
+    # User reached route via POST
+    if request.method == "POST":
+        username_email = request.form.get("username")
+        password = request.form.get("password")
+        remember = request.form.get("remember") == 'on'
+
+        if not username_email:
+            flash("Username or email is required.", "danger")
+            return render_template("login.html")
+
+        elif not password:
+            flash("Password is required.", "danger")
+            return render_template("login.html")
+
+        # Query database for username
+        with sqlite3.connect("fitness.db") as db:
+            db.row_factory = sqlite3.Row
+            cursor = db.cursor()
+            cursor.execute(
+                "SELECT * FROM users WHERE username = ? OR email = ?", 
+                (username_email, username_email,)
+            )
+            rows = cursor.fetchone()
+
+        # Ensure username exists and password is correct
+        if rows is None or not check_password_hash(
+            rows["hash"], password
+            ):
+            flash("Invalid username/email or password.", "danger")
+            return render_template("login.html")
+
+        # Remember which user has logged in
+        session["user_id"] = rows["user_id"]
+
+        # Set session permanence based on the 'remember me' checkbox
+        session.permanent = remember
+
+        # Redirect user to home page
+        flash("Login succesful.", "success")
+        return redirect(url_for('index'))
+
+    return render_template("login.html")
+
 @app.route("/change", methods=["GET", "POST"])
 @login_required
 def change():
@@ -205,3 +202,14 @@ def change():
     cursor.execute("UPDATE users SET hash = ? WHERE user_id = ?", (new_hash, user_id,))
     flash("Password successfully changed.", "success")
     return redirect(url_for('index'))
+
+# Route for user logout
+@app.route("/logout")
+def logout():
+    """Log user out"""
+
+    # Forget any user_id
+    session.clear()
+
+    # Redirect user to login form
+    return redirect("/")
