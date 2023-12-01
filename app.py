@@ -85,6 +85,7 @@ def login():
         session["user_id"] = rows["user_id"]
 
         # Redirect user to home page
+        flash("Login succesful.", "success")
         return redirect(url_for('index'))
 
     return render_template("login.html")
@@ -155,6 +156,7 @@ def register():
         if user_id:
             # Starts the session without having to log in
             session["user_id"] = user_id
+            flash("Successfully registered.", "success")
             return redirect(url_for('index'))
         else:
             # Sends user to login as user already has credentials

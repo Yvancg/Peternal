@@ -46,21 +46,16 @@
             </div>
         </nav>
 
-        {% if get_flashed_messages() %}
-            <header>
-                <div class="alert alert-primary mb-0 text-center" role="alert">
-                    {% with messages = get_flashed_messages() %}
-                    {% if messages %}
-                      <p class="flashes">
-                      {% for message in messages %}
-                        <div>{{ message }}</div>
-                      {% endfor %}
-                      </p>
-                    {% endif %}
-                  {% endwith %}
+        {% if get_flashed_messages(with_categories=true) %}
+        <header>
+            {% for category, message in get_flashed_messages(with_categories=true) %}
+                <div class="alert alert-{{ category }} mb-0 text-center" role="alert">
+                    {{ message }}
                 </div>
-            </header>
+            {% endfor %}
+        </header>
         {% endif %}
+    
 
         <main class="container-fluid py-5 text-center">
             {% block main %}{% endblock %}
