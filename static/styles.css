@@ -1,4 +1,27 @@
-/* Size for brand */
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+
+:root {
+    --accent-color: greenyellow;
+    --dark-color: #121B25;
+    --link-color: greenyellow;
+  }
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: #D6D6D6;
+    color: var(--light-text-color);
+    font-size: 100%;
+    font-weight: 400;
+    line-height: 1.6;
+    padding-bottom: 0.5rem;
+}
+
+/* Styling for navigation */
+.navbar {
+    padding-left: 2rem;
+    padding-right: 2rem;
+}
+
 nav .navbar-brand {
     font-size: xx-large;
 }
@@ -10,11 +33,18 @@ nav .navbar-brand {
 .navbar a:not(.navbar-brand):hover {
     background-color: greenyellow;
     color: black;
-    font-weight: bold;
     padding: auto;
     margin: auto;
 }
 
+.navbar a:not(.navbar-brand):focus {
+    background-color: #D6D6D6;
+    color: #83898F;
+    padding: auto;
+    margin: auto;
+}
+
+/* Styling for tables */
 .myTable {
     width: 90%;
     margin-left: auto;
@@ -25,7 +55,7 @@ nav .navbar-brand {
     background-color: #f2f2f2;
 }
 
-/* Error messages */
+/* Unused Error messages */
 .flashes {
     color: red;
 }
