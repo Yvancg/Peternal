@@ -13,7 +13,6 @@ main {
 /* Overall color scheme */
 :root {
     --accent-color: greenyellow;
-    --dark-color: #121B25;
     --link-color: greenyellow;
   }
 
@@ -75,4 +74,15 @@ nav .navbar-brand {
 
 .error-border {
     border: 1px solid red;
+}
+
+/* Custom Tooltip Styles */
+.tooltip-inner {
+    background-color: yellowgreen;
+    opacity: 1;
+    max-width: 300px;
+    color: black;
+}
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+    border-top-color: yellowgreen;
 }

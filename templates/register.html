@@ -12,15 +12,29 @@
             <input autofocus class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'username' }}" id="username" name="username" value="{{ username or '' }}" placeholder="Username" type="text">
         </div>
         <div class="mb-3">
-            <input autofocus class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'email' }}" id="email" name="email" value="{{ email or '' }}" placeholder="Email" type="email">
+            <input class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'email' }}" id="email" name="email" value="{{ email or '' }}" placeholder="Email" type="email">
         </div>
         <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'password' }}" id="password" name="password" value="{{ password or '' }}" placeholder="Password" type="password">
+            <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'password' }}" 
+                id="password" name="password" 
+                value="{{ password or '' }}" 
+                placeholder="Password" 
+                type="password"
+                data-bs-toggle="tooltip" 
+                data-bs-placement="top"
+                data-bs-custom-class="custom-tooltip"
+                title="Password must be 8 characters long or more, contain at least a digit, an uppercase letter, a lowercase letter, and a special character.">
+            
+            <div class="progress mx-auto" style="height: 3px; width:20%;">
+                <div class="progress-bar" id="password-strength-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            </div>
         </div>
-        <p class="danger"> Password must be 8 characters long or more and contain at least a digit, 
-            <br>an uppercase and lowercase letter, and a special charater.</p>
         <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'confirmation' }}" id="confirmation" name="confirmation" value="{{ confirmation or '' }}" placeholder="Confirm Password" type="password">
+            <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'confirmation' }}" 
+            id="confirmation" name="confirmation" 
+            value="{{ confirmation or '' }}" 
+            placeholder="Confirm Password" 
+            type="password">
         </div>
         <button class="btn btn-primary" type="submit">Register</button>
     </form>
