@@ -1,11 +1,23 @@
 @import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 
+/* Prep the code to use the full size of the viewport */
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+main {
+    flex: 1;
+}
+
+/* Overall color scheme */
 :root {
     --accent-color: greenyellow;
     --dark-color: #121B25;
     --link-color: greenyellow;
   }
 
+/* Base look and feel + change body to a flex container */
 body {
     font-family: 'Poppins', sans-serif;
     background-color: #D6D6D6;
@@ -13,7 +25,8 @@ body {
     font-size: 100%;
     font-weight: 400;
     line-height: 1.6;
-    padding-bottom: 0.5rem;
+    display: flex;
+    flex-direction: column;
 }
 
 /* Styling for navigation */
@@ -55,7 +68,7 @@ nav .navbar-brand {
     background-color: #f2f2f2;
 }
 
-/* Unused Error messages */
+/* Error styling for the registration boxes */
 .flashes {
     color: red;
 }
