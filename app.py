@@ -1,3 +1,13 @@
+"""Fit 4 Life Web Application.
+
+This module initializes and configures the Flask application for the Fit 4 Life platform. 
+It sets up necessary configurations for session management, security, and database connections. 
+The application provides users with features related to fitness tracking, workout plans, 
+and health metrics. Functions for user authentication, registration, password validation, 
+and session handling are imported from the 'auth' module.
+
+The app uses SQLite for database operations and Werkzeug for password hashing and verification.
+"""
 import os
 
 import sqlite3
@@ -7,7 +17,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 
 # Importing from auth.py
-from auth import login_required, register_user, authenticate_user, is_valid_email, is_password_strong
+from auth import login_required, register_user, is_valid_email, is_password_strong
 
 from config import SECRET_KEY
 
