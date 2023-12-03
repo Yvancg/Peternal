@@ -14,7 +14,7 @@ main {
 :root {
     --accent-color: greenyellow;
     --link-color: greenyellow;
-  }
+}
 
 /* Base look and feel + change body to a flex container */
 body {
@@ -69,11 +69,11 @@ nav .navbar-brand {
 
 /* Error styling for the registration boxes */
 .flashes {
-    color: red;
+    color: red !important;
 }
 
 .error-border {
-    border: 1px solid red;
+    border: 1px solid red !important;
 }
 
 /* Custom Tooltip Styles */
@@ -82,7 +82,20 @@ nav .navbar-brand {
     opacity: 1;
     max-width: 300px;
     color: black;
+    padding: 10px;
 }
-.tooltip.bs-tooltip-top .tooltip-arrow::before {
-    border-top-color: yellowgreen;
+
+/* Focus color */
+.form-control:focus {
+    outline: 2px solid yellowgreen;
+}
+
+/* Progress bar */
+.progress {
+    height: 4px;
+    width: 318px;
+}
+
+.progress-bar {
+    width: 0%;
 }

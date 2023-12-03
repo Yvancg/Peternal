@@ -5,14 +5,22 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Register</h1>
+    <h1>Sign Up</h1>
     <br>
     <form action="/register" method="post">
         <div class="mb-3">
-            <input autofocus class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'username' }}" id="username" name="username" value="{{ username or '' }}" placeholder="Username" type="text">
+            <input autofocus class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'username' }}" 
+                id="username" name="username" 
+                value="{{ username or '' }}" 
+                placeholder="Username" 
+                type="text">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'email' }}" id="email" name="email" value="{{ email or '' }}" placeholder="Email" type="email">
+            <input class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'email' }}" 
+                id="email" name="email" 
+                value="{{ email or '' }}" 
+                placeholder="Email" 
+                type="email">
         </div>
         <div class="mb-3">
             <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'password' }}" 
@@ -25,8 +33,14 @@
                 data-bs-custom-class="custom-tooltip"
                 title="Password must be 8 characters long or more, contain at least a digit, an uppercase letter, a lowercase letter, and a special character.">
             
-            <div class="progress mx-auto" style="height: 3px; width:20%;">
-                <div class="progress-bar" id="password-strength-bar" role="progressbar" style="width: 0%;" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+            <div class="progress mx-auto">
+                <div class="progress-bar" 
+                    id="password-strength-bar" 
+                    role="progressbar" 
+                    aria-valuenow="0" 
+                    aria-valuemin="0" 
+                    aria-valuemax="100" 
+                    title="Progress"></div>
             </div>
         </div>
         <div class="mb-3">
