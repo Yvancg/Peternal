@@ -99,3 +99,18 @@ nav .navbar-brand {
 .progress-bar {
     width: 0%;
 }
+
+/* Button for forms */
+.btn-fit {
+    background-color: black;
+    color: #D6D6D6;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 5px;
+    transition: all 0.1s;
+}
+
+.btn-fit:hover {
+    background-color: yellowgreen;
+    color: black;
+}
