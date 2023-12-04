@@ -2,8 +2,8 @@
 import sqlite3
 import re
 from functools import wraps
-from werkzeug.security import check_password_hash, generate_password_hash
-from flask import flash, redirect, url_for, session
+from werkzeug.security import generate_password_hash
+from flask import redirect, session
 
 # Requires user to be logged in
 def login_required(f):
@@ -15,20 +15,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-# Authentication function
-def authenticate_user(username, email, password):
-    """Check if user is authenticated"""
-    with sqlite3.connect("fitness.db") as db:
-        cursor = db.cursor()
-        cursor.execute(
-            "SELECT * FROM users WHERE username = ? OR email = ?", (username, email,)
-        )
-        user_row = cursor.fetchone()
-
-    if user_row and check_password_hash(user_row['hash'], password):
-        user = user(user_id=user_row['user_id'], username=user_row['username'])
-        return user
-    return None
 
 # Function to register a new user
 def register_user(username, email, password):
@@ -48,11 +34,13 @@ def register_user(username, email, password):
     except sqlite3.IntegrityError:
         return False
 
+
 # Function to check if the email is valid
 def is_valid_email(email):
     """Validate the email format."""
     email_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
     return re.match(email_regex, email) is not None
+
 
 # Password strength checker function
 def is_password_strong(password):

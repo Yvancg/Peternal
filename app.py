@@ -9,17 +9,24 @@ and session handling are imported from the 'auth' module.
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
 import os
-
 import sqlite3
 from datetime import timedelta
+
+# Loading .env automatically in the dev env
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask_mail import Mail, Message
+from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 
-# Importing from auth.py
-from auth import login_required, register_user, is_valid_email, is_password_strong
-
+# Importing config variables
 from config import SECRET_KEY
+
+# Importing from auth.py
+from auth import is_valid_email, login_required, register_user, is_password_strong
 
 # Configure application
 app = Flask(__name__)
@@ -28,10 +35,24 @@ app = Flask(__name__)
 app.config["SESSION_PERMANENT"] = False
 app.config["SESSION_TYPE"] = "filesystem"
 app.config['SECRET_KEY'] = SECRET_KEY
+# Cookie settings
 app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)  # Remember login for 30 days
 app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 Session(app)
+# Email settings
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USE_SSL'] = False
+app.config['MAIL_USERNAME'] = 'MAIL_USERNAME' # Change the variables in .env
+app.config['MAIL_PASSWORD'] = 'MAIL_PASSWORD' # Change the variables in .env
+app.config['MAIL_DEFAULT_SENDER'] = 'fit4life.post@gmail.com'
+app.config['MAIL_CONFIRM_SALT'] = 'MAIL_CONFIRM_SALT'
+mail = Mail(app)
+
+# Securely signing emails
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 # Ensuring server responses are not cached
 @app.after_request
@@ -111,14 +132,48 @@ def register():
         # Call the function after the checks
         user_id = register_user(username, email, password)
         if user_id:
-            # Starts the session without having to log in
-            session["user_id"] = user_id
-            flash("Successfully registered.", "success")
-            return redirect(url_for('index'))
+            # Generate token for email confirmation
+            token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
+
+            # Create a confirmation link to send by email
+            confirm_url = url_for('confirm_email', token=token, _external=True)
+
+            # Create the email message
+            html = render_template('email/activate.html', confirm_url=confirm_url)
+            subject = "Fit 4 Life: Please confirm your email"
+            msg = Message(subject, recipients=[email], html=html)
+
+            # Send the email
+            mail.send(msg)
+
+            flash("Please check your email to confirm your registration.", "danger")
+            return render_template("register.html")
+
         else:
             # Sends user to login as user already has credentials
             flash("Already registered", "danger")
             return redirect(url_for('login'))
+
+    return render_template("register.html")
+
+# Route for email confirmation
+@app.route('/confirm_email/<token>')
+def confirm_email(token, expiration=3600):
+    """Sending email validation"""
+    try:
+        email = s.loads(token, salt='MAIL_CONFIRM_SALT', max_age=expiration)
+    except SignatureExpired:
+        flash("The confirmation link is expired", "danger")
+        return redirect(url_for('register'))
+
+    # Update the user's status in the database to mark the email as confirmed
+    with sqlite3.connect("fitness.db") as db:
+        cursor = db.cursor()
+        cursor.execute("UPDATE users SET email_verified = 1 WHERE email = ?", (email,))
+        db.commit()
+
+    flash("Your email has been confirmed!", "success")
+    return redirect(url_for('index'))
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
@@ -134,7 +189,7 @@ def login():
         remember = request.form.get("remember") == 'on'
 
         if not username_email:
-            flash("Username and email are both required.", "danger")
+            flash("Username or email is required.", "danger")
             return render_template("login.html")
 
         elif not password:
@@ -152,21 +207,24 @@ def login():
             rows = cursor.fetchone()
 
         # Ensure username exists and password is correct
-        if rows is None or not check_password_hash(
-            rows["hash"], password
-            ):
+        if rows is None or not check_password_hash(rows["hash"], password):
             flash("Invalid username/email or password.", "danger")
             return render_template("login.html")
 
-        # Remember which user has logged in
-        session["user_id"] = rows["user_id"]
+        # Check if user is verified
+        if rows["verified"] == 1:
+            # Remember which user has logged in
+            session["user_id"] = rows["user_id"]
 
-        # Set session permanence based on the 'remember me' checkbox
-        session.permanent = remember
+            # Set session permanence based on the 'remember me' checkbox
+            session.permanent = remember
 
-        # Redirect user to home page
-        flash("Login succesful.", "success")
-        return redirect(url_for('index'))
+            # Redirect user to home page
+            flash("Login successful.", "success")
+            return redirect(url_for('index'))
+        else:
+            flash("Please verify your email first.", "danger")
+            return render_template("login.html")
 
     return render_template("login.html")
 
