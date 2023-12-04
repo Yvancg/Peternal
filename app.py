@@ -134,7 +134,7 @@ def login():
         remember = request.form.get("remember") == 'on'
 
         if not username_email:
-            flash("Username or email is required.", "danger")
+            flash("Username and email are both required.", "danger")
             return render_template("login.html")
 
         elif not password:

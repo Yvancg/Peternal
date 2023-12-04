@@ -87,12 +87,26 @@ nav .navbar-brand {
 
 /* Focus color */
 .form-control:focus {
+    outline: 1px solid yellowgreen;
+    border-color: yellowgreen;
+    box-shadow: 0 0 0 0.3rem rgba(154, 240, 117, 0.25);
+}
+
+input[type="checkbox"]:focus {
+    outline: 1px solid yellowgreen;;
+    box-shadow: 0 0 0 0.2rem yellowgreen;
+}
+
+.btn-fit:focus {
     outline: 2px solid yellowgreen;
+    background-color: rgba(154, 240, 117, 0.25);
+    border-color: yellowgreen;
+    box-shadow: 0 0 0 0.3rem rgba(154, 240, 117, 0.25);
 }
 
 /* Progress bar */
 .progress {
-    height: 5px;
+    height: 4px;
     width: 318px;
 }
 
