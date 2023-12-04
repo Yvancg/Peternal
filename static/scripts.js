@@ -27,12 +27,12 @@ document.getElementById('password').addEventListener('input', function() {
     strengthBar.style.width = strength + '%';
 
     if (strength < 40) {
-        strengthBar.className = 'progress-bar bg-danger';
+        strengthBar.className = 'progress-bar bg-red';
     } else if (strength < 60) {
-        strengthBar.className = 'progress-bar bg-warning';
+        strengthBar.className = 'progress-bar bg-orange';
     } else if (strength < 80) {
-        strengthBar.className = 'progress-bar bg-info';
+        strengthBar.className = 'progress-bar bg-yellow';
     } else {
-        strengthBar.className = 'progress-bar bg-success';
+        strengthBar.className = 'progress-bar bg-green';
     }
 });

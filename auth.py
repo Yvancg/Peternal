@@ -48,28 +48,6 @@ def register_user(username, email, password):
     except sqlite3.IntegrityError:
         return False
 
-"""
-    hash_password = generate_password_hash(password)
-    with sqlite3.connect("fitness.db") as db:
-        cursor = db.cursor()
-        # Check if email exists
-        cursor.execute(
-            "SELECT user_id FROM users WHERE email = ?", (email,)
-        )
-        if cursor.fetchone():
-            return False, "Email already in use."
-
-        try:
-            cursor.execute(
-                "INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", 
-                (username, email, hash_password)
-            )
-        except sqlite3.IntegrityError:
-            return False, "Username already exists."
-
-    return True, "Registration successful."
-"""
-
 # Function to check if the email is valid
 def is_valid_email(email):
     """Validate the email format."""

@@ -92,12 +92,28 @@ nav .navbar-brand {
 
 /* Progress bar */
 .progress {
-    height: 4px;
+    height: 5px;
     width: 318px;
 }
 
 .progress-bar {
     width: 0%;
+}
+
+.bg-red {
+    background-color: red;
+}
+
+.bg-orange {
+    background-color: orange;
+}
+
+.bg-yellow {
+    background-color: yellow;
+}
+
+.bg-green {
+    background-color: yellowgreen;
 }
 
 /* Button for forms */
