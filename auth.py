@@ -53,6 +53,6 @@ def is_password_strong(password):
         return False, "contain an uppercase letter, "
     if not re.search("[a-z]", password):
         return False, "contain a lowercase letter, "
-    if not re.search("[!@#$%^&*(),.?\":{}|<>]", password):
+    if not re.search(r"[^\w]", password):
         return False, "contain a special character."
     return True, "Password is strong."

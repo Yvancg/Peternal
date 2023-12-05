@@ -148,6 +148,7 @@ def register():
                 # Send the email
                 mail.send(msg)
                 flash("Please check your email to confirm your registration.", "danger")
+                return render_template("index.html")
 
             except SMTPAuthenticationError:
                 # Log the error and notify the user

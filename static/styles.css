@@ -114,6 +114,11 @@ input[type="checkbox"]:focus {
     width: 0%;
 }
 
+.progress-top {
+    position: relative;
+    z-index: 10;
+}
+
 .bg-red {
     background-color: red;
 }
