@@ -107,7 +107,7 @@ input[type="checkbox"]:focus {
 /* Progress bar */
 .progress {
     height: 4px;
-    width: 318px;
+    width: 294px;
 }
 
 .progress-bar {
@@ -143,4 +143,9 @@ input[type="checkbox"]:focus {
 .btn-fit:hover {
     background-color: yellowgreen;
     color: black;
+}
+
+/* Width of text input */
+.w-fixed {
+    width: 300px;
 }

@@ -9,21 +9,21 @@
     <br>
     <form action="/register" method="post">
         <div class="mb-3">
-            <input autofocus class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'username' }}" 
+            <input autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'username' }}" 
                 id="username" name="username" 
                 value="{{ username or '' }}" 
                 placeholder="Username" 
                 type="text">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'email' }}" 
+            <input class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'email' }}" 
                 id="email" name="email" 
                 value="{{ email or '' }}" 
                 placeholder="Email" 
                 type="email">
         </div>
         <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'password' }}" 
+            <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
                 id="password" name="password" 
                 value="{{ password or '' }}" 
                 placeholder="Password" 
@@ -44,7 +44,7 @@
             </div>
         </div>
         <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-auto {{ 'error-border' if error_field == 'confirmation' }}" 
+            <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'confirmation' }}" 
             id="confirmation" name="confirmation" 
             value="{{ confirmation or '' }}" 
             placeholder="Confirm Password" 

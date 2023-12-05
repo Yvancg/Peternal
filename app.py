@@ -11,6 +11,7 @@ The app uses SQLite for database operations and Werkzeug for password hashing an
 import os
 import sqlite3
 from datetime import timedelta
+from smtplib import SMTPAuthenticationError
 
 # Loading .env automatically in the dev env
 from dotenv import load_dotenv
@@ -22,11 +23,11 @@ from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 
-# Importing config variables
-from config import SECRET_KEY
-
 # Importing from auth.py
 from auth import is_valid_email, login_required, register_user, is_password_strong
+
+# Importing config variables
+from config import SECRET_KEY
 
 # Configure application
 app = Flask(__name__)
@@ -41,13 +42,13 @@ app.config['REMEMBER_COOKIE_SECURE'] = True
 app.config['REMEMBER_COOKIE_HTTPONLY'] = True
 Session(app)
 # Email settings
-app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_SERVER'] = 'smtp.mailersend.net'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
 app.config['MAIL_USERNAME'] = 'MAIL_USERNAME' # Change the variables in .env
 app.config['MAIL_PASSWORD'] = 'MAIL_PASSWORD' # Change the variables in .env
-app.config['MAIL_DEFAULT_SENDER'] = 'fit4life.post@gmail.com'
+#app.config['MAIL_DEFAULT_SENDER'] = 'fit4life.post@gmail.com'
 app.config['MAIL_CONFIRM_SALT'] = 'MAIL_CONFIRM_SALT'
 mail = Mail(app)
 
@@ -139,15 +140,20 @@ def register():
             confirm_url = url_for('confirm_email', token=token, _external=True)
 
             # Create the email message
-            html = render_template('email/activate.html', confirm_url=confirm_url)
+            html = render_template("email/activate.html", confirm_url=confirm_url)
             subject = "Fit 4 Life: Please confirm your email"
             msg = Message(subject, recipients=[email], html=html)
 
-            # Send the email
-            mail.send(msg)
+            try:
+                # Send the email
+                mail.send(msg)
+                flash("Please check your email to confirm your registration.", "danger")
 
-            flash("Please check your email to confirm your registration.", "danger")
-            return render_template("register.html")
+            except SMTPAuthenticationError:
+                # Log the error and notify the user
+                app.logger.error("SMTP Authentication failed")
+                flash("Email sending failed due to SMTP Authentication error.", "danger")
+                return render_template("register.html")
 
         else:
             # Sends user to login as user already has credentials
@@ -212,7 +218,7 @@ def login():
             return render_template("login.html")
 
         # Check if user is verified
-        if rows["verified"] == 1:
+        if rows["email_verified"] == 1:
             # Remember which user has logged in
             session["user_id"] = rows["user_id"]
 
