@@ -28,6 +28,9 @@ from config import Config
 # Importing from auth.py
 from auth import is_valid_email, login_required, register_user, is_password_strong
 
+# Importing from database.py
+from database import get_username_email, verify_user, update_password, get_workouts
+
 # Configure application
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -53,13 +56,7 @@ def index():
     """Show workout program"""
     user_id = int(session["user_id"])
     workouts = None
-    with sqlite3.connect("fitness.db") as db:
-        cursor = db.cursor()
-        cursor.execute(
-            "SELECT workout_id, date, type, duration, intensity FROM workouts WHERE user_id = ?",
-            (user_id,)
-        )
-        workouts = cursor.fetchall()
+    workouts = get_workouts(user_id)
     return render_template("index.html", workouts=workouts)
 
 # Route for user registration
@@ -113,8 +110,8 @@ def register():
             return render_template("register.html")
 
         # Call the function after the checks
-        user_id = register_user(username, email, password)
-        if user_id:
+        success = register_user(username, email, generate_password_hash(password))
+        if success:
             # Generate token for email confirmation
             token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
 
@@ -130,7 +127,7 @@ def register():
                 # Send the email
                 mail.send(msg)
                 flash("Please check your email to confirm your registration.", "danger")
-                return render_template("index.html")
+                return render_template("register.html")
 
             except SMTPAuthenticationError:
                 # Log the error and notify the user
@@ -152,17 +149,14 @@ def confirm_email(token, expiration=3600):
     try:
         email = s.loads(token, salt='MAIL_CONFIRM_SALT', max_age=expiration)
     except SignatureExpired:
-        flash("The confirmation link is expired", "danger")
+        flash("The confirmation link has expired", "danger")
         return redirect(url_for('register'))
 
     # Update the user's status in the database to mark the email as confirmed
-    with sqlite3.connect("fitness.db") as db:
-        cursor = db.cursor()
-        cursor.execute("UPDATE users SET email_verified = 1 WHERE email = ?", (email,))
-        db.commit()
+    verify_user(email)
 
     flash("Your email has been confirmed!", "success")
-    return redirect(url_for('index'))
+    return render_template("index.html")
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
@@ -186,14 +180,7 @@ def login():
             return render_template("login.html")
 
         # Query database for username
-        with sqlite3.connect("fitness.db") as db:
-            db.row_factory = sqlite3.Row
-            cursor = db.cursor()
-            cursor.execute(
-                "SELECT * FROM users WHERE username = ? OR email = ?", 
-                (username_email, username_email,)
-            )
-            rows = cursor.fetchone()
+        rows = get_username_email(username_email)
 
         # Ensure username exists and password is correct
         if rows is None or not check_password_hash(rows["hash"], password):
@@ -244,20 +231,14 @@ def change():
     user_id = int(session["user_id"])
 
     # Database connection for password validation
-    with sqlite3.connect("fitness.db") as db:
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
-        cursor.execute("SELECT hash FROM users WHERE user_id = ?", (user_id,))
-        row = cursor.fetchone()
-
+    row = get_password(user_id)  # Assuming this function retrieves the hashed password
     if not row or not check_password_hash(row["hash"], old_password):
         flash("Invalid old password.", "danger")
         return render_template("change.html")
 
-    # Update the user's password
+    # If old password is valid, then update to new password
     new_hash = generate_password_hash(new_password)
-    cursor.execute("UPDATE users SET hash = ? WHERE user_id = ?", (new_hash, user_id,))
-    flash("Password successfully changed.", "success")
+    update_password(user_id, new_hash)
     return redirect(url_for('index'))
 
 # Route for user logout

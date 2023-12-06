@@ -1,9 +1,10 @@
 """auth.py Functions used for registration and authentication"""
-import sqlite3
 import re
 from functools import wraps
 from werkzeug.security import generate_password_hash
 from flask import redirect, session
+
+from database import create_user
 
 # Requires user to be logged in
 def login_required(f):
@@ -15,7 +16,6 @@ def login_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
-
 # Function to register a new user
 def register_user(username, email, password):
     """Registers a new user"""
@@ -23,17 +23,7 @@ def register_user(username, email, password):
     hash = generate_password_hash(password)
 
     # Create new user and checks if already registered
-    try:
-        with sqlite3.connect("fitness.db") as db:
-            cursor = db.cursor()
-            cursor.execute(
-                "INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", 
-                (username, email, hash)
-            )
-            return True
-    except sqlite3.IntegrityError:
-        return False
-
+    return create_user(username, email, hash)
 
 # Function to check if the email is valid
 def is_valid_email(email):
