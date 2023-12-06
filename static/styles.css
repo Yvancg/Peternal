@@ -106,7 +106,7 @@ input[type="checkbox"]:focus {
 
 /* Progress bar */
 .progress {
-    height: 4px;
+    height: 2px;
     width: 294px;
 }
 
@@ -124,11 +124,11 @@ input[type="checkbox"]:focus {
 }
 
 .bg-orange {
-    background-color: orange;
+    background-color: orangered;
 }
 
 .bg-yellow {
-    background-color: yellow;
+    background-color: orange;
 }
 
 .bg-green {
@@ -148,6 +148,11 @@ input[type="checkbox"]:focus {
 .btn-fit:hover {
     background-color: yellowgreen;
     color: black;
+}
+
+/* Style for the checkbox */
+.checkbox input[type="checkbox"]:checked + .checkmark {
+    background-color: yellowgreen;
 }
 
 /* Width of text input */

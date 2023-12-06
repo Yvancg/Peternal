@@ -10,7 +10,6 @@ The app uses SQLite for database operations and Werkzeug for password hashing an
 """
 import os
 import sqlite3
-from datetime import timedelta
 from smtplib import SMTPAuthenticationError
 
 # Loading .env automatically in the dev env
@@ -23,33 +22,16 @@ from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
 from flask_session import Session
 
+# Importing config variables
+from config import Config
+
 # Importing from auth.py
 from auth import is_valid_email, login_required, register_user, is_password_strong
 
-# Importing config variables
-from config import SECRET_KEY
-
 # Configure application
 app = Flask(__name__)
-
-# Flask-Session configuration
-app.config["SESSION_PERMANENT"] = False
-app.config["SESSION_TYPE"] = "filesystem"
-app.config['SECRET_KEY'] = SECRET_KEY
-# Cookie settings
-app.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=30)  # Remember login for 30 days
-app.config['REMEMBER_COOKIE_SECURE'] = True
-app.config['REMEMBER_COOKIE_HTTPONLY'] = True
+app.config.from_object(Config)
 Session(app)
-# Email settings
-app.config['MAIL_SERVER'] = 'smtp.mailersend.net'
-app.config['MAIL_PORT'] = 587
-app.config['MAIL_USE_TLS'] = True
-app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = 'MAIL_USERNAME' # Change the variables in .env
-app.config['MAIL_PASSWORD'] = 'MAIL_PASSWORD' # Change the variables in .env
-#app.config['MAIL_DEFAULT_SENDER'] = 'fit4life.post@gmail.com'
-app.config['MAIL_CONFIRM_SALT'] = 'MAIL_CONFIRM_SALT'
 mail = Mail(app)
 
 # Securely signing emails
@@ -228,7 +210,7 @@ def login():
 
             # Redirect user to home page
             flash("Login successful.", "success")
-            return redirect(url_for('index'))
+            return render_template("index.html")
         else:
             flash("Please verify your email first.", "danger")
             return render_template("login.html")
