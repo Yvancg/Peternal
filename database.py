@@ -26,7 +26,6 @@ def create_user(username, email, password_hash):
             db.commit()
             return True
     except sqlite3.IntegrityError:
-        flash("Username already taken.")
         return False
 
 def verify_user(email):
@@ -49,6 +48,14 @@ def update_password(user_id, new_hash):
         cursor = db.cursor()
         cursor.execute("UPDATE users SET hash = ? WHERE user_id = ?", (new_hash, user_id,))
         db.commit()
+
+def get_user_id_by_email(email):
+    """ Associates the user ID with their email"""
+    with sqlite3.connect(DATABASE) as db:
+        cursor = db.cursor()
+        cursor.execute("SELECT user_id FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        return user[0] if user else None
 
 def user_status(email):
     """Check the status of the user's email verification and return user_id if verified."""

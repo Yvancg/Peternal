@@ -31,7 +31,7 @@ from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
 
 # Importing from database.py
-from database import get_username_email, verify_user, update_password, get_password, get_workouts, user_status
+from database import get_username_email, verify_user, update_password, get_password, get_workouts, user_status, get_user_id_by_email
 
 # Configure application
 app = Flask(__name__)
@@ -101,7 +101,7 @@ def register():
     # Check password strength
     elif not is_password_strong(password)[0]:
         flash(f"Password must {is_password_strong(password)[1]}", "danger")
- 
+
     else:
         # Call the function after the checks
         if register_user(username, email, password):
@@ -109,7 +109,7 @@ def register():
         else:
             flash("Already registered", "info")
             return redirect(url_for('login'))
-        
+
     # Return with show_resend_link as False if any validation fails
     return render_template("register.html", show_resend_link=False)
 
@@ -133,7 +133,7 @@ def send_confirmation_email(email):
         app.logger.error("SMTP Authentication failed")
         flash("Email sending failed due to SMTP Authentication error.", "danger")
     except Exception as e:
-        app.logger.error(f"Email sending failed: {e}")
+        app.logger.error("Email sending failed: %s", e)
         flash(f"Email sending failed: {e}", "danger")
 
     # Return with show_resend_link as True since user is registered but needs to verify email
@@ -157,7 +157,7 @@ def confirm_email(token, expiration=3600):
         session["user_id"] = user_id
         flash("Your email has been confirmed!", "success")
         return redirect(url_for('index'))
-    
+
     else:
         flash("Email verification failed. Please try registering again.", "danger")
         return redirect(url_for('register'))
@@ -213,7 +213,11 @@ def login():
         # Ensure username exists and password is correct
         if rows is None or not check_password_hash(rows["hash"], password):
             flash("Invalid username/email or password.", "danger")
-            return render_template("login.html")
+            show_reset_password = True
+            return render_template("login.html",
+                                   username=username_email,
+                                   show_reset_password=show_reset_password,
+                                   )
 
         # Check if user is verified
         if rows["email_verified"] == 1:
@@ -230,7 +234,7 @@ def login():
             flash("Please verify your email first.", "danger")
             return render_template("login.html")
 
-    return render_template("login.html")
+    return render_template("login.html", username="", show_reset_password=False)
 
 @app.route("/change", methods=["GET", "POST"])
 @login_required
@@ -269,6 +273,78 @@ def change():
     # If old password is valid, then update to new password
     new_hash = generate_password_hash(new_password)
     update_password(user_id, new_hash)
+    return redirect(url_for('index'))
+
+# Route for requesting the password reset
+@app.route("/request_password_reset", methods=["GET", "POST"])
+def request_password_reset():
+    """ Directing the user to a page to enter his email to reset the password """
+    if request.method == "GET":
+        return render_template("request_password_reset.html")
+
+    email = request.form.get("email")
+    if email and is_valid_email(email):
+        return send_password_reset_email(email)
+    else:
+        flash("Please enter a valid email address.", "danger")
+        return render_template("request_password_reset.html")
+
+def send_password_reset_email(email):
+    """ Sending the email to reset the password """
+    token = s.dumps(email, salt='PASSWORD_RESET_SALT')
+    reset_url = url_for('reset_password', token=token, _external=True)
+    html = render_template("email/password_reset.html", reset_url=reset_url)
+    subject = "Fit 4 Life - Password Reset"
+    msg = Message(subject, recipients=[email], html=html)
+
+    try:
+        mail.send(msg)
+        flash("Check your email for the password reset link.", "info")
+    except SMTPAuthenticationError:
+        app.logger.error("SMTP Authentication failed")
+        flash("Email sending failed due to SMTP Authentication error.", "danger")
+    except Exception as e:
+        app.logger.error("Email sending failed: %s", e)
+        flash(f"Email sending failed: {e}", "danger")
+
+    return redirect(url_for('login'))
+
+# Route for actually resetting the password
+@app.route("/reset_password/<token>", methods=["GET", "POST"])
+def reset_password(token):
+    """ Resetting the password """
+    try:
+        email = s.loads(token, salt='PASSWORD_RESET_SALT', max_age=3600)
+    except SignatureExpired:
+        flash("The password reset link has expired.", "danger")
+        return redirect(url_for('request_password_reset'))
+
+    if request.method == "GET":
+        return render_template("reset_password.html")
+
+    new_password = request.form.get("new_password")
+    confirm_password = request.form.get("confirm_password")
+
+    if new_password != confirm_password:
+        flash("Passwords do not match.", "danger")
+        return render_template("reset_password.html")
+    elif not is_password_strong(new_password):
+        flash("Password does not meet the required criteria.", "danger")
+        return render_template("reset_password.html")
+
+    update_password(email, new_password)
+    # After successfully updating the password
+    user_id = get_user_id_by_email(email)
+    if user_id is None:
+        flash("User not found.", "danger")
+        return redirect(url_for('request_password_reset'))
+
+    new_hash = generate_password_hash(new_password)
+    update_password(user_id, new_hash)
+
+    # Set up user session after password reset
+    session["user_id"] = user_id
+    flash("Your password has been reset. You are now logged in.", "success")
     return redirect(url_for('index'))
 
 # Route for user logout
