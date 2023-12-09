@@ -5,56 +5,71 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Sign Up</h1>
-    <br>
-    <form action="/register" method="post">
-        <div class="mb-3">
-            <input autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'username' }}" 
-                id="username" name="username" 
-                value="{{ username or '' }}" 
-                placeholder="Username" 
-                type="text">
-        </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'email' }}" 
-                id="email" name="email" 
-                value="{{ email or '' }}" 
-                placeholder="Email" 
-                type="email">
-        </div>
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
-                id="password" name="password" 
-                value="{{ password or '' }}" 
-                placeholder="Password" 
-                type="password"
-                data-bs-toggle="tooltip" 
-                data-bs-placement="top"
-                data-bs-custom-class="custom-tooltip"
-                title="Password must be 8 characters long or more, contain at least a digit, an uppercase letter, a lowercase letter, and a special character.">
-            
-            <div class="progress mx-auto progress-top">
-                <div class="progress-bar" 
-                    id="password-strength-bar" 
-                    role="progressbar" 
-                    aria-valuenow="0" 
-                    aria-valuemin="0" 
-                    aria-valuemax="100" 
-                    title="Progress"></div>
+    {% if not show_resend_link %}
+        <h1>Sign Up</h1>
+        <br>
+        <form action="/register" method="post">
+            <div class="mb-3">
+                <input autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'username' }}" 
+                    id="username" name="username" 
+                    value="{{ username or '' }}" 
+                    placeholder="Username" 
+                    type="text">
             </div>
+            <div class="mb-3">
+                <input class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'email' }}" 
+                    id="email" name="email" 
+                    value="{{ email or '' }}" 
+                    placeholder="Email" 
+                    type="email">
+            </div>
+            <div class="mb-3">
+                <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
+                    id="password" name="password" 
+                    value="{{ password or '' }}" 
+                    placeholder="Password" 
+                    type="password"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    data-bs-custom-class="custom-tooltip"
+                    title="Password must be 8 characters long or more, contain at least a digit, an uppercase letter, a lowercase letter, and a special character.">
+                
+                <div class="progress mx-auto progress-top">
+                    <div class="progress-bar" 
+                        id="password-strength-bar" 
+                        role="progressbar" 
+                        aria-valuenow="0" 
+                        aria-valuemin="0" 
+                        aria-valuemax="100" 
+                        title="Progress"></div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'confirmation' }}" 
+                id="confirmation" name="confirmation" 
+                value="{{ confirmation or '' }}" 
+                placeholder="Confirm Password" 
+                type="password">
+            </div>
+            <button class="btn btn-fit" type="submit">Register</button>
+        </form>
+        <div class="login-link">
+            <p>
+                Already have an account? <a href={{ url_for('login') }}>Login here.</a>
+            </p>
         </div>
-        <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'confirmation' }}" 
-            id="confirmation" name="confirmation" 
-            value="{{ confirmation or '' }}" 
-            placeholder="Confirm Password" 
-            type="password">
-        </div>
-        <button class="btn btn-fit" type="submit">Register</button>
-    </form>
-    <div class="login-link">
+    {% endif %}
+    {% if show_resend_link %}
+        <h1>Email sent</h1>
+        <br>
         <p>
-            Already have an account? <a href={{ url_for('login') }}>Login here.</a>
+            Didn't receive the email?
+            <br>
+            Make sure to check your spam folder first.
+            <form action="{{ url_for('resend_verification_email') }}" method="post">
+                <input type="hidden" name="email" value="{{ email }}">
+                <button class="btn btn-fit" type="submit">Resend Verification Email</button>
+            </form>
         </p>
-    </div>
+    {% endif %}
 {% endblock %}

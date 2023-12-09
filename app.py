@@ -69,78 +69,75 @@ def register():
     if request.method == "GET":
         return render_template("register.html")
 
+    username = request.form.get("username")
+    email = request.form.get("email")
+    password = request.form.get("password")
+    confirmation = request.form.get("confirmation")
+
+    # Check for username
+    if not username:
+        flash("Username required.", "danger")
+
+    # Check for email
+    elif not email:
+        flash("Email required.", "danger")
+
+    # Check for password
+    elif not password:
+        flash("Password required.", "danger")
+
+    # Check for confirmation
+    elif not confirmation:
+        flash("Password confirmation required.", "danger")
+
+    # Check for if email is valid
+    elif not is_valid_email(email):
+        flash("Invalid email format.", "danger")
+
+    # Check password matches confirmation
+    elif password != confirmation:
+        flash("Passwords must match.", "danger")
+
+    # Check password strength
+    elif not is_password_strong(password)[0]:
+        flash(f"Password must {is_password_strong(password)[1]}", "danger")
+ 
     else:
-        username = request.form.get("username")
-        email = request.form.get("email")
-        password = request.form.get("password")
-        confirmation = request.form.get("confirmation")
-
-        # Check for username
-        if not username:
-            flash("Username required.", "danger")
-
-        # Check for email
-        elif not email:
-            flash("Email required.", "danger")
-
-        # Check for password
-        elif not password:
-            flash("Password required.", "danger")
-
-        # Check for confirmation
-        elif not confirmation:
-            flash("Confirmation required.", "danger")
-
-        # Check for if email is valid
-        elif not is_valid_email(email):
-            flash("Invalid email format.", "danger")
-
-        # Check password matches confirmation
-        elif password != confirmation:
-            flash("Passwords must match.", "danger")
-
-        # Check password strength
+        # Call the function after the checks
+        if register_user(username, email, password):
+            return send_confirmation_email(email)
         else:
-            # Check password strength
-            is_strong, message = is_password_strong(password)
-            if not is_strong:
-                flash(f"Password must {message}", "danger")
+            flash("Already registered", "info")
+            return redirect(url_for('login'))
+        
+    # Return with show_resend_link as False if any validation fails
+    return render_template("register.html", show_resend_link=False)
 
-            else:
-                # Call the function after the checks
-                success = register_user(username, email, password)
-                if success:
-                    # Generate token for email confirmation
-                    token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
+def send_confirmation_email(email):
+    """Send a confirmation email to the user."""
+    # Generate token for email confirmation
+    token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
+    # Create a confirmation link to send by email
+    confirm_url = url_for('confirm_email', token=token, _external=True)
+    # Create the email message
+    html = render_template("email/activate.html", confirm_url=confirm_url)
+    subject = "Fit 4 Life - Please confirm your email"
+    msg = Message(subject, recipients=[email], html=html)
 
-                    # Create a confirmation link to send by email
-                    confirm_url = url_for('confirm_email', token=token, _external=True)
+    try:
+        # Send the email
+        mail.send(msg)
+        flash("Please check your email to confirm your registration.", "info")
+    except SMTPAuthenticationError:
+        # Log the error and notify the user
+        app.logger.error("SMTP Authentication failed")
+        flash("Email sending failed due to SMTP Authentication error.", "danger")
+    except Exception as e:
+        app.logger.error(f"Email sending failed: {e}")
+        flash(f"Email sending failed: {e}", "danger")
 
-                    # Create the email message
-                    html = render_template("email/activate.html", confirm_url=confirm_url)
-                    subject = "Fit 4 Life - Please confirm your email"
-                    msg = Message(subject, recipients=[email], html=html)
-
-                    try:
-                        # Send the email
-                        mail.send(msg)
-                        flash("Please check your email to confirm your registration.", "info")
-                        return render_template("register.html", show_resend_link = True, email=email)
-
-                    except SMTPAuthenticationError:
-                        # Log the error and notify the user
-                        app.logger.error("SMTP Authentication failed")
-                        flash("Email sending failed due to SMTP Authentication error.", "danger")
-                    except Exception as e:
-                        app.logger.error("Email sending failed: %s", {e})
-                        flash(f"Email sending failed: {e}", "danger")
-
-                else:
-                    # Sends user to login as user already has credentials
-                    flash("Already registered", "danger")
-                    return redirect(url_for('login'))
-
-        return render_template("register.html", show_resend_link=False)
+    # Return with show_resend_link as True since user is registered but needs to verify email
+    return render_template("register.html", show_resend_link=True, email=email)
 
 # Route for email confirmation
 @app.route("/confirm_email/<token>")
@@ -164,6 +161,30 @@ def confirm_email(token, expiration=3600):
     else:
         flash("Email verification failed. Please try registering again.", "danger")
         return redirect(url_for('register'))
+
+# Route for resending the verification
+@app.route("/resend_verification_email", methods=["POST"])
+def resend_verification_email():
+    """Route to resend verification email."""
+    email = request.form.get("email")
+    if email and is_valid_email(email):
+        # Resend email logic
+        try:
+            token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
+            confirm_url = url_for('confirm_email', token=token, _external=True)
+            html = render_template("email/activate.html", confirm_url=confirm_url)
+            subject = "Fit 4 Life - Please confirm your email"
+            msg = Message(subject, recipients=[email], html=html)
+            mail.send(msg)
+            flash("Verification email resent. Please check your inbox.", "info")
+        except SMTPAuthenticationError:
+            flash("Email sending failed due to SMTP Authentication error.", "danger")
+        except Exception as e:
+            flash(f"Email sending failed: {e}", "danger")
+    else:
+        flash("Invalid email address.", "danger")
+
+    return redirect(url_for('register'))
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
