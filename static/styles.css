@@ -159,3 +159,18 @@ input[type="checkbox"]:focus {
 .w-fixed {
     width: 300px;
 }
+
+/* Login on registration page styling */
+.login-link {
+    margin-top: 20px;
+    text-align: center;
+}
+
+.login-link a {
+    color: yellowgreen;
+    text-decoration: none;
+}
+
+.login-link a:hover {
+    text-decoration: underline;
+}
