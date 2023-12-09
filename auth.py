@@ -20,10 +20,9 @@ def login_required(f):
 def register_user(username, email, password):
     """Registers a new user"""
     # Stores hash password instead of password
-    hash = generate_password_hash(password)
-
+    password_hash = generate_password_hash(password)
     # Create new user and checks if already registered
-    return create_user(username, email, hash)
+    return create_user(username, email, password_hash)
 
 # Function to check if the email is valid
 def is_valid_email(email):

@@ -1,16 +1,18 @@
 """Fit 4 Life Web Application.
 
 This module initializes and configures the Flask application for the Fit 4 Life platform. 
-It sets up necessary configurations for session management, security, and database connections. 
-The application provides users with features related to fitness tracking, workout plans, 
-and health metrics. Functions for user authentication, registration, password validation, 
-and session handling are imported from the 'auth' module.
+It sets up necessary configurations for session management and security,. Database connections 
+are imported from the .database' module. The application provides users with features related 
+to fitness tracking, workout plans, and health metrics. Functions for user authentication, 
+registration, password validation, and session handling are imported from the 'auth' module.
 
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
-import os
-import sqlite3
 from smtplib import SMTPAuthenticationError
+
+# For debugging
+import logging
+logging.basicConfig(level=logging.DEBUG)
 
 # Loading .env automatically in the dev env
 from dotenv import load_dotenv
@@ -29,7 +31,7 @@ from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
 
 # Importing from database.py
-from database import get_username_email, verify_user, update_password, get_workouts
+from database import get_username_email, verify_user, update_password, get_password, get_workouts
 
 # Configure application
 app = Flask(__name__)
@@ -110,19 +112,21 @@ def register():
             return render_template("register.html")
 
         # Call the function after the checks
-        success = register_user(username, email, generate_password_hash(password))
+        success = register_user(username, email, password)
+        app.logger.debug('register user') # Debugging
         if success:
             # Generate token for email confirmation
             token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
+            app.logger.debug('token generated') # Debugging
 
             # Create a confirmation link to send by email
             confirm_url = url_for('confirm_email', token=token, _external=True)
 
             # Create the email message
             html = render_template("email/activate.html", confirm_url=confirm_url)
-            subject = "Fit 4 Life: Please confirm your email"
+            subject = "Fit 4 Life - Please confirm your email"
             msg = Message(subject, recipients=[email], html=html)
-
+            app.logger.debug('Send email') # Debugging
             try:
                 # Send the email
                 mail.send(msg)
@@ -133,7 +137,11 @@ def register():
                 # Log the error and notify the user
                 app.logger.error("SMTP Authentication failed")
                 flash("Email sending failed due to SMTP Authentication error.", "danger")
-                return render_template("register.html")
+            except Exception as e:
+                app.logger.error("Email sending failed: %s", {e})
+                flash("Email sending failed: {e}", "danger")
+
+            return render_template("register.html")
 
         else:
             # Sends user to login as user already has credentials
@@ -143,7 +151,7 @@ def register():
     return render_template("register.html")
 
 # Route for email confirmation
-@app.route('/confirm_email/<token>')
+@app.route("/confirm_email/<token>")
 def confirm_email(token, expiration=3600):
     """Sending email validation"""
     try:
@@ -231,8 +239,10 @@ def change():
     user_id = int(session["user_id"])
 
     # Database connection for password validation
-    row = get_password(user_id)  # Assuming this function retrieves the hashed password
-    if not row or not check_password_hash(row["hash"], old_password):
+    row = get_password(user_id)
+    app.logger.debug('password row') # Debugging
+    print(row) # Debugging
+    if not row or not check_password_hash(row[0], old_password):
         flash("Invalid old password.", "danger")
         return render_template("change.html")
 

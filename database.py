@@ -8,18 +8,25 @@ def get_username_email(username_email):
     with sqlite3.connect(DATABASE) as db:
         db.row_factory = sqlite3.Row
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM users WHERE username = ? OR email = ?", (username_email, username_email))
+        cursor.execute(
+            "SELECT * FROM users WHERE username = ? OR email = ?",
+             (username_email, username_email)
+        )
         return cursor.fetchone()
 
 def create_user(username, email, password_hash):
-    """ Register new user """
+    """ Create new user """
     try:
         with sqlite3.connect(DATABASE) as db:
             cursor = db.cursor()
-            cursor.execute("INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", (username, email, password_hash))
+            cursor.execute(
+                "INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", 
+                (username, email, password_hash)
+            )
             db.commit()
             return True
     except sqlite3.IntegrityError:
+        flash("Username already taken.")
         return False
 
 def verify_user(email):
@@ -47,5 +54,8 @@ def get_workouts(user_id):
     """ Go fectch workouts """
     with sqlite3.connect(DATABASE) as db:
         cursor = db.cursor()
-        cursor.execute("SELECT workout_id, date, type, duration, intensity FROM workouts WHERE user_id = ?", (user_id,))
+        cursor.execute(
+            "SELECT workout_id, date, type, duration, intensity FROM workouts WHERE user_id = ?", 
+            (user_id,)
+        )
         return cursor.fetchall()
