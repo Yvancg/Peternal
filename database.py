@@ -50,6 +50,17 @@ def update_password(user_id, new_hash):
         cursor.execute("UPDATE users SET hash = ? WHERE user_id = ?", (new_hash, user_id,))
         db.commit()
 
+def user_status(email):
+    """Check the status of the user's email verification and return user_id if verified."""
+    with sqlite3.connect(DATABASE) as db:
+        db.row_factory = sqlite3.Row  # Set row factory to access columns by name
+        cursor = db.cursor()
+        cursor.execute("SELECT user_id, email_verified FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        if user and user["email_verified"] == 1:
+            return user["user_id"]
+        return None
+
 def get_workouts(user_id):
     """ Go fectch workouts """
     with sqlite3.connect(DATABASE) as db:

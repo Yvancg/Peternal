@@ -31,7 +31,7 @@ from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
 
 # Importing from database.py
-from database import get_username_email, verify_user, update_password, get_password, get_workouts
+from database import get_username_email, verify_user, update_password, get_password, get_workouts, user_status
 
 # Configure application
 app = Flask(__name__)
@@ -139,7 +139,7 @@ def register():
                 flash("Email sending failed due to SMTP Authentication error.", "danger")
             except Exception as e:
                 app.logger.error("Email sending failed: %s", {e})
-                flash("Email sending failed: {e}", "danger")
+                flash(f"Email sending failed: {e}", "danger")
 
             return render_template("register.html")
 
@@ -163,8 +163,15 @@ def confirm_email(token, expiration=3600):
     # Update the user's status in the database to mark the email as confirmed
     verify_user(email)
 
-    flash("Your email has been confirmed!", "success")
-    return render_template("index.html")
+    user_id = user_status(email)
+    if user_id:
+        session["user_id"] = user_id
+        flash("Your email has been confirmed!", "success")
+        return redirect(url_for('index'))
+    
+    else:
+        flash("Email verification failed. Please try registering again.", "danger")
+        return redirect(url_for('register'))
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
