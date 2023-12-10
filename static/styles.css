@@ -2,12 +2,19 @@
 
 /* Prep the code to use the full size of the viewport */
 html, body {
-    height: 100%;
+    height: 100vh;
     margin: 0;
 }
 
 main {
     flex: 1;
+}
+
+.full-height-container {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    padding-bottom: 50px; /* counters the 50px we blocked at the top for the flash messages */
 }
 
 /* Overall color scheme */
@@ -29,6 +36,14 @@ body {
     line-height: 1.6;
     display: flex;
     flex-direction: column;
+}
+
+/* Big bold text */
+.headline {
+    font-size: 3rem;
+    font-weight: bolder;
+    text-align: center;
+    vertical-align: middle;
 }
 
 /* Styling for navigation */
@@ -74,12 +89,12 @@ nav .navbar-brand {
     color: var(--dark-color);
 }
 
+/* blocking a space for alerts to avoid layout shifts */
 header {
-    min-height: 50px; /* Adjust this value based on your design */
+    min-height: 50px; 
     position: relative;
 }
 
-/* blocking a space for alerts to avoid layout shifts */
 .alert-container {
     position: absolute;
     width: 100%;
@@ -91,7 +106,6 @@ header {
 .alert-container.active {
     display: block; /* Show when there are messages */
 }
-
 
 /* Styling for tables */
 .myTable {
@@ -142,9 +156,9 @@ input[type="checkbox"]:focus {
 
 /* Progress bar */
 .progress {
-    height: 2px;
-    width: 294px;
-    margin-top: -2px; /* Moves the bar inside the password field */
+    height: 3px;
+    max-width: 294px;
+    margin-top: -3px; /* Moves the bar inside the password field */
 }
 
 .progress-bar {
@@ -192,9 +206,9 @@ input[type="checkbox"]:focus {
     background-color: var(--main-color);
 }
 
-/* Width of text input */
+/* Width of form input */
 .w-fixed {
-    width: 300px;
+    max-width: 300px;
 }
 
 /* Login on registration page styling */

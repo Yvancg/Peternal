@@ -5,31 +5,47 @@
 {% endblock %}
 
 {% block main %}
-    <h1>Log in</h1>
-    <br>
-    <form action="/login" method="post">
-        <div class="mb-3">
-            <input autocomplete="off" autofocus class="form-control mx-auto w-fixed" id="username" name="username" placeholder="Username or Email" type="text" value="{{ username or '' }}">
-        </div>
-        <div class="mb-3">
-            <input class="form-control mx-auto w-fixed" id="password" name="password" placeholder="Password" type="password">
-        </div>
-        <div class="mb-3">
-            <button class="btn btn-fit" type="submit">Log In</button>
-        </div>
-        {% if not show_reset_password %}
-            <div class="mb-3 grey-color">
-                <input type="checkbox" name="remember" id="remember">
-                <label for="remember">Remember me for 30 days</label>
-            </div>
-        {% endif %}
-        <!-- If flashed error, display the following -->
-        {% if show_reset_password %}
-            <div>
+<div class="container full-height-container">
+    <div class="row d-flex align-items-center">
+        <!-- Left Column -->
+        <div class="col-md-8">
+            <div class="headline">
                 <p>
-                    Forgot your password? <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>.
+                    Create fond memories of your beloved furry friend, from its birth until the afterlife.
                 </p>
             </div>
-        {% endif %}
-    </form>
+        </div>
+
+        <!-- Right Column (login form) -->
+        <div class="col-md-4">
+            <h1>Log in</h1>
+            <br>
+            <form action="/login" method="post">
+                <div class="mb-3">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-fixed" id="username" name="username" placeholder="Username or Email" type="text" value="{{ username or '' }}">
+                </div>
+                <div class="mb-3">
+                    <input class="form-control mx-auto w-fixed" id="password" name="password" placeholder="Password" type="password">
+                </div>
+                <div class="mb-3">
+                    <button class="btn btn-fit" type="submit">Log In</button>
+                </div>
+                {% if not show_reset_password %}
+                    <div class="mb-3 grey-color">
+                        <input type="checkbox" name="remember" id="remember">
+                        <label for="remember">Remember me for 30 days</label>
+                    </div>
+                {% endif %}
+                <!-- If flashed error, display the following -->
+                {% if show_reset_password %}
+                    <div>
+                        <p>
+                            Forgot your password? <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>.
+                        </p>
+                    </div>
+                {% endif %}
+            </form>
+        </div>
+    </div>
+</div>
 {% endblock %}
