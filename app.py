@@ -77,30 +77,37 @@ def register():
     # Check for username
     if not username:
         flash("Username required.", "danger")
+        return render_template("register.html")
 
     # Check for email
     elif not email:
         flash("Email required.", "danger")
+        return render_template("register.html")
 
     # Check for password
     elif not password:
         flash("Password required.", "danger")
+        return render_template("register.html")
 
     # Check for confirmation
     elif not confirmation:
         flash("Password confirmation required.", "danger")
+        return render_template("register.html")
 
     # Check for if email is valid
     elif not is_valid_email(email):
         flash("Invalid email format.", "danger")
+        return render_template("register.html")
 
     # Check password matches confirmation
     elif password != confirmation:
-        flash("Passwords must match.", "danger")
+        flash("Confirmation doesn't match password.", "danger")
+        return render_template("register.html")
 
     # Check password strength
     elif not is_password_strong(password)[0]:
         flash(f"Password must {is_password_strong(password)[1]}", "danger")
+        return render_template("register.html")
 
     else:
         # Call the function after the checks
@@ -210,14 +217,18 @@ def login():
         # Query database for username
         rows = get_username_email(username_email)
 
-        # Ensure username exists and password is correct
-        if rows is None or not check_password_hash(rows["hash"], password):
-            flash("Invalid username/email or password.", "danger")
+        # Ensure username exists
+        if rows is None:
+            flash("Invalid username/email.", "danger")
+            return render_template("login.html", username=username_email)
+
+        # Ensure password is correct
+        if not check_password_hash(rows["hash"], password):
+            flash("Invalid password.", "danger")
             show_reset_password = True
             return render_template("login.html",
                                    username=username_email,
-                                   show_reset_password=show_reset_password,
-                                   )
+                                   show_reset_password=show_reset_password)
 
         # Check if user is verified
         if rows["email_verified"] == 1:
