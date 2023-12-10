@@ -8,7 +8,8 @@ $(document).ready(function() {
 // Tooltip function from Bootstrap 
 $(document).ready(function(){
     $('[data-bs-toggle="tooltip"]').tooltip({
-        trigger: 'focus'
+        trigger: 'focus',
+        html: true
     });
 });
 

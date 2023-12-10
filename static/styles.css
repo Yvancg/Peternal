@@ -12,15 +12,18 @@ main {
 
 /* Overall color scheme */
 :root {
-    --accent-color: greenyellow;
-    --link-color: greenyellow;
+    --main-color: #647C90;
+    --light-color: #E2DED0;
+    --dark-color: #4E4F50;
+    --accent-color: #746C70;
+    --highlight-color: #FFD700;
 }
 
 /* Base look and feel + change body to a flex container */
 body {
     font-family: 'Poppins', sans-serif;
-    background-color: #D6D6D6;
-    color: var(--light-text-color);
+    background-color: var(--main-color);
+    color: var(--light-color);
     font-size: 100%;
     font-weight: 400;
     line-height: 1.6;
@@ -32,28 +35,42 @@ body {
 .navbar {
     padding-left: 2rem;
     padding-right: 2rem;
+    color: var(--light-color);
+    background-color: var(--dark-color);
 }
 
 nav .navbar-brand {
     font-size: xx-large;
+    color: var(--light-color);
 }
 
 .navbar-brand:hover {
-    color: greenyellow;
+    color: var(--accent-color);
+}
+
+.navbar-brand:focus {
+    outline: 2px solid var(--highlight-color);
+    border-color: var(--highlight-color);
 }
 
 .navbar a:not(.navbar-brand):hover {
-    background-color: greenyellow;
-    color: black;
+    background-color: var(--light-color);
+    color: var(--dark-color);
     padding: auto;
     margin: auto;
 }
 
 .navbar a:not(.navbar-brand):focus {
-    background-color: #D6D6D6;
-    color: #83898F;
+    background-color: var(--light-color);
+    color: var(--main-color);
+    border: var(--highlight-color)
     padding: auto;
     margin: auto;
+}
+
+.bg-footer {
+    background-color: var(--light-color);
+    color: var(--dark-color);
 }
 
 /* Styling for tables */
@@ -77,37 +94,41 @@ nav .navbar-brand {
 }
 
 /* Custom Tooltip Styles */
-.tooltip-inner {
-    background-color: yellowgreen;
-    opacity: 1;
-    max-width: 300px;
-    color: black;
-    padding: 10px;
+.custom-tooltip {
+    --bs-tooltip-bg: var(--dark-color);
+    --bs-tooltip-arrow-color: var(--dark-color);
+    --bs-tooltip-arrow-width: 1.2rem;
+    --bs-tooltip-arrow-height: 0.8rem;
+    --bs-tooltip-opacity: 0.9;
+    --bs-tooltip-max-width: 300px;
+    --bs-tooltip-color: whitesmoke;
+    --bs-tooltip-padding: 20px;
 }
 
 /* Focus color */
 .form-control:focus {
-    outline: 1px solid yellowgreen;
-    border-color: yellowgreen;
-    box-shadow: 0 0 0 0.3rem rgba(154, 240, 117, 0.25);
+    outline: 2px solid var(--highlight-color);
+    border-color: var(--highlight-color);
+    box-shadow: 0 0 1rem 0.5rem rgba(var(--light-color), 0.5);
 }
 
 input[type="checkbox"]:focus {
-    outline: 1px solid yellowgreen;;
-    box-shadow: 0 0 0 0.2rem yellowgreen;
+    outline: 1px solid var(--highlight-color);
+    box-shadow: 0 0 0.5rem 0.3rem rgba(var(--light-color), 0.3);
 }
 
 .btn-fit:focus {
-    outline: 2px solid yellowgreen;
-    background-color: rgba(154, 240, 117, 0.25);
-    border-color: yellowgreen;
-    box-shadow: 0 0 0 0.3rem rgba(154, 240, 117, 0.25);
+    outline: 2px solid var(--highlight-color);
+    background-color: rgba(var(--light-color), 0.5);
+    border-color: var(--light-color);
+    box-shadow: 0 0 1rem 0.5rem rgba(var(--light-color), 0.5);
 }
 
 /* Progress bar */
 .progress {
     height: 2px;
     width: 294px;
+    margin-top: -2px; /* Moves the bar inside the password field */
 }
 
 .progress-bar {
@@ -137,8 +158,8 @@ input[type="checkbox"]:focus {
 
 /* Button for forms */
 .btn-fit {
-    background-color: black;
-    color: #D6D6D6;
+    background-color: var(--dark-color);
+    color: var(--light-color);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -146,13 +167,13 @@ input[type="checkbox"]:focus {
 }
 
 .btn-fit:hover {
-    background-color: yellowgreen;
-    color: black;
+    background-color: var(--light-color);
+    color: var(--dark-color);
 }
 
 /* Style for the checkbox */
 .checkbox input[type="checkbox"]:checked + .checkmark {
-    background-color: yellowgreen;
+    background-color: var(--main-color);
 }
 
 /* Width of text input */
@@ -164,13 +185,4 @@ input[type="checkbox"]:focus {
 .login-link {
     margin-top: 20px;
     text-align: center;
-}
-
-.login-link a {
-    color: yellowgreen;
-    text-decoration: none;
-}
-
-.login-link a:hover {
-    text-decoration: underline;
 }

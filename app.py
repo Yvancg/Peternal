@@ -1,10 +1,10 @@
-"""Fit 4 Life Web Application.
+"""Peternal Web Application.
 
-This module initializes and configures the Flask application for the Fit 4 Life platform. 
-It sets up necessary configurations for session management and security,. Database connections 
-are imported from the .database' module. The application provides users with features related 
-to fitness tracking, workout plans, and health metrics. Functions for user authentication, 
-registration, password validation, and session handling are imported from the 'auth' module.
+This module initializes and configures the Flask application for the Peternal platform. 
+It sets up necessary configurations for session management and security. Database connections 
+are imported from the 'database' module. The application provides users with features related 
+to pets tracking, pets memories, and afterlife. Functions for user authentication, registration, 
+password validation, and session handling are imported from the 'auth' module.
 
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
@@ -128,7 +128,7 @@ def send_confirmation_email(email):
     confirm_url = url_for('confirm_email', token=token, _external=True)
     # Create the email message
     html = render_template("email/activate.html", confirm_url=confirm_url)
-    subject = "Fit 4 Life - Please confirm your email"
+    subject = "Peternal - Please confirm your email"
     msg = Message(subject, recipients=[email], html=html)
 
     try:
@@ -180,7 +180,7 @@ def resend_verification_email():
             token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
             confirm_url = url_for('confirm_email', token=token, _external=True)
             html = render_template("email/activate.html", confirm_url=confirm_url)
-            subject = "Fit 4 Life - Please confirm your email"
+            subject = "Peternal - Please confirm your email"
             msg = Message(subject, recipients=[email], html=html)
             mail.send(msg)
             flash("Verification email resent. Please check your inbox.", "info")
@@ -305,7 +305,7 @@ def send_password_reset_email(email):
     token = s.dumps(email, salt='PASSWORD_RESET_SALT')
     reset_url = url_for('reset_password', token=token, _external=True)
     html = render_template("email/password_reset.html", reset_url=reset_url)
-    subject = "Fit 4 Life - Password Reset"
+    subject = "Peternal - Password Reset"
     msg = Message(subject, recipients=[email], html=html)
 
     try:
