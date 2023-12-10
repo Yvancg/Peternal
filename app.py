@@ -31,7 +31,7 @@ from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
 
 # Importing from database.py
-from database import get_username_email, verify_user, update_password, get_password, get_workouts, user_status, get_user_id_by_email
+from database import get_username_email, verify_user, update_password, get_password, get_workouts, user_status, get_user_id_by_email, check_user_exists
 
 # Configure application
 app = Flask(__name__)
@@ -108,6 +108,16 @@ def register():
     elif not is_password_strong(password)[0]:
         flash(f"Password must {is_password_strong(password)[1]}", "danger")
         return render_template("register.html")
+
+    # Check if username or email already exists
+    existing_user = check_user_exists(username, email)
+    if existing_user:
+        if existing_user["email"] == email:
+            flash("Email already registered. Please login.", "info") # Not working properly, it should flash
+            return redirect(url_for('login'))
+        elif existing_user["username"] == username:
+            flash("Username already taken.", "danger")
+            return render_template("register.html")
 
     else:
         # Call the function after the checks
@@ -275,15 +285,14 @@ def change():
 
     # Database connection for password validation
     row = get_password(user_id)
-    app.logger.debug('password row') # Debugging
-    print(row) # Debugging
-    if not row or not check_password_hash(row[0], old_password):
-        flash("Invalid old password.", "danger")
+    if not row or not check_password_hash(row["hash"], old_password):
+        flash("Invalid current password.", "danger")
         return render_template("change.html")
 
     # If old password is valid, then update to new password
     new_hash = generate_password_hash(new_password)
     update_password(user_id, new_hash)
+    flash("Password succesfully changed.", "success")
     return redirect(url_for('index'))
 
 # Route for requesting the password reset

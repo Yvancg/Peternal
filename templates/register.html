@@ -7,7 +7,18 @@
 {% block main %}
 <div class="container full-height-container">
     <div class="row d-flex align-items-center">
-        {% if not show_resend_link %}
+        <!-- Left Column -->
+        <div class="col-md-6">
+            <div class="headline">
+                <p>
+                    Join millions of happy pet owners and loved pets, <br> today!
+                </p>
+            </div>
+        </div>
+
+        <!-- Right Column (login form) -->
+        <div class="col-md-6">
+            {% if not show_resend_link %}
             <h1>Sign Up</h1>
             <br>
             <form action="/register" method="post">
@@ -61,8 +72,8 @@
                     Already have an account? <a href={{ url_for('login') }}>Login here.</a>
                 </p>
             </div>
-        {% endif %}
-        {% if show_resend_link %}
+            {% endif %}
+            {% if show_resend_link %}
             <h1>Email sent</h1>
             <br>
             <p>
@@ -74,7 +85,8 @@
                     <button class="btn btn-fit" type="submit">Resend Verification Email</button>
                 </form>
             </p>
-        {% endif %}
+            {% endif %}
+        </div>
     </div>
 </div>
 {% endblock %}

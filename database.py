@@ -10,7 +10,26 @@ def get_username_email(username_email):
         cursor = db.cursor()
         cursor.execute(
             "SELECT * FROM users WHERE username = ? OR email = ?",
-             (username_email, username_email)
+            (username_email, username_email,)
+        )
+        return cursor.fetchone()
+
+def get_user_id_by_email(email):
+    """ Associates the user ID with their email"""
+    with sqlite3.connect(DATABASE) as db:
+        cursor = db.cursor()
+        cursor.execute("SELECT user_id FROM users WHERE email = ?", (email,))
+        user = cursor.fetchone()
+        return user[0] if user else None
+
+def check_user_exists(username, email):
+    """Check if a user with the given username or email already exists."""
+    with sqlite3.connect(DATABASE) as db:
+        db.row_factory = sqlite3.Row
+        cursor = db.cursor()
+        cursor.execute(
+            "SELECT username, email FROM users WHERE username = ? OR email = ?", 
+            (username, email)
         )
         return cursor.fetchone()
 
@@ -21,7 +40,7 @@ def create_user(username, email, password_hash):
             cursor = db.cursor()
             cursor.execute(
                 "INSERT INTO users (username, email, hash) VALUES (?, ?, ?)", 
-                (username, email, password_hash)
+                (username, email, password_hash,)
             )
             db.commit()
             return True
@@ -38,6 +57,7 @@ def verify_user(email):
 def get_password(user_id):
     """ Go fectch the password to initiate change """
     with sqlite3.connect(DATABASE) as db:
+        db.row_factory = sqlite3.Row
         cursor = db.cursor()
         cursor.execute("SELECT hash FROM users WHERE user_id = ?", (user_id,))
         return cursor.fetchone()
@@ -48,14 +68,6 @@ def update_password(user_id, new_hash):
         cursor = db.cursor()
         cursor.execute("UPDATE users SET hash = ? WHERE user_id = ?", (new_hash, user_id,))
         db.commit()
-
-def get_user_id_by_email(email):
-    """ Associates the user ID with their email"""
-    with sqlite3.connect(DATABASE) as db:
-        cursor = db.cursor()
-        cursor.execute("SELECT user_id FROM users WHERE email = ?", (email,))
-        user = cursor.fetchone()
-        return user[0] if user else None
 
 def user_status(email):
     """Check the status of the user's email verification and return user_id if verified."""
