@@ -48,13 +48,15 @@
 
         <header>
             <!-- Display alerts -->
-            {% if get_flashed_messages(with_categories=true) %}
-                {% for category, message in get_flashed_messages(with_categories=true) %}
-                    <div class="alert alert-{{ category }} mb-0 text-center" role="alert">
-                        {{ message }}
-                    </div>
-                {% endfor %}
-            {% endif %}
+            <div class="alert-container {% if get_flashed_messages(with_categories=true) %}active{% endif %}">
+                {% if get_flashed_messages(with_categories=true) %}
+                    {% for category, message in get_flashed_messages(with_categories=true) %}
+                        <div class="alert alert-{{ category }} mb-0 text-center" role="alert">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
         </header>
 
     
