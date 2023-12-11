@@ -19,8 +19,9 @@
         </div>
 
         <!-- Right Column (login form) -->
-        <div class="col-md-4">
+        <div class="col-md-4 mx-auto">
             <h1>Log in</h1>
+            <br>
             <br>
             <form action="/login" method="post">
                 <div class="mb-3">
@@ -42,7 +43,8 @@
                 {% if show_reset_password %}
                     <div>
                         <p>
-                            Forgot your password? <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>.
+                            Forgot your password? <br>
+                            <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>.
                         </p>
                     </div>
                 {% endif %}

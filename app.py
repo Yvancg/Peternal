@@ -351,11 +351,12 @@ def reset_password(token):
         return render_template("request_password_reset.html")
 
     if request.method == "GET":
-        return render_template("reset_password.html")
+        return render_template("reset_password.html", token=token)
 
     new_password = request.form.get("new_password")
     confirmation = request.form.get("confirmation")
 
+    # Handling wrong password formats
     if new_password != confirmation:
         flash("Passwords do not match.", "danger")
         return render_template("reset_password.html")
@@ -363,13 +364,13 @@ def reset_password(token):
         flash("Password does not meet the required criteria.", "danger")
         return render_template("reset_password.html")
 
-    update_password(email, new_password)
     # After successfully updating the password
     user_id = get_user_id_by_email(email)
     if user_id is None:
         flash("User not found.", "danger")
         return render_template("request_password_reset.html")
 
+    # Updating the password in the database
     new_hash = generate_password_hash(new_password)
     update_password(user_id, new_hash)
 

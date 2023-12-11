@@ -17,9 +17,10 @@
         </div>
 
         <!-- Right Column (login form) -->
-        <div class="col-md-6">
+        <div class="col-md-6 mx-auto">
             {% if not show_resend_link %}
             <h1>Sign Up</h1>
+            <br>
             <br>
             <form action="/register" method="post">
                 <div class="mb-3">
@@ -70,7 +71,8 @@
             </form>
             <div class="login-link">
                 <p>
-                    Already have an account? <a href={{ url_for('login') }}>Login here.</a>
+                    Already have an account? <br>
+                    <a href={{ url_for('login') }}>Login here.</a>
                 </p>
             </div>
             {% endif %}
