@@ -8,39 +8,42 @@ password validation, and session handling are imported from the 'auth' module.
 
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
-from smtplib import SMTPAuthenticationError
 
 # For debugging
 import logging
-logging.basicConfig(level=logging.DEBUG)
+from smtplib import SMTPAuthenticationError
 
 # Loading .env automatically in the dev env
 from dotenv import load_dotenv
-load_dotenv()
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
 from flask_mail import Mail, Message
+from flask_session import Session
 from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
-from flask_session import Session
 
 # Importing config variables
 from config import Config
-
-# Importing from auth.py
 from auth import is_valid_email, login_required, register_user, is_password_strong
+from database import (get_username_email, verify_user, update_password, 
+                      get_password, get_workouts, user_status, 
+                      get_user_id_by_email, check_user_exists)
 
-# Importing from database.py
-from database import get_username_email, verify_user, update_password, get_password, get_workouts, user_status, get_user_id_by_email, check_user_exists
+load_dotenv()
+logging.basicConfig(level=logging.DEBUG)
 
-# Configure application
-app = Flask(__name__)
-app.config.from_object(Config)
-Session(app)
-mail = Mail(app)
+def create_app():
+    app = Flask(__name__)
+    app.config.from_object(Config)
+    
+    Session(app)
+    mail = Mail(app)
+    # Securely signing emails
+    s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
-# Securely signing emails
-s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+    return app
+
+app = create_app()
 
 # Ensuring server responses are not cached
 @app.after_request
@@ -80,32 +83,32 @@ def register():
         return render_template("register.html")
 
     # Check for email
-    elif not email:
+    if not email:
         flash("Email required.", "danger")
         return render_template("register.html")
 
     # Check for if email is valid
-    elif not is_valid_email(email):
+    if not is_valid_email(email):
         flash("Invalid email format.", "danger")
         return render_template("register.html")
     
     # Check for password
-    elif not password:
+    if not password:
         flash("Password required.", "danger")
         return render_template("register.html")
     
     # Check password strength
-    elif not is_password_strong(password)[0]:
+    if not is_password_strong(password)[0]:
         flash(f"Password must {is_password_strong(password)[1]}", "danger")
         return render_template("register.html")
 
     # Check for confirmation
-    elif not confirmation:
+    if not confirmation:
         flash("Password confirmation required.", "danger")
         return render_template("register.html")
 
     # Check password matches confirmation
-    elif password != confirmation:
+    if password != confirmation:
         flash("Confirmation doesn't match password.", "danger")
         return render_template("register.html")
 
@@ -116,18 +119,19 @@ def register():
         # Email already exists
         flash("Email already registered. Please login.", "info")
         return render_template("login.html")
-    elif existing_user["username_exists"]:
+    
+    if existing_user["username_exists"]:
         # Username already exists
         flash("Username already taken.", "danger")
         return render_template("register.html")
-    else:
-        # Username and email are unique, proceed with registration
-        if register_user(username, email, password):
-            flash("Registration in progress. Check your email.", "info")
-            return send_confirmation_email(email)
+    
+    # Username and email are unique, proceed with registration
+    if register_user(username, email, password):
+        flash("Registration in progress. Check your email.", "info")
+        return send_confirmation_email(email)
 
-        else:
-            flash("Unexpected error occurred. Please try again.", "danger")
+    else:
+        flash("Unexpected error occurred. Please try again.", "danger")
 
     # Return with show_resend_link as False if any validation fails
     return render_template("register.html", show_resend_link=False)
@@ -222,7 +226,7 @@ def login():
             flash("Username or email is required.", "danger")
             return render_template("login.html")
 
-        elif not password:
+        if not password:
             flash("Password is required.", "danger")
             return render_template("login.html")
 
@@ -360,7 +364,8 @@ def reset_password(token):
     if new_password != confirmation:
         flash("Passwords do not match.", "danger")
         return render_template("reset_password.html")
-    elif not is_password_strong(new_password):
+    
+    if not is_password_strong(new_password):
         flash("Password does not meet the required criteria.", "danger")
         return render_template("reset_password.html")
 
