@@ -84,9 +84,19 @@ def register():
         flash("Email required.", "danger")
         return render_template("register.html")
 
+    # Check for if email is valid
+    elif not is_valid_email(email):
+        flash("Invalid email format.", "danger")
+        return render_template("register.html")
+    
     # Check for password
     elif not password:
         flash("Password required.", "danger")
+        return render_template("register.html")
+    
+    # Check password strength
+    elif not is_password_strong(password)[0]:
+        flash(f"Password must {is_password_strong(password)[1]}", "danger")
         return render_template("register.html")
 
     # Check for confirmation
@@ -94,21 +104,12 @@ def register():
         flash("Password confirmation required.", "danger")
         return render_template("register.html")
 
-    # Check for if email is valid
-    elif not is_valid_email(email):
-        flash("Invalid email format.", "danger")
-        return render_template("register.html")
-
     # Check password matches confirmation
     elif password != confirmation:
         flash("Confirmation doesn't match password.", "danger")
         return render_template("register.html")
 
-    # Check password strength
-    elif not is_password_strong(password)[0]:
-        flash(f"Password must {is_password_strong(password)[1]}", "danger")
-        return render_template("register.html")
-
+# Debug this part
     # Check if username or email already exists
     existing_user = check_user_exists(username, email)
     if existing_user:
@@ -118,7 +119,6 @@ def register():
         elif existing_user["username"] == username:
             flash("Username already taken.", "danger")
             return render_template("register.html")
-
     else:
         # Call the function after the checks
         if register_user(username, email, password):
@@ -279,6 +279,13 @@ def change():
 
     if new_password != confirmation:
         flash("New passwords do not match.", "danger")
+        return render_template("change.html")
+    
+    # Check password strength
+    new_password = request.form.get("new_password")
+    is_strong, message = is_password_strong(new_password)
+    if not is_strong:
+        flash(f"New password must {message}", "danger")
         return render_template("change.html")
 
     user_id = int(session["user_id"])

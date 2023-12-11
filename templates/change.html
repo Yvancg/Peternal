@@ -12,10 +12,33 @@
             <input class="form-control mx-auto w-fixed" id="old_password" name="old_password" placeholder="Current Password" type="password">
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-fixed" id="new_password" name="new_password" placeholder="New Password" type="password">
+            <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
+            id="new_password" name="new_password" 
+            value="{{ password or '' }}" 
+            placeholder="New Password" 
+            type="password"
+            data-bs-toggle="tooltip" 
+            data-bs-placement="top"
+            data-bs-custom-class="custom-tooltip"
+            data-bs-html="true"
+            title="Password requirements: <br>- minimum 8 characters, <br>- at least one digit,<br>- uppercase letter(s), <br>- lowercase letter(s), <br>- special character(s).">
+            <div class="progress mx-auto progress-top">
+                <div class="progress-bar" 
+                    id="password-strength-bar" 
+                    role="progressbar" 
+                    aria-valuenow="0" 
+                    aria-valuemin="0" 
+                    aria-valuemax="100" 
+                    title="Progress">
+                </div>
+            </div>
         </div>
         <div class="mb-3">
-            <input class="form-control mx-auto w-fixed" id="confirmation" name="confirmation" placeholder="Confirm New Password" type="password">
+            <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'confirmation' }}" 
+            id="confirmation" name="confirmation" 
+            value="{{ confirmation or '' }}" 
+            placeholder="Confirm New Password" 
+            type="password">
         </div>
         <button class="btn btn-fit" type="submit">Change</button>
     </form>
