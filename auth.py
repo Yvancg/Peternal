@@ -3,6 +3,7 @@ import re
 from functools import wraps
 from werkzeug.security import generate_password_hash
 from flask import redirect, session
+from email_validator import validate_email, EmailNotValidError
 
 from database import create_user
 
@@ -24,12 +25,16 @@ def register_user(username, email, password):
     # Create new user and checks if already registered
     return create_user(username, email, password_hash)
 
-# Function to check if the email is valid
 def is_valid_email(email):
-    """Validate the email format."""
-    email_regex = r"(^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$)"
-    return re.match(email_regex, email) is not None
-
+    """Validate the email format using email-validator library."""
+    try:
+        # Validate.
+        validate_email(email)
+        # Email is valid.
+        return True
+    except EmailNotValidError as e:
+        # Email is not valid, return False.
+        return False
 
 # Password strength checker function
 def is_password_strong(password):
