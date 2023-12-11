@@ -109,23 +109,25 @@ def register():
         flash("Confirmation doesn't match password.", "danger")
         return render_template("register.html")
 
-# Debug this part
     # Check if username or email already exists
     existing_user = check_user_exists(username, email)
-    if existing_user:
-        if existing_user["email"] == email:
-            flash("Email already registered. Please login.", "info") # Not working properly, it should flash
-            return redirect(url_for('login'))
-        elif existing_user["username"] == username:
-            flash("Username already taken.", "danger")
-            return render_template("register.html")
+
+    if existing_user["email_exists"]:
+        # Email already exists
+        flash("Email already registered. Please login.", "info")
+        return render_template("login.html")
+    elif existing_user["username_exists"]:
+        # Username already exists
+        flash("Username already taken.", "danger")
+        return render_template("register.html")
     else:
-        # Call the function after the checks
+        # Username and email are unique, proceed with registration
         if register_user(username, email, password):
+            flash("Registration in progress. Check your email.", "info")
             return send_confirmation_email(email)
+
         else:
-            flash("Already registered", "info")
-            return redirect(url_for('login'))
+            flash("Unexpected error occurred. Please try again.", "danger")
 
     # Return with show_resend_link as False if any validation fails
     return render_template("register.html", show_resend_link=False)
