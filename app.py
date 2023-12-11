@@ -329,14 +329,16 @@ def send_password_reset_email(email):
     try:
         mail.send(msg)
         flash("Check your email for the password reset link.", "info")
+        return render_template("login.html")
     except SMTPAuthenticationError:
         app.logger.error("SMTP Authentication failed")
         flash("Email sending failed due to SMTP Authentication error.", "danger")
+        return render_template("login.html")
     except Exception as e:
         app.logger.error("Email sending failed: %s", e)
         flash(f"Email sending failed: {e}", "danger")
 
-    return redirect(url_for('login'))
+    return render_template("login.html")
 
 # Route for actually resetting the password
 @app.route("/reset_password/<token>", methods=["GET", "POST"])
@@ -346,15 +348,15 @@ def reset_password(token):
         email = s.loads(token, salt='PASSWORD_RESET_SALT', max_age=3600)
     except SignatureExpired:
         flash("The password reset link has expired.", "danger")
-        return redirect(url_for('request_password_reset'))
+        return render_template("request_password_reset.html")
 
     if request.method == "GET":
         return render_template("reset_password.html")
 
     new_password = request.form.get("new_password")
-    confirm_password = request.form.get("confirm_password")
+    confirmation = request.form.get("confirmation")
 
-    if new_password != confirm_password:
+    if new_password != confirmation:
         flash("Passwords do not match.", "danger")
         return render_template("reset_password.html")
     elif not is_password_strong(new_password):
@@ -366,7 +368,7 @@ def reset_password(token):
     user_id = get_user_id_by_email(email)
     if user_id is None:
         flash("User not found.", "danger")
-        return redirect(url_for('request_password_reset'))
+        return render_template("request_password_reset.html")
 
     new_hash = generate_password_hash(new_password)
     update_password(user_id, new_hash)
@@ -374,7 +376,7 @@ def reset_password(token):
     # Set up user session after password reset
     session["user_id"] = user_id
     flash("Your password has been reset. You are now logged in.", "success")
-    return redirect(url_for('index'))
+    return render_template("index.html")
 
 # Route for user logout
 @app.route("/logout")

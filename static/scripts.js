@@ -26,6 +26,7 @@ function updateStrengthBar(passwordFieldId) {
 
     var strengthBar = document.getElementById('password-strength-bar');
     strengthBar.style.width = strength + '%';
+    strengthBar.setAttribute('aria-valuenow', strength);
 
     if (strength < 40) {
         strengthBar.className = 'progress-bar bg-red';

@@ -37,19 +37,6 @@ def check_user_exists(username, email):
             "email_exists": result and result["email"] == email
         }
 
-"""
-def check_user_exists(username, email):
-    Check if a user with the given username or email already exists.
-    with sqlite3.connect(DATABASE) as db:
-        db.row_factory = sqlite3.Row
-        cursor = db.cursor()
-        cursor.execute(
-            "SELECT username, email FROM users WHERE username = ? OR email = ?", 
-            (username, email)
-        )
-        return cursor.fetchone()
-"""
-
 def create_user(username, email, password_hash):
     """ Create new user """
     try:
