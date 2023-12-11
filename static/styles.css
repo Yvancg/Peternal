@@ -158,13 +158,13 @@ header {
     background-color: #f2f2f2;
 }
 
-/* Error styling for the registration boxes - not used yet, need to implement */
+/* Error styling for the input fields */
 .flashes {
     color: red !important;
 }
 
 .error-border {
-    border: 1px solid red !important;
+    border: 2px solid red !important;
 }
 
 /* Custom Tooltip Styles */

@@ -25,25 +25,21 @@ from werkzeug.security import check_password_hash, generate_password_hash
 # Importing config variables
 from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
-from database import (get_username_email, verify_user, update_password, 
-                      get_password, get_workouts, user_status, 
+from database import (get_username_email, verify_user, update_password,
+                      get_password, get_workouts, user_status,
                       get_user_id_by_email, check_user_exists)
 
 load_dotenv()
 logging.basicConfig(level=logging.DEBUG)
 
-def create_app():
-    app = Flask(__name__)
-    app.config.from_object(Config)
-    
-    Session(app)
-    mail = Mail(app)
-    # Securely signing emails
-    s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
+# Configure application
+app = Flask(__name__)
+app.config.from_object(Config)
+Session(app)
+mail = Mail(app)
 
-    return app
-
-app = create_app()
+# Securely signing emails
+s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
 
 # Ensuring server responses are not cached
 @app.after_request
@@ -80,37 +76,37 @@ def register():
     # Check for username
     if not username:
         flash("Username required.", "danger")
-        return render_template("register.html")
+        return render_template("register.html", error_field="username")
 
     # Check for email
     if not email:
         flash("Email required.", "danger")
-        return render_template("register.html")
+        return render_template("register.html", error_field="email")
 
     # Check for if email is valid
     if not is_valid_email(email):
         flash("Invalid email format.", "danger")
-        return render_template("register.html")
-    
+        return render_template("register.html", error_field="email")
+
     # Check for password
     if not password:
         flash("Password required.", "danger")
-        return render_template("register.html")
-    
+        return render_template("register.html", error_field="password")
+
     # Check password strength
     if not is_password_strong(password)[0]:
         flash(f"Password must {is_password_strong(password)[1]}", "danger")
-        return render_template("register.html")
+        return render_template("register.html", error_field="password")
 
     # Check for confirmation
     if not confirmation:
         flash("Password confirmation required.", "danger")
-        return render_template("register.html")
+        return render_template("register.html", error_field="confirmation")
 
     # Check password matches confirmation
     if password != confirmation:
         flash("Confirmation doesn't match password.", "danger")
-        return render_template("register.html")
+        return render_template("register.html", error_field="confirmation")
 
     # Check if username or email already exists
     existing_user = check_user_exists(username, email)
@@ -119,12 +115,12 @@ def register():
         # Email already exists
         flash("Email already registered. Please login.", "info")
         return render_template("login.html")
-    
+
     if existing_user["username_exists"]:
         # Username already exists
         flash("Username already taken.", "danger")
-        return render_template("register.html")
-    
+        return render_template("register.html", error_field="username")
+
     # Username and email are unique, proceed with registration
     if register_user(username, email, password):
         flash("Registration in progress. Check your email.", "info")
@@ -224,11 +220,11 @@ def login():
 
         if not username_email:
             flash("Username or email is required.", "danger")
-            return render_template("login.html")
+            return render_template("login.html", error_field="email")
 
         if not password:
             flash("Password is required.", "danger")
-            return render_template("login.html")
+            return render_template("login.html", error_field="password")
 
         # Query database for username
         rows = get_username_email(username_email)
@@ -277,22 +273,22 @@ def change():
     # Initial form validation
     if not (old_password and new_password and confirmation):
         flash("All fields are required.", "danger")
-        return render_template("change.html")
+        return render_template("change.html", error_field="old_password")
 
     if new_password == old_password:
         flash("New password must be different from the old password.", "danger")
-        return render_template("change.html")
+        return render_template("change.html", error_field="new_password")
 
     if new_password != confirmation:
         flash("New passwords do not match.", "danger")
-        return render_template("change.html")
-    
+        return render_template("change.html", error_field="confirmation")
+
     # Check password strength
     new_password = request.form.get("new_password")
     is_strong, message = is_password_strong(new_password)
     if not is_strong:
         flash(f"New password must {message}", "danger")
-        return render_template("change.html")
+        return render_template("change.html", error_field="new_password")
 
     user_id = int(session["user_id"])
 
@@ -300,7 +296,7 @@ def change():
     row = get_password(user_id)
     if not row or not check_password_hash(row["hash"], old_password):
         flash("Invalid current password.", "danger")
-        return render_template("change.html")
+        return render_template("change.html", error_field="old_password")
 
     # If old password is valid, then update to new password
     new_hash = generate_password_hash(new_password)
@@ -320,7 +316,7 @@ def request_password_reset():
         return send_password_reset_email(email)
     else:
         flash("Please enter a valid email address.", "danger")
-        return render_template("request_password_reset.html")
+        return render_template("request_password_reset.html", error_field="email")
 
 def send_password_reset_email(email):
     """ Sending the email to reset the password """
@@ -363,11 +359,11 @@ def reset_password(token):
     # Handling wrong password formats
     if new_password != confirmation:
         flash("Passwords do not match.", "danger")
-        return render_template("reset_password.html")
-    
+        return render_template("reset_password.html", error_field="confirmation")
+
     if not is_password_strong(new_password):
         flash("Password does not meet the required criteria.", "danger")
-        return render_template("reset_password.html")
+        return render_template("reset_password.html", error_field="password")
 
     # After successfully updating the password
     user_id = get_user_id_by_email(email)

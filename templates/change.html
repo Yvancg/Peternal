@@ -10,10 +10,12 @@
     <br>
     <form action="/change" method="post">
         <div class="mb-3">
-            <input class="form-control mx-auto w-fixed" id="old_password" name="old_password" placeholder="Current Password" type="password">
+            <input class="form-control mx-auto w-fixed  {{ 'error-border' if error_field == 'old_password' }}" id="old_password" name="old_password" 
+            placeholder="Current Password" 
+            type="password">
         </div>
         <div class="mb-3">
-            <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
+            <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'new_password' }}" 
             id="new_password" name="new_password" 
             value="{{ password or '' }}" 
             placeholder="New Password" 

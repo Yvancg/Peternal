@@ -10,7 +10,7 @@
         <!-- Left Column -->
         <div class="col-md-8">
             <div class="headline">
-                <img src="static/peternal-logo.svg" alt="Peternal Logo" class="logo-image">
+                <img src="/static/peternal-logo.svg" alt="Peternal Logo" class="logo-image">
                 <br>
                 <p>
                     Create fond memories of your beloved furry friend, from its birth until the afterlife.<br> 
@@ -25,10 +25,17 @@
             <br>
             <form action="/login" method="post">
                 <div class="mb-3">
-                    <input autocomplete="off" autofocus class="form-control mx-auto w-fixed" id="username" name="username" placeholder="Username or Email" type="text" value="{{ username or '' }}">
+                    <input autocomplete="off" autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'email' }}" 
+                    id="username" name="username" 
+                    placeholder="Username or Email" 
+                    type="text" 
+                    value="{{ username or '' }}">
                 </div>
                 <div class="mb-3">
-                    <input class="form-control mx-auto w-fixed" id="password" name="password" placeholder="Password" type="password">
+                    <input class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
+                    id="password" name="password" 
+                    placeholder="Password" 
+                    type="password">
                 </div>
                 <div class="mb-3">
                     <button class="btn btn-fit" type="submit">Log In</button>
@@ -36,7 +43,7 @@
                 {% if not show_reset_password %}
                     <div class="mb-3 grey-color">
                         <input type="checkbox" name="remember" id="remember">
-                        <label for="remember">Remember me for 30 days</label>
+                        <label for="remember">Remember me for 30 days<br></label>
                     </div>
                 {% endif %}
                 <!-- If flashed error, display the following -->
