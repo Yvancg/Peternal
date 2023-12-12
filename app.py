@@ -123,7 +123,6 @@ def register():
 
     # Username and email are unique, proceed with registration
     if register_user(username, email, password):
-        flash("Registration in progress. Check your email.", "info")
         return send_confirmation_email(email)
 
     else:
@@ -218,13 +217,10 @@ def login():
         password = request.form.get("password")
         remember = request.form.get("remember") == 'on'
 
+        # Ensure username/email is entered
         if not username_email:
             flash("Username or email is required.", "danger")
             return render_template("login.html", error_field="email")
-
-        if not password:
-            flash("Password is required.", "danger")
-            return render_template("login.html", error_field="password")
 
         # Query database for username
         rows = get_username_email(username_email)
@@ -232,7 +228,12 @@ def login():
         # Ensure username exists
         if rows is None:
             flash("Invalid username/email.", "danger")
-            return render_template("login.html", username=username_email)
+            return render_template("login.html", username=username_email, error_field="email")
+
+        # Ensure password is entered
+        if not password:
+            flash("Password is required.", "danger")
+            return render_template("login.html", error_field="password")
 
         # Ensure password is correct
         if not check_password_hash(rows["hash"], password):
@@ -240,7 +241,8 @@ def login():
             show_reset_password = True
             return render_template("login.html",
                                    username=username_email,
-                                   show_reset_password=show_reset_password)
+                                   show_reset_password=show_reset_password,
+                                   error_field="password")
 
         # Check if user is verified
         if rows["email_verified"] == 1:

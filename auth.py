@@ -25,6 +25,7 @@ def register_user(username, email, password):
     # Create new user and checks if already registered
     return create_user(username, email, password_hash)
 
+# Built-in function for email validation
 def is_valid_email(email):
     """Validate the email format using email-validator library."""
     try:
@@ -38,7 +39,7 @@ def is_valid_email(email):
 
 # Password strength checker function
 def is_password_strong(password):
-    """ Ensure the password is strong"""
+    """Check the strength of the password using zxcvbn."""
     if len(password) < 8:
         return False, "be at least 8 characters long, "
     if not re.search("[0-9]", password):

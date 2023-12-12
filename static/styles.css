@@ -164,7 +164,8 @@ header {
 }
 
 .error-border {
-    border: 2px solid red !important;
+    border: 4px solid red !important;
+    z-index: 5;
 }
 
 /* Custom Tooltip Styles */
@@ -187,6 +188,7 @@ header {
 .form-control:focus {
     border: 2px solid var(--highlight-color);
     background-color: var(--light-color);
+    z-index: 1;
 }
 
 input[type="checkbox"] {
