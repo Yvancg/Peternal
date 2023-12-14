@@ -11,7 +11,7 @@
         <div class="col-md-6">
             <div class="headline">
                 <p>
-                    Join millions of sad pet owners and dead pets, <br> today!
+                    Join millions of sad pet owners and dead puppies 🐶😵, today!
                 </p>
             </div>
         </div>
@@ -81,16 +81,20 @@
             {% endif %}
             {% if show_resend_link %}
             <h1>Email sent</h1>
-            <br>
-            <p>
-                Didn't receive the email?
-                <br>
-                Make sure to check your spam folder first.
-                <form action="{{ url_for('resend_verification_email') }}" method="post">
+                <form action="{{ url_for('resend_verification_email') }}" method="post" id="register-form">
+                    <!-- Spinner, initially hidden -->
+                    <div class="d-flex justify-content-center spinner-container" id="spinner-container">
+                        <div id="spinner" class="spinner-border m-3 visually-hidden" role="status">
+                        </div>
+                    </div>
+                    <p>
+                        Didn't receive the email?
+                        <br>
+                        Make sure to check your spam folder first.
+                    </p>
                     <input type="hidden" name="email" value="{{ email }}">
                     <button class="btn btn-fit" type="submit">Resend Verification Email</button>
                 </form>
-            </p>
             {% endif %}
         </div>
     </div>

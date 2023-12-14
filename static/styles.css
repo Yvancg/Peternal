@@ -299,10 +299,11 @@ input[type="checkbox"]:focus {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100px;
+    height: 60px;
     width: 100%;
 }
 
 .spinner-border {
+    height: 2rem;
     height: 2rem;
 }

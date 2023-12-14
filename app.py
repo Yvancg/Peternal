@@ -1,11 +1,23 @@
 """Peternal Web Application.
 
 This module initializes and configures the Flask application for the Peternal platform. 
-It sets up necessary configurations for session management and security. Database connections 
-are imported from the 'database' module. The application provides users with features related 
-to pets tracking, pets memories, and afterlife. Functions for user authentication, registration, 
-password validation, and session handling are imported from the 'auth' module.
-
+It sets up necessary configurations for session management and security. The application 
+provides users with features related to pets tracking, pets memories, and afterlife. 
+Database connections are imported from the 'database' module. Functions for user authentication, 
+registration, password validation, and session handling are imported from the 'auth' module.
+Here are the functions in the order they appear:
+    def after_request(response):
+    def index():
+    def register():
+    def send_confirmation_email(email):
+    def confirm_email(token, expiration=3600):
+    def resend_verification_email():
+    def login():
+    def change():
+    def request_password_reset():
+    def send_password_reset_email(email):
+    def reset_password(token):
+    def logout():
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
 
@@ -28,6 +40,7 @@ from auth import is_valid_email, login_required, register_user, is_password_stro
 from database import (get_username_email, verify_user, update_password,
                       get_password, get_workouts, user_status,
                       get_user_id_by_email, check_user_exists)
+from utils import save_pet_photo, send_email
 
 load_dotenv()
 logging.basicConfig(level=logging.DEBUG)
@@ -140,6 +153,13 @@ def send_confirmation_email(email):
     # Create the email message
     html = render_template("email/activate.html", confirm_url=confirm_url)
     subject = "Peternal - Please confirm your email"
+
+    send_email(subject, [email], html, mail)
+    flash("Please check your email to confirm your registration.", "info")
+    # Return with show_resend_link as True since user is registered but needs to verify email
+    return render_template("register.html", show_resend_link=True, email=email)
+
+"""
     msg = Message(subject, recipients=[email], html=html)
 
     try:
@@ -153,9 +173,9 @@ def send_confirmation_email(email):
     except Exception as e:
         app.logger.error("Email sending failed: %s", e)
         flash(f"Email sending failed: {e}", "danger")
+"""
 
-    # Return with show_resend_link as True since user is registered but needs to verify email
-    return render_template("register.html", show_resend_link=True, email=email)
+
 
 # Route for email confirmation
 @app.route("/confirm_email/<token>")
@@ -187,18 +207,25 @@ def resend_verification_email():
     email = request.form.get("email")
     if email and is_valid_email(email):
         # Resend email logic
-        try:
-            token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
-            confirm_url = url_for('confirm_email', token=token, _external=True)
-            html = render_template("email/activate.html", confirm_url=confirm_url)
-            subject = "Peternal - Please confirm your email"
-            msg = Message(subject, recipients=[email], html=html)
+        token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
+        confirm_url = url_for('confirm_email', token=token, _external=True)
+        html = render_template("email/activate.html", confirm_url=confirm_url)
+        subject = "Peternal - Please confirm your email"
+
+        send_email(subject, [email], html, mail)
+        flash("Verification email resent. Please check your inbox.", "info")
+
+        """
+        msg = Message(subject, recipients=[email], html=html)
+
             mail.send(msg)
             flash("Verification email resent. Please check your inbox.", "info")
         except SMTPAuthenticationError:
             flash("Email sending failed due to SMTP Authentication error.", "danger")
         except Exception as e:
             flash(f"Email sending failed: {e}", "danger")
+            """
+
     else:
         flash("Invalid email address.", "danger")
 
@@ -303,7 +330,7 @@ def change():
     # If old password is valid, then update to new password
     new_hash = generate_password_hash(new_password)
     update_password(user_id, new_hash)
-    flash("Password succesfully changed.", "success")
+    flash("Password successfully changed.", "success")
     return redirect(url_for('index'))
 
 # Route for requesting the password reset
@@ -326,6 +353,11 @@ def send_password_reset_email(email):
     reset_url = url_for('reset_password', token=token, _external=True)
     html = render_template("email/password_reset.html", reset_url=reset_url)
     subject = "Peternal - Password Reset"
+
+    send_email(subject, [email], html, mail)
+    flash("Check your email for the password reset link.", "info")
+
+    """
     msg = Message(subject, recipients=[email], html=html)
 
     try:
@@ -339,6 +371,7 @@ def send_password_reset_email(email):
     except Exception as e:
         app.logger.error("Email sending failed: %s", e)
         flash(f"Email sending failed: {e}", "danger")
+    """
 
     return render_template("login.html")
 
@@ -392,3 +425,36 @@ def logout():
 
     # Redirect user to login form
     return redirect("/")
+
+"""
+# Route for adding pets
+@app.route("/add_pet", methods=["GET", "POST"])
+@login_required
+Users can add their pets once logged in
+if request.method == "GET":
+    return render_template("add_pet.html")
+
+pet_type = request.form.get("pet_type")
+pet_name = request.form.get("pet_name")
+pet_photo = request.form.get("pet_photo")
+breed = request.form.get("breed")
+pet_dob = request.form.get("pet_dob")
+vaccination = request.form.get("vaccination")
+tracker = request.form.get("tracker")
+insurance = request.form.get("insurance")
+
+
+
+if request.method == "POST":
+
+        pet_photo = request.files.get("petPhoto")
+        photo_path = save_pet_photo(pet_photo) if pet_photo else None
+
+
+# Add pet information to the database
+# You'll need a function in your database.py to insert pet data
+# insert_pet_data(user_id, pet_type, pet_name, photo_path, breed, dob, vaccination, tracker, insurance)
+    
+flash("Your pet has been added!", "success")
+        return redirect(url_for('index'))
+"""

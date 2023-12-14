@@ -44,16 +44,16 @@
                     <div class="mb-3 grey-color">
                         <input type="checkbox" name="remember" id="remember">
                         <label for="remember">Remember me for 30 days<br>
-                        <br></label>
+                        </label>
+                        <br>
+                        <br>
                     </div>
                 {% endif %}
                 <!-- If flashed error, display the following -->
                 {% if show_reset_password %}
-                    <div>
-                        <p>
-                            Forgot your password? <br>
-                            <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>
-                        </p>
+                    <div class="mb-3">
+                        Forgot your password? <br>
+                        <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>
                     </div>
                 {% endif %}
             </form>

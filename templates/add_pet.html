@@ -1,0 +1,54 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Add Pet
+{% endblock %}
+
+{% block main %}
+<div class="container">
+    <h1>Add Your Pet</h1>
+    <form action="/add_pet" method="post" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label for="petType" class="form-label">Pet Type</label>
+            <select id="petType" name="petType" class="form-select">
+                <option value="dog">Dog</option>
+                <option value="cat" disabled>Cat</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="pet_name" class="form-label">Pet Name</label>
+            <input type="text" id="pet_name" name="pet_name" class="form-control" required>
+        </div>
+        <div class="mb-3">
+            <label for="pet_photo" class="form-label">Photo Upload</label>
+            <input type="file" id="pet_photo" name="pet_photo" class="form-control" accept="image/*">
+        </div>
+        <div class="mb-3">
+            <label for="breed" class="form-label">Breed</label>
+            <select id="breed" name="breed" class="form-select">
+                <!-- Options pulled from fci-breeds.csv -->
+                <option value="other">Other</option>
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="pet_dob" class="form-label">Date of Birth</label>
+            <input type="date" id="pet_dob" name="pet_dob" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="vaccination" class="form-label">Vaccination</label>
+            <select id="vaccination" name="vaccination[]" class="form-select" multiple>
+                <!-- Options based on the provided vaccination list -->
+            </select>
+        </div>
+        <div class="mb-3">
+            <label for="tracker" class="form-label">Tracker</label>
+            <input type="text" id="tracker" name="tracker" class="form-control">
+        </div>
+        <div class="mb-3">
+            <label for="insurance" class="form-label">Insurance</label>
+            <input type="text" id="insurance" name="insurance" class="form-control">
+        </div>
+        <button type="submit" class="btn btn-primary">Add Pet</button>
+    </form>
+</div>
+{% endblock %}
