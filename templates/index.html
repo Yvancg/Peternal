@@ -5,38 +5,67 @@
 
 {% block main %}
 
-    <h1>Build memories</h1>
-    <br>
-    <br>
-    <table class="table myTable">
-        <thead>
-            <tr>
-                <th scope="col">Workout</th>
-                <th scope="col">Date</th>
-                <th scope="col">Type</th>
-                <th scope="col">Duration</th>
-                <th scope="col">Intensity</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for workout in workouts %}
-                <tr>
-                    <td>{{ workout[0] }}</td>
-                    <td>{{ workout[1] }}</td>
-                    <td>{{ workout[2] }}</td>
-                    <td>{{ workout[3] }}</td>
-                    <td>{{ workout[4] }}</td>
-                </tr>
-            {% endfor %}
-        </tbody>
-        <tfoot>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-            </tr>
-        </tfoot>
-    </table>
-
+    <div class="row">
+        <div class="col-sm-4 mb-3 mb-sm-0 mx-auto">
+            <div class="d-grid">
+                <button class="btn btn-fit" type="button">Add Pet</button>
+                <button class="btn btn-fit" type="button">Feeds</button>
+                <button class="btn btn-fit" type="button">Dating</button>
+                <button class="btn btn-fit" type="button">Marketplace</button>
+            </div>
+        </div>
+        <div class="col-sm-4 mb-3 mb-sm-0 mx-auto">
+            <div class="card" style="width: 18rem;">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                <h5 class="card-title">Pet Name</h5>
+                <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                <a href="#" class="btn btn-fit">Go somewhere</a>
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-4 mb-3 mb-sm-0 mx-auto">
+            <div class="card" style="width: 18rem;">
+                <img src="..." class="card-img-top" alt="...">
+                <div class="card-body">
+                <h5 class="card-title">Pet Name</h5>
+                <p class="card-text">
+                    Dog Bytes, Tails of a Dogital Transformation<br>
+                    <br>
+                    <br>
+                    In the realm where bytes and pixels blend,<br>
+                    A loyal heart finds a start, not an end.<br>
+                    Once a dog with a bark and a bound,<br>
+                    Now an avatar, in the virtual world found.<br>
+                    <br>
+                    No more the chains of mortal strife,<br>
+                    Nor the pangs of aging life.<br>
+                    In this digital expanse, he roams free,<br>
+                    A spirit untethered, a code-spun jubilee.<br>
+                    <br>
+                    With fur of silk and eyes aglow,<br>
+                    Through fields of data, he does now flow.<br>
+                    Chasing fractal birds that never tire,<br>
+                    Leaping over streams of electric fire.<br>
+                    <br>
+                    His bark echoes in the chatroom halls,<br>
+                    A ghostly presence that never palls.<br>
+                    A comforting nuzzle, a phantom lick,<br>
+                    A presence felt, both kind and quick.<br>
+                    <br>
+                    In pixels, he finds his new kin,<br>
+                    A pack of avatars, all born from within.<br>
+                    No longer a whisper from the past,<br>
+                    In this cyber world, he's home at last.<br>
+                    <br>
+                    So let the servers hum his tale,<br>
+                    Of a dog reborn where memories sail.<br>
+                    In the virtual world, his spirit runs,<br>
+                    Forever chasing the endless suns.</p>
+                <a href="#" class="btn btn-fit">Go somewhere</a>
+                </div>
+            </div>
+        </div>
+    </div>
+    
 {% endblock %}

@@ -20,9 +20,12 @@
         <div class="col-md-6 mx-auto">
             {% if not show_resend_link %}
             <h1>Sign Up</h1>
-            <br>
-            <br>
-            <form action="/register" method="post">
+            <form action="/register" method="post" id="register-form">
+                <!-- Spinner, initially hidden -->
+                <div class="d-flex justify-content-center spinner-container" id="spinner-container">
+                    <div id="spinner" class="spinner-border m-3 visually-hidden" role="status">
+                    </div>
+                </div>
                 <div class="mb-3">
                     <input autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'username' }}" 
                         id="username" name="username" 

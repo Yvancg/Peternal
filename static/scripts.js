@@ -15,8 +15,8 @@ $(document).ready(function(){
 
 // Password strength progress bar
 function updateStrengthBar(passwordFieldId) {
-    var password = document.getElementById(passwordFieldId).value;
-    var strength = 0;
+    const password = document.getElementById(passwordFieldId).value;
+    let strength = 0;
 
     if (password.match(/[a-z]+/)) strength += 20;
     if (password.match(/[A-Z]+/)) strength += 20;
@@ -24,7 +24,7 @@ function updateStrengthBar(passwordFieldId) {
     if (password.match(/[\W]+/)) strength += 20;
     if (password.length > 7) strength += 20;
 
-    var strengthBar = document.getElementById('password-strength-bar');
+    const strengthBar = document.getElementById('password-strength-bar');
     strengthBar.style.width = strength + '%';
     strengthBar.setAttribute('aria-valuenow', strength);
 
@@ -40,8 +40,8 @@ function updateStrengthBar(passwordFieldId) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    var passwordField = document.getElementById('password');
-    var newPasswordField = document.getElementById('new_password');
+    const passwordField = document.getElementById('password');
+    const newPasswordField = document.getElementById('new_password');
 
     if (passwordField) {
         passwordField.addEventListener('input', function() {
@@ -54,4 +54,20 @@ document.addEventListener('DOMContentLoaded', function() {
             updateStrengthBar('new_password');
         });
     }
+});
+
+// Spinner visibility
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('register-form');
+    const spinner = document.getElementById('spinner');
+    const flashMessage = document.querySelector('.alert');
+
+    form.addEventListener('submit', function () {
+        // Show spinner on form submit
+        spinner.classList.remove('visually-hidden');
+    });
+        // Hide spinner if flash message is present
+        if (flashMessage) {
+            spinner.classList.add('visually-hidden');
+        }
 });
