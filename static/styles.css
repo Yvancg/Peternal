@@ -192,8 +192,7 @@ header {
 }
 
 .form-control:focus {
-    background-color: var(--light-color);
-    border: 2px solid var(--highlight-color);
+    border: 2px solid var(--light-color);
     z-index: 1;
 }
 
@@ -202,11 +201,11 @@ input[type="checkbox"] {
 }
 
 input[type="checkbox"]:active {
-    background-color: var(--highlight-color);
+    background-color: var(--light-color);
 }
 
 input[type="checkbox"]:focus {
-    outline: 1px solid var(--highlight-color);
+    outline: 1px solid var(--light-color);
 }
 
 /* Progress bar */
@@ -306,4 +305,9 @@ input[type="checkbox"]:focus {
 .spinner-border {
     height: 2rem;
     height: 2rem;
+}
+
+/* Gradient background */
+.grad {
+    background-image: linear-gradient(var(--main-color), var(--light-color));
 }

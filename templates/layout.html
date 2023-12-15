@@ -30,8 +30,9 @@
                     {% if session["user_id"] %}
                         <ul class="navbar-nav nav-pills me-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/add_pet">Icon Add Pet</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/feeds">Icon Add pet</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/dating">Dating</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/">Icon Tracking</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/">Icon Dating</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/">Icon Afterlife</a></li>
 
                         </ul>
                         <ul class="navbar-nav nav-pills ms-auto mt-2">
@@ -67,7 +68,7 @@
             {% block main %}{% endblock %}
         </main>
 
-        <footer class="footer mt-auto py-3 bg-footer text-center text-muted">
+        <footer class="footer mt-auto py-3 bg-footer text-center text-muted fixed-bottom">
             <div class="container">
                 <span class="text-body-secondary">
                     Data provided by <a href="https://froggystyle.biz/">Pets of the World</a>

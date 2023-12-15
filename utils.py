@@ -26,8 +26,11 @@ def send_email(subject, recipients, html, mail):
     msg = Message(subject, recipients=recipients, html=html)
     try:
         mail.send(msg)
-    except SMTPAuthenticationError:
-        raise
+        return True, None  # Indicates successful email sending
+    except SMTPAuthenticationError as e:
+        return False, "SMTP Authentication failed"
+    except Exception as e:
+        return False, f"Email sending failed: {e}"
 
 """
         app.logger.error("SMTP Authentication failed")

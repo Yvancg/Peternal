@@ -426,26 +426,24 @@ def logout():
     # Redirect user to login form
     return redirect("/")
 
-"""
 # Route for adding pets
 @app.route("/add_pet", methods=["GET", "POST"])
 @login_required
-Users can add their pets once logged in
-if request.method == "GET":
-    return render_template("add_pet.html")
+def add_pet():
+    """Users can add their pets once logged in"""
+    if request.method == "GET":
+        return render_template("add_pet.html")
 
-pet_type = request.form.get("pet_type")
-pet_name = request.form.get("pet_name")
-pet_photo = request.form.get("pet_photo")
-breed = request.form.get("breed")
-pet_dob = request.form.get("pet_dob")
-vaccination = request.form.get("vaccination")
-tracker = request.form.get("tracker")
-insurance = request.form.get("insurance")
+    pet_type = request.form.get("pet_type")
+    pet_name = request.form.get("pet_name")
+    pet_photo = request.form.get("pet_photo")
+    breed = request.form.get("breed")
+    pet_dob = request.form.get("pet_dob")
+    vaccination = request.form.get("vaccination")
+    tracker = request.form.get("tracker")
+    insurance = request.form.get("insurance")
 
-
-
-if request.method == "POST":
+    if request.method == "POST":
 
         pet_photo = request.files.get("petPhoto")
         photo_path = save_pet_photo(pet_photo) if pet_photo else None
@@ -454,7 +452,6 @@ if request.method == "POST":
 # Add pet information to the database
 # You'll need a function in your database.py to insert pet data
 # insert_pet_data(user_id, pet_type, pet_name, photo_path, breed, dob, vaccination, tracker, insurance)
-    
-flash("Your pet has been added!", "success")
+
+        flash("Your pet has been added!", "success")
         return redirect(url_for('index'))
-"""
