@@ -3,6 +3,7 @@
 /* Prep the code to use the full size of the viewport */
 html, body {
     height: 100vh;
+    width: 100vw;
     margin: 0;
 }
 
@@ -285,6 +286,11 @@ input[type="checkbox"]:focus {
 /* Width of form input */
 .w-fixed {
     max-width: 300px;
+}
+
+.label-width {
+    width: 130px;
+    background-color: var(--light-color);
 }
 
 /* Login link on registration page styling */

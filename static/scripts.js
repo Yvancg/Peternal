@@ -71,3 +71,11 @@ document.addEventListener('DOMContentLoaded', function () {
             spinner.classList.add('visually-hidden');
         }
 });
+
+// Select2 extended features https://select2.org/
+$(document).ready(function() {
+    $('#breed').select2({
+        placeholder: "Choose...",
+        allowClear: true,
+    });
+});

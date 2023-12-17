@@ -9,6 +9,8 @@
 
         <!-- https://getbootstrap.com/docs/5.3/ -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <!-- https://select2.org/ -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
         <!-- https://favicon.io/emoji-favicons/hollow-red-circle -->
         <link href="/static/favicon.ico" rel="icon">
 
@@ -32,6 +34,7 @@
                             <li class="nav-item"><a class="nav-link" href="/add_pet">Icon Add Pet</a></li>
                             <li class="nav-item"><a class="nav-link" href="/">Icon Tracking</a></li>
                             <li class="nav-item"><a class="nav-link" href="/">Icon Dating</a></li>
+                            <li class="nav-item"><a class="nav-link" href="/">Icon Health</a></li>
                             <li class="nav-item"><a class="nav-link" href="/">Icon Afterlife</a></li>
 
                         </ul>
@@ -64,7 +67,7 @@
 
     
 
-        <main class="container-fluid py-5 text-center">
+        <main class="container-fluid text-center">
             {% block main %}{% endblock %}
         </main>
 
@@ -79,9 +82,12 @@
         <!-- https://getbootstrap.com/docs/5.3/ -->
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
         <!-- JQuery for fading message box -->
-        <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+        <!-- https://select2.org/ -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
+        <!-- Local JavaScript file -->
         <script src="{{ url_for('static', filename='scripts.js') }}"></script>
-
+        
     </body>
 
 </html>

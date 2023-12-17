@@ -18,18 +18,18 @@ Here are the functions in the order they appear:
     def send_password_reset_email(email):
     def reset_password(token):
     def logout():
+    def add_pet()
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
 
 # For debugging
 import logging
-from smtplib import SMTPAuthenticationError
 
 # Loading .env automatically in the dev env
 from dotenv import load_dotenv
 
 from flask import Flask, flash, redirect, render_template, request, session, url_for
-from flask_mail import Mail, Message
+from flask_mail import Mail
 from flask_session import Session
 from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -38,9 +38,9 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
 from database import (get_username_email, verify_user, update_password,
-                      get_password, get_workouts, user_status,
+                      get_password, user_status, insert_pet_data,
                       get_user_id_by_email, check_user_exists)
-from utils import save_pet_photo, send_email
+from utils import save_pet_photo, send_email, get_sorted_breeds
 
 load_dotenv()
 logging.basicConfig(level=logging.DEBUG)
@@ -67,11 +67,11 @@ def after_request(response):
 @app.route("/")
 @login_required
 def index():
-    """Show workout program"""
+    """Show pets owned"""
     user_id = int(session["user_id"])
-    workouts = None
-    workouts = get_workouts(user_id)
-    return render_template("index.html", workouts=workouts)
+    pets = None
+    pets = get_pets(user_id)
+    return render_template("index.html", pets=pets)
 
 # Route for user registration
 @app.route("/register", methods=["GET", "POST"])
@@ -159,24 +159,6 @@ def send_confirmation_email(email):
     # Return with show_resend_link as True since user is registered but needs to verify email
     return render_template("register.html", show_resend_link=True, email=email)
 
-"""
-    msg = Message(subject, recipients=[email], html=html)
-
-    try:
-        # Send the email
-        mail.send(msg)
-        flash("Please check your email to confirm your registration.", "info")
-    except SMTPAuthenticationError:
-        # Log the error and notify the user
-        app.logger.error("SMTP Authentication failed")
-        flash("Email sending failed due to SMTP Authentication error.", "danger")
-    except Exception as e:
-        app.logger.error("Email sending failed: %s", e)
-        flash(f"Email sending failed: {e}", "danger")
-"""
-
-
-
 # Route for email confirmation
 @app.route("/confirm_email/<token>")
 def confirm_email(token, expiration=3600):
@@ -214,17 +196,6 @@ def resend_verification_email():
 
         send_email(subject, [email], html, mail)
         flash("Verification email resent. Please check your inbox.", "info")
-
-        """
-        msg = Message(subject, recipients=[email], html=html)
-
-            mail.send(msg)
-            flash("Verification email resent. Please check your inbox.", "info")
-        except SMTPAuthenticationError:
-            flash("Email sending failed due to SMTP Authentication error.", "danger")
-        except Exception as e:
-            flash(f"Email sending failed: {e}", "danger")
-            """
 
     else:
         flash("Invalid email address.", "danger")
@@ -357,22 +328,6 @@ def send_password_reset_email(email):
     send_email(subject, [email], html, mail)
     flash("Check your email for the password reset link.", "info")
 
-    """
-    msg = Message(subject, recipients=[email], html=html)
-
-    try:
-        mail.send(msg)
-        flash("Check your email for the password reset link.", "info")
-        return render_template("login.html")
-    except SMTPAuthenticationError:
-        app.logger.error("SMTP Authentication failed")
-        flash("Email sending failed due to SMTP Authentication error.", "danger")
-        return render_template("login.html")
-    except Exception as e:
-        app.logger.error("Email sending failed: %s", e)
-        flash(f"Email sending failed: {e}", "danger")
-    """
-
     return render_template("login.html")
 
 # Route for actually resetting the password
@@ -432,26 +387,23 @@ def logout():
 def add_pet():
     """Users can add their pets once logged in"""
     if request.method == "GET":
-        return render_template("add_pet.html")
-
-    pet_type = request.form.get("pet_type")
-    pet_name = request.form.get("pet_name")
-    pet_photo = request.form.get("pet_photo")
-    breed = request.form.get("breed")
-    pet_dob = request.form.get("pet_dob")
-    vaccination = request.form.get("vaccination")
-    tracker = request.form.get("tracker")
-    insurance = request.form.get("insurance")
+        breeds = get_sorted_breeds()
+        return render_template("add_pet.html", breeds=breeds)
 
     if request.method == "POST":
+        pet_type = request.form.get("pet_type")
+        pet_name = request.form.get("pet_name")
+        pet_photo = request.files.get("pet_photo")
+        breed = request.form.get("breeds")
+        pet_dob = request.form.get("pet_dob")
+        tracker = request.form.get("tracker")
 
-        pet_photo = request.files.get("petPhoto")
+        # Ensure a photo was uploaded
         photo_path = save_pet_photo(pet_photo) if pet_photo else None
 
+        user_id = int(session["user_id"])
 
-# Add pet information to the database
-# You'll need a function in your database.py to insert pet data
-# insert_pet_data(user_id, pet_type, pet_name, photo_path, breed, dob, vaccination, tracker, insurance)
+        insert_pet_data(user_id, pet_type, pet_name, photo_path, breed, pet_dob, tracker)
 
         flash("Your pet has been added!", "success")
         return redirect(url_for('index'))

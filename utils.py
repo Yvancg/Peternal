@@ -1,7 +1,10 @@
 from werkzeug.utils import secure_filename
 import os
-from flask_mail import Mail, Message
+import requests
+import csv
+from flask_mail import Message
 from smtplib import SMTPAuthenticationError
+from io import StringIO
 
 # Process photo upload
 def save_pet_photo(pet_photo):
@@ -32,10 +35,13 @@ def send_email(subject, recipients, html, mail):
     except Exception as e:
         return False, f"Email sending failed: {e}"
 
-"""
-        app.logger.error("SMTP Authentication failed")
-        flash("Email sending failed due to SMTP Authentication error.", "danger")
-    except Exception as e:
-        app.logger.error(f"Email sending failed: {e}")
-        flash(f"Email sending failed: {e}", "danger")
-"""
+# Import dog breeds
+def get_sorted_breeds():
+    """Importing and sorting all dog breeds from Github"""
+    breeds_url = "https://raw.githubusercontent.com/paiv/fci-breeds/main/fci-breeds.csv"
+    response = requests.get(breeds_url)
+    response.raise_for_status()
+
+    file_like_object = StringIO(response.text)
+    reader = csv.DictReader(file_like_object)
+    return sorted(row['name'].title() for row in reader)
