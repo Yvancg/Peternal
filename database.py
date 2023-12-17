@@ -52,10 +52,10 @@ def create_user(username, email, password_hash):
                 (username, email, password_hash,)
             )
             conn.commit()
-    except sqlite3.IntegrityError:
+            return True
+    except sqlite3.IntegrityError as e:
         logging.error("Database error occurred: %s", e)
-        return False
-    return True
+        raise ValueError("Username or email already exists") from e
 
 def verify_user(email):
     """ Email verification for new registration """
@@ -98,7 +98,7 @@ def insert_pet_data(user_id, pet_type, pet_name, photo_path, breed, pet_dob, tra
             VALUES (?, ?, ?, ?, ?, ?, ?)
             ''', (user_id, pet_type, pet_name, photo_path, breed, pet_dob, tracker))
             conn.commit()
+            return True
     except sqlite3.DatabaseError as e:
         logging.error("Database error occurred: %s", e)
-        return False
-    return True
+        raise ValueError("Database error occurred") from e
