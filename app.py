@@ -43,7 +43,10 @@ from database import (get_username_email, verify_user, update_password,
 from utils import save_pet_photo, send_email, get_sorted_breeds
 
 load_dotenv()
-logging.basicConfig(level=logging.DEBUG)
+
+# Configure logging messages
+logging.basicConfig(level=logging.INFO,
+                    format='%(asctime)s - %(levelname)s - %(message)s')
 
 # Configure application
 app = Flask(__name__)
@@ -140,6 +143,7 @@ def register():
 
     else:
         flash("Unexpected error occurred. Please try again.", "danger")
+        logging.error("Unexpected error: %s", e)
 
     # Return with show_resend_link as False if any validation fails
     return render_template("register.html", show_resend_link=False)
@@ -167,6 +171,7 @@ def confirm_email(token, expiration=3600):
         email = s.loads(token, salt='MAIL_CONFIRM_SALT', max_age=expiration)
     except SignatureExpired:
         flash("The confirmation link has expired", "danger")
+        logging.error("Confirmation link expired: %s", e)
         return redirect(url_for('register'))
 
     # Update the user's status in the database to mark the email as confirmed
@@ -180,6 +185,7 @@ def confirm_email(token, expiration=3600):
 
     else:
         flash("Email verification failed. Please try registering again.", "danger")
+        logging.error("Email verification failure: %s", e)
         return redirect(url_for('register'))
 
 # Route for resending the verification
@@ -338,6 +344,7 @@ def reset_password(token):
         email = s.loads(token, salt='PASSWORD_RESET_SALT', max_age=3600)
     except SignatureExpired:
         flash("The password reset link has expired.", "danger")
+        logging.error("Reset link expired: %s", e)
         return render_template("request_password_reset.html")
 
     if request.method == "GET":
