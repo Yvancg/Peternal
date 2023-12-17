@@ -2,6 +2,7 @@ from werkzeug.utils import secure_filename
 import os
 import requests
 import csv
+from flask import request
 from flask_mail import Message
 from smtplib import SMTPAuthenticationError
 from io import StringIO
@@ -12,16 +13,27 @@ def save_pet_photo(pet_photo):
     if pet_photo.filename == '':
         return None
 
-    filename = secure_filename(pet_photo.filename)
-    photo_path = os.path.join('static/pet_photos', filename)
+    try:
+        filename = secure_filename(pet_photo.filename)
+        photo_path = os.path.join('static/pet_photos', filename)
 
-    # Ensure the directory exists
-    os.makedirs(os.path.dirname(photo_path), exist_ok=True)
+        # Ensure the directory exists
+        os.makedirs(os.path.dirname(photo_path), exist_ok=True)
 
-    # Save the file
-    pet_photo.save(photo_path)
+        pet_photo = request.files.get('pet_photo')
+        max_size = 5 * 1024 * 1024  # 5MB
 
-    return photo_path
+        if pet_photo and len(pet_photo.read()) > max_size:
+            raise ValueError("The file is too large. Please select a file smaller than 5MB.")
+
+        pet_photo.seek(0)  # Reset file read pointer after checking size
+
+        # Save the file
+        pet_photo.save(photo_path)
+
+        return photo_path
+    except IOError as e:
+        raise ValueError("Failed to save pet photo")
 
 # Generic email sending function
 def send_email(subject, recipients, html, mail):
