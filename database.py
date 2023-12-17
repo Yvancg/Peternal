@@ -2,7 +2,7 @@
 import sqlite3
 import logging
 
-DATABASE = "pets.db"
+DATABASE = "petlife.db"
 
 def get_db_connection():
     """ Centralize the connection logic to the DB """

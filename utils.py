@@ -1,11 +1,16 @@
-""" Utilites to support the app.py """
-from werkzeug.utils import secure_filename
+""" Utilities to support the app.py. 
+The functions are:
+    save_pet_photo
+    send_email
+    get_sorted_breeds
+"""
 import os
 import csv
-import requests
-from flask_mail import Message
 from smtplib import SMTPAuthenticationError
 from io import StringIO
+from werkzeug.utils import secure_filename
+import requests
+from flask_mail import Message
 
 # Process photo upload
 def save_pet_photo(pet_photo):
@@ -36,7 +41,7 @@ def send_email(subject, recipients, html, mail):
     except SMTPAuthenticationError as e:
         raise ValueError("SMTP Authentication failed") from e
     except Exception as e:
-        raise ValueError("Email sending failed: %s") from e
+        raise ValueError("Email sending failed: {{e}}") from e
     return True  # Indicates successful email sending
 
 # Import dog breeds
