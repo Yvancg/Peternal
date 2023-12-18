@@ -38,7 +38,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
 from database import (get_username_email, verify_user, update_password,
-                      get_password, user_status, insert_pet_data,
+                      get_password, user_status, insert_pet_data, get_pets,
                       get_user_id_by_email, check_user_exists)
 from utils import save_pet_photo, send_email, get_sorted_breeds
 
@@ -71,9 +71,14 @@ def after_request(response):
 @login_required
 def index():
     """Show pets owned"""
-    user_id = int(session["user_id"])
-    pets = None
-    pets = get_pets(user_id)
+    user_id = session["user_id"]
+    try:
+        pets = get_pets(user_id)
+    except ValueError as e:
+        flash(str(e), 'danger')
+        logging.error("Error fetching pets: %s", e)
+        pets = []  # Default to an empty list in case of an error
+
     return render_template("index.html", pets=pets)
 
 # Route for user registration

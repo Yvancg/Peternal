@@ -1,4 +1,17 @@
-""" Data Access Layer """
+""" Data Access Layer 
+Functions used:
+    get_db_connection
+    get_username_email
+    get_user_id_by_email
+    check_user_exists
+    create_user
+    verify_user
+    get_password
+    update_password
+    user_status
+    insert_pet_data
+    get_pets
+"""
 import sqlite3
 import logging
 
@@ -102,3 +115,15 @@ def insert_pet_data(user_id, pet_type, pet_name, photo_path, breed, pet_dob, tra
     except sqlite3.DatabaseError as e:
         logging.error("Database error occurred: %s", e)
         raise ValueError("Database error occurred") from e
+
+def get_pets(user_id):
+    """Retrieve pets for a given user."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("SELECT * FROM pets WHERE user_id = ?", (user_id,))
+            pets = cursor.fetchall()
+            return pets
+    except sqlite3.DatabaseError as e:
+        logging.error("Database error when fetching pets: %s", e)
+        raise ValueError("Database error when fetching pets") from e

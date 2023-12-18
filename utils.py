@@ -14,19 +14,22 @@ from flask_mail import Message
 
 # Process photo upload
 def save_pet_photo(pet_photo):
-    """Function to save the pet photo in a specific dir"""
+    """Function to save the pet photo in a specific dir."""
     if pet_photo.filename == '':
         return None
 
     try:
         filename = secure_filename(pet_photo.filename)
-        photo_path = os.path.join('static/pet_photos', filename)
+        full_photo_path = os.path.join('static/pet_photos', filename)  # Full path for saving
 
         # Ensure the directory exists
-        os.makedirs(os.path.dirname(photo_path), exist_ok=True)
+        os.makedirs(os.path.dirname(full_photo_path), exist_ok=True)
 
         # Save the file
-        pet_photo.save(photo_path)
+        pet_photo.save(full_photo_path)
+
+        # Remove 'static/' from the path before returning
+        photo_path = full_photo_path.replace('static/', '', 1)
 
         return photo_path
     except IOError as e:

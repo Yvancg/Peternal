@@ -1,24 +1,36 @@
-@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
+/**
+ * Table of Contents
+ * -----------------
+ * 1. General Settings
+ * 2. Variables
+ * 3. Base Styles
+ * 4. Layout Components
+ *    4.1. Main Layout
+ *    4.2. Navigation Bar
+ *    4.3. Footer
+ * 5. Components
+ *    5.1. Buttons
+ *    5.2. Forms
+ *    5.3. Alerts
+ *    5.4. Tables
+ *    5.5. Progress Bar
+ *    5.6. Spinner
+ *    5.7. Tooltip
+ * 6. Utilities
+ * 7. Media Queries
+ * 8. Specific Pages
+ *    8.1. Index Page
+ */
 
-/* Prep the code to use the full size of the viewport */
+/* 1. General Settings */
+@import url('https://fonts.googleapis.com/css2?family=Poppins&display=swap');
 html, body {
-    height: 100vh;
-    width: 100vw;
+    height: 100%;
+    width: 100%;
     margin: 0;
 }
 
-main {
-    flex: 1;
-}
-
-.full-height-container {
-    display: flex;
-    align-items: center;
-    height: 100%;
-    padding-bottom: 50px; /* counters the 50px we blocked at the top for the flash messages */
-}
-
-/* Overall color scheme */
+/* 2. Variables */
 :root {
     --main-color: #647C90;
     --light-color: #E2DED0;
@@ -28,7 +40,7 @@ main {
     --link-color: #DAA520;
 }
 
-/* Base look and feel + change body to a flex container */
+/* 3. Base Styles */
 body {
     background-color: var(--main-color);
     color: var(--light-color);
@@ -40,23 +52,45 @@ body {
     line-height: 1.6;
 }
 
-/* Big bold text */
-.headline {
-    font-size: 3rem;
-    font-weight: bolder;
-    text-align: center;
-    vertical-align: middle;
+a {
+    color: var(--link-color);
+    text-decoration: none;
+    padding-left: 5px;
+    padding-right: 5px;
 }
 
-/* Logo */
-.logo-image {
-    height: auto;
-    margin-bottom: 15px;
-    max-width: 100%;
-    width: 20%; 
+a:hover {
+    border: 1px solid transparent; /* To compensate the shift from focus */
+    color: var(--accent-color);
+    opacity: 0.7;
 }
 
-/* Styling for navigation */
+/* double check this */
+a:active {
+    color: var(--highlight-color);
+}
+
+a:focus {
+    outline: none;
+    border: 2px solid var(--highlight-color);
+    padding-left: 3px; /* To compensate the shift from focus */
+    padding-right: 3px;
+}
+
+/* 4. Layout Components */
+/* 4.1. Main Layout */
+main {
+    flex: 1;
+}
+
+.full-height-container {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    padding-bottom: 50px; /* counters the 50px we blocked at the top for the flash messages */
+}
+
+/* 4.2. Navigation Bar */
 .navbar {
     background-color: var(--dark-color);
     color: var(--light-color);
@@ -64,7 +98,7 @@ body {
     padding-right: 2rem;
 }
 
-nav .navbar-brand {
+.navbar-brand {
     border: none;
     color: var(--light-color);
     font-size: xx-large;
@@ -106,142 +140,14 @@ nav .navbar-brand {
     color: var(--main-color);
 }
 
-/* Link style */
-a {
-    color: var(--link-color);
-    padding-left: 5px;
-    padding-right: 5px;
-    text-decoration: none;
-}
-
-a:hover {
-    border: 1px solid transparent; /* To compensate the shift from focus */
-    color: var(--accent-color);
-    opacity: 0.7;
-}
-
-a:active {
-    color: var(--highlight-color);
-}
-
-a:focus {
-    border: 2px solid var(--highlight-color);
-    outline: none;
-    padding-left: 3px; /* To compensate the shift from focus */
-    padding-right: 3px;
-}
-
+/* 4.3. Footer */
 .bg-footer {
     background-color: var(--light-color);
     color: var(--dark-color);
 }
 
-/* blocking a space for alerts to avoid layout shifts */
-header {
-    min-height: 50px; 
-    position: relative;
-}
-
-.alert-container {
-    display: none;
-    left: 0;
-    position: absolute;
-    top: 0;
-    width: 100%;
-}
-
-.alert-container.active {
-    display: block; /* Show when there are messages */
-}
-
-/* Styling for tables */
-.myTable {
-    margin-left: auto;
-    margin-right: auto;
-    width: 90%;
-}
-
-.myTable tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-/* Error styling for the input fields */
-.alerts {
-    color: red !important;
-}
-
-.error-border {
-    border: 4px solid red !important;
-    z-index: 5;
-}
-
-/* Custom Tooltip Styles */
-.custom-tooltip {
-    --bs-tooltip-arrow-color: var(--dark-color);
-    --bs-tooltip-arrow-height: 0.8rem;
-    --bs-tooltip-arrow-width: 1.2rem;
-    --bs-tooltip-bg: var(--dark-color);
-    --bs-tooltip-color: whitesmoke;
-    --bs-tooltip-max-width: 300px;
-    --bs-tooltip-opacity: 0.9;
-    --bs-tooltip-padding: 20px;
-}
-
-/* Focus color */
-.form-control {
-    border: 2px solid transparent; /* To compensate the shift from focus */
-}
-
-.form-control:focus {
-    border: 2px solid var(--light-color);
-    z-index: 1;
-}
-
-input[type="checkbox"] {
-    outline: 1px solid transparent; /* To compensate the shift from focus */
-}
-
-input[type="checkbox"]:active {
-    background-color: var(--light-color);
-}
-
-input[type="checkbox"]:focus {
-    outline: 1px solid var(--light-color);
-}
-
-/* Progress bar */
-.progress {
-    height: 3px;
-    margin-top: -3px; /* Moves the bar inside the password field */
-    max-width: 294px;
-}
-
-.progress-bar {
-    width: 0%;
-}
-
-.progress-top {
-    position: relative;
-    z-index: 10;
-}
-
-.bg-red {
-    background-color: red;
-}
-
-.bg-orange {
-    background-color: orangered;
-}
-
-.bg-yellow {
-    background-color: orange;
-}
-
-.bg-green {
-    background-color: yellowgreen;
-}
-
-/* Button for forms */
+/* 5. Components */
+/* 5.1. Buttons */
 .btn-fit {
     background-color: var(--dark-color);
     border: 2px solid transparent;
@@ -278,10 +184,178 @@ input[type="checkbox"]:focus {
     padding: 10px 20px;
 }
 
-/* Style for when the checkbox is checked */
+/* 5.2. Forms */
+.form-control {
+    border: 2px solid transparent; /* To compensate the shift from focus */
+}
+
+.form-control:focus {
+    border: 2px solid var(--light-color);
+    z-index: 1;
+}
+
+input[type="checkbox"] {
+    outline: 1px solid transparent; /* To compensate the shift from focus */
+}
+
+input[type="checkbox"]:active {
+    background-color: var(--light-color);
+}
+
+input[type="checkbox"]:focus {
+    outline: 1px solid var(--light-color);
+}
+
 .checkbox-container input:checked ~ .checkmark {
     background-color: var(--main-color);
   }
+
+/* 5.3. Alerts */
+.alert-container {
+    display: none;
+    left: 0;
+    position: absolute;
+    top: 0;
+    width: 100%;
+}
+
+.alert-container.active {
+    display: block; /* Show when there are messages */
+}
+
+/* 5.4. Tables */
+.myTable {
+    margin-left: auto;
+    margin-right: auto;
+    width: 90%;
+}
+
+.myTable tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+/* 5.5. Progress Bar */
+.progress {
+    height: 3px;
+    margin-top: -3px; /* Moves the bar inside the password field */
+    max-width: 294px;
+}
+
+.progress-bar {
+    width: 0%;
+}
+
+.progress-top {
+    position: relative;
+    z-index: 10;
+}
+
+.bg-red {
+    background-color: red;
+}
+
+.bg-orange {
+    background-color: orangered;
+}
+
+.bg-yellow {
+    background-color: orange;
+}
+
+.bg-green {
+    background-color: yellowgreen;
+}
+
+/* 5.6. Spinner */
+.spinner-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 60px;
+    width: 100%;
+}
+
+.spinner-border {
+    height: 2rem;
+    width: 2rem;
+}
+
+/* 5.7. Tooltip */
+.custom-tooltip {
+    --bs-tooltip-arrow-color: var(--dark-color);
+    --bs-tooltip-arrow-height: 0.8rem;
+    --bs-tooltip-arrow-width: 1.2rem;
+    --bs-tooltip-bg: var(--dark-color);
+    --bs-tooltip-color: whitesmoke;
+    --bs-tooltip-max-width: 300px;
+    --bs-tooltip-opacity: 0.9;
+    --bs-tooltip-padding: 20px;
+}
+
+/* 6. Utilities */
+/* Custom utility classes here */
+
+/* 7. Media Queries */
+@media (min-width: 768px) {
+    .col-md-9 {
+        overflow-y: auto;
+        max-height: 100vh;
+    }
+}
+
+/* 8. Specific Pages */
+/* 8.1. Index Page */
+.fixed-column {
+    position: sticky;
+    top: 0;
+}
+
+.h-100 {
+    height: 100%;
+}
+
+.card .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.card.h-100 {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Error styling for the input fields */
+.alerts {
+    color: red;
+}
+
+.error-border {
+    border: 4px solid red;
+    z-index: 5;
+}
+
+/* Logo */
+.logo-image {
+    height: auto;
+    margin-bottom: 15px;
+    max-width: 100%;
+    width: 20%; 
+}
+
+/* Big bold text */
+.headline {
+    font-size: 3rem;
+    font-weight: bolder;
+    text-align: center;
+    vertical-align: middle;
+}
+
+/* blocking a space for alerts to avoid layout shifts */
+header {
+    min-height: 50px; 
+    position: relative;
+}
 
 /* Width of form input */
 .w-fixed {
@@ -297,20 +371,6 @@ input[type="checkbox"]:focus {
 .login-link {
     margin-top: 20px;
     text-align: center;
-}
-
-/* Spinner container with fixed dimensions */
-.spinner-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 60px;
-    width: 100%;
-}
-
-.spinner-border {
-    height: 2rem;
-    height: 2rem;
 }
 
 /* Gradient background */
