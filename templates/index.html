@@ -8,39 +8,39 @@
 <div class="container-fluid h-100 mb-4 mr-4 ml-4 mb-md-5 mr-md-5 ml-md-5">
     <div class="row h-100 align-items-center">
         <!-- Fixed Text Column -->
-        <div class="col-md-3">
-            <div class="fixed-column d-flex align-items-center h-100">
-                <!-- Your static text content goes here -->
-                <p>Some fixed text...</p>
+        <div class="col-md-3 col-12">
+            <div class="fixed-column align-items-center h-100">
+                <!-- Static text content goes here -->
+                <h1>My Pets</h1>
+                <br>
+                <h2>Keep track of your pets in an elegant way.</h2>
+                <br>
             </div>
         </div>
 
         <!-- Pet Cards Column -->
-        <div class="col-md-9">
+        <div class="col-md-9 col-12">
             <div class="row">
                 <!-- Loop through pets and create cards -->
 
                 {% for pet in pets %}
-                    <div class="col-md-4 col-sm-6 mb-4">
+                <div class="col-lg-4 col-md-6 col-12 mb-4">
                         <div class="card h-100">
                             <!-- Use the photo path from the pet data -->
                             <img src="{{ url_for('static', filename=pet.photo_path) }}" class="card-img-top" alt="{{ pet.pet_name }}">
+                            <i class="bi bi-pencil-square edit-photo-icon" onclick="editPhoto(petId)"></i>
                             <div class="card-body">
                                 <h4 class="card-title">{{ pet.pet_name }}</h4>
+                                <br>
                                 <!-- Add more pet details here if needed -->
                                 <p class="card-text">Breed: {{ pet.breed }}</p>
-                                <p class="card-text">Date of Birth: {{ pet.dob }}</p>
-                                <p class="card-text">Tracker: {{ pet.tracker }}</p>
+                                <p class="card-text">Date of Birth: {{ pet.pet_dob }}</p>
+                                <p class="card-text">Tracker: {{ pet.tracker }} 
+                                <i class="bi bi-pencil-square edit-tracker-icon" onclick="editTracker(petId)"></i></p>
                                 <a href="#" class="btn btn-fit">Go somewhere</a>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Add a new row for every three pets -->
-                    {% if loop.index % 3 == 0 and not loop.last %}
-                        </div><div class="row">
-                    {% endif %}
-
                 {% endfor %}
             </div>
         </div>

@@ -10,7 +10,9 @@
         <!-- https://getbootstrap.com/docs/5.3/ -->
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
         <!-- https://select2.org/ -->
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet" />
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/css/select2.min.css" rel="stylesheet">
+        <!-- Bootstrap icons -->
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.7.2/font/bootstrap-icons.css" rel="stylesheet">
         <!-- https://favicon.io/emoji-favicons/hollow-red-circle -->
         <link href="/static/favicon.ico" rel="icon">
 
@@ -31,17 +33,31 @@
                 <div class="collapse navbar-collapse" id="navbar">
                     {% if session["user_id"] %}
                         <ul class="navbar-nav nav-pills me-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/add_pet">Icon Add Pet</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/tracking">Icon Tracking</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/dating">Icon Dating</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/health">Icon Health</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/afterlife">Icon Afterlife</a></li>
-
+                            <li class="nav-item">
+                                <a class="nav-link" href="/add_pet" title="Add Pet"><i class="bi bi-plus-square-fill"></i></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/tracking" title="Tracking"><i class="bi bi-compass-fill"></i></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/dating" title="Dating"><i class="bi bi-heart-fill"></i></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/health" title="Health"><i class="bi bi-activity"></i></a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" href="/afterlife" title="Afterlife"><i class="bi bi-emoji-dizzy-fill"></i></a>
+                            </li>
                         </ul>
-                        <ul class="navbar-nav nav-pills ms-auto mt-2">
-                            <li class="nav-item"><a class="nav-link" href="/change">Change Password</a></li>
-                            <li class="nav-item"><a class="nav-link" href="/logout">Log Out</a></li>
-                        </ul>
+                        <div class="nav-item dropdown ms-auto mt-2">
+                            <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="bi bi-person-circle"></i>
+                            </a>
+                            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+                                <li><a class="dropdown-item" href="/change">Change Password</a></li>
+                                <li><a class="dropdown-item" href="/logout">Log Out</a></li>
+                            </ul>
+                        </div>
                     {% else %}
                         <ul class="navbar-nav nav-pills ms-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/register">Sign up</a></li>
