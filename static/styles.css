@@ -143,14 +143,30 @@ main {
 }
 
 .nav-user-icon {
+    border: 2px solid transparent; /* To compensate the shift from focus */
     color: var(--highlight-color);
     padding: 0.5rem;
 }
 
 .navbar a.nav-user-icon:hover {
     background-color: var(--light-color);
-    color: var(--dark-color);
     border-radius: 0.375rem;
+    color: var(--dark-color);
+}
+
+.navbar a.nav-user-icon:active {
+    background-color: var(--light-color);
+    border: 2px solid var(--highlight-color);
+    border-radius: 0.375rem;
+    color: var(--dark-color);
+    padding: 0.5rem;
+}
+.navbar a.nav-user-icon:focus {
+    background-color: var(--light-color);
+    border-radius: 0.375rem;
+    border: 2px solid var(--highlight-color);
+    color: var(--dark-color);
+    padding: 0.5rem;
 }
 
 /* 4.3. Footer */
