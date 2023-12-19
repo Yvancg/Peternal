@@ -157,6 +157,7 @@ main {
 .bg-footer {
     background-color: var(--light-color);
     color: var(--dark-color);
+    padding-top: 50px;
 }
 
 /* 5. Components */
@@ -295,11 +296,11 @@ input[type="checkbox"]:focus {
 
 /* 5.7. Tooltip */
 .custom-tooltip {
-    --bs-tooltip-arrow-color: var(--dark-color);
+    --bs-tooltip-arrow-color: var(--light-color);
     --bs-tooltip-arrow-height: 0.8rem;
     --bs-tooltip-arrow-width: 1.2rem;
-    --bs-tooltip-bg: var(--dark-color);
-    --bs-tooltip-color: whitesmoke;
+    --bs-tooltip-bg: var(--light-color);
+    --bs-tooltip-color: var(--dark-color);
     --bs-tooltip-max-width: 300px;
     --bs-tooltip-opacity: 0.9;
     --bs-tooltip-padding: 20px;
