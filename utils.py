@@ -61,3 +61,12 @@ def get_sorted_breeds():
     except requests.RequestException as e:
         # Handle network errors
         raise ValueError("Failed to fetch breeds data from GitHub") from e
+
+# Sanitize inputs
+def sanitize_email(email):
+    """ Sanitize emails """
+    return email.strip().lower()
+
+def sanitize_username(username):
+    """ Sanitize usernames """
+    return username.strip()

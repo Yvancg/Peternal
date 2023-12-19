@@ -40,7 +40,7 @@ from auth import is_valid_email, login_required, register_user, is_password_stro
 from database import (get_username_email, verify_user, update_password,
                       get_password, user_status, insert_pet_data, get_pets,
                       get_user_id_by_email, check_user_exists)
-from utils import save_pet_photo, send_email, get_sorted_breeds
+from utils import save_pet_photo, send_email, get_sorted_breeds, sanitize_email, sanitize_username
 
 load_dotenv()
 
@@ -89,8 +89,8 @@ def register():
     if request.method == "GET":
         return render_template("register.html")
 
-    username = request.form.get("username")
-    email = request.form.get("email")
+    username = sanitize_username(request.form.get("username"))
+    email = sanitize_email(request.form.get("email"))
     password = request.form.get("password")
     confirmation = request.form.get("confirmation")
 
@@ -205,7 +205,7 @@ def confirm_email(token, expiration=3600):
 @app.route("/resend_verification_email", methods=["POST"])
 def resend_verification_email():
     """Route to resend verification email."""
-    email = request.form.get("email")
+    email = sanitize_email(request.form.get("email"))
     if email and is_valid_email(email):
         # Resend email logic
         token = s.dumps(email, salt='MAIL_CONFIRM_SALT')
@@ -418,6 +418,7 @@ def add_pet():
     if request.method == "POST":
         pet_type = request.form.get("pet_type")
         pet_name = request.form.get("pet_name")
+        pet_sex = request.form.get("pet_sex")
         pet_photo = request.files.get("pet_photo")
         breed = request.form.get("breeds")
         pet_dob = request.form.get("pet_dob")
@@ -436,7 +437,7 @@ def add_pet():
             photo_path = save_pet_photo(pet_photo)
             user_id = int(session["user_id"])
 
-            if not insert_pet_data(user_id, pet_type, pet_name, photo_path, breed, pet_dob, tracker):
+            if not insert_pet_data(user_id, pet_type, pet_name, pet_sex, photo_path, breed, pet_dob, tracker):
                 raise ValueError("Failed to add pet data to the database.")
             flash("Your pet has been added!", "success")
             return redirect(url_for('index'))
