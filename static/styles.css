@@ -79,6 +79,20 @@ a:focus {
     padding-right: 3px;
 }
 
+.logo-image {
+    height: auto;
+    margin-bottom: 15px;
+    max-width: 100%;
+    width: 20%;
+}
+
+.headline {
+    font-size: 3rem;
+    font-weight: bolder; /* Big bold text */
+    text-align: center;
+    vertical-align: middle;
+}
+
 /* 4. Layout Components */
 /* 4.1. Main Layout */
 main {
@@ -241,11 +255,30 @@ input[type="checkbox"]:focus {
     outline: 1px solid var(--light-color);
 }
 
+.w-fixed {
+    max-width: 300px; /* Width of form input */
+}
+
+.label-width {
+    width: 130px;
+    background-color: var(--light-color);
+}
+
 .checkbox-container input:checked ~ .checkmark {
     background-color: var(--main-color);
 }
 
 /* 5.3. Alerts */
+header {
+    min-height: 50px; /* blocking a space for alerts to avoid layout shifts */
+    position: relative;
+    z-index: 0;
+}
+
+.alerts {
+    color: red;
+}
+
 .alert-container {
     visibility: hidden;
     opacity: 0;
@@ -259,6 +292,11 @@ input[type="checkbox"]:focus {
 .alert-container.active {
     visibility: visible; /* Show */
     opacity: 1; /* Make fully visible */
+}
+
+.error-border {
+    border: 4px solid red; /* Error styling for the input fields */
+    z-index: 5;
 }
 
 /* 5.4. Tables */
@@ -376,49 +414,6 @@ input[type="checkbox"]:focus {
     position: absolute;
     top: 10px;
     right: 10px;
-}
-
-/* Error styling for the input fields */
-.alerts {
-    color: red;
-}
-
-.error-border {
-    border: 4px solid red;
-    z-index: 5;
-}
-
-/* Logo */
-.logo-image {
-    height: auto;
-    margin-bottom: 15px;
-    max-width: 100%;
-    width: 20%; 
-}
-
-/* Big bold text */
-.headline {
-    font-size: 3rem;
-    font-weight: bolder;
-    text-align: center;
-    vertical-align: middle;
-}
-
-/* blocking a space for alerts to avoid layout shifts */
-header {
-    min-height: 50px; 
-    position: relative;
-    z-index: 0;
-}
-
-/* Width of form input */
-.w-fixed {
-    max-width: 300px;
-}
-
-.label-width {
-    width: 130px;
-    background-color: var(--light-color);
 }
 
 /* 8.2 Login/register page */
