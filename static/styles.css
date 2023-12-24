@@ -275,7 +275,7 @@ input[type="checkbox"]:focus {
 /* 5.5. Progress Bar */
 .progress {
     height: 3px;
-    margin-top: -3px; /* Moves the bar inside the password field */
+    margin-top: -12px; /* Moves the bar inside the password field */
     max-width: 294px;
 }
 
