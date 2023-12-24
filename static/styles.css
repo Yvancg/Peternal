@@ -20,6 +20,7 @@
  * 7. Media Queries
  * 8. Specific Pages
  *    8.1. Index Page
+ *    8.2. Login/register Page
  */
 
 /* 1. General Settings */
@@ -176,6 +177,10 @@ main {
     padding-top: 50px;
 }
 
+.footer-container {
+    border: 0px transparent;
+}
+
 /* 5. Components */
 /* 5.1. Buttons */
 .btn-fit {
@@ -238,19 +243,22 @@ input[type="checkbox"]:focus {
 
 .checkbox-container input:checked ~ .checkmark {
     background-color: var(--main-color);
-  }
+}
 
 /* 5.3. Alerts */
 .alert-container {
-    display: none;
-    left: 0;
-    position: absolute;
-    top: 0;
+    visibility: hidden;
+    opacity: 0;
     width: 100%;
+    transition: visibility 0s, opacity 0.5s linear;
+    position: absolute;
+    left: 0;
+    top: 0;
 }
 
 .alert-container.active {
-    display: block; /* Show when there are messages */
+    visibility: visible; /* Show */
+    opacity: 1; /* Make fully visible */
 }
 
 /* 5.4. Tables */
@@ -400,6 +408,7 @@ input[type="checkbox"]:focus {
 header {
     min-height: 50px; 
     position: relative;
+    z-index: 0;
 }
 
 /* Width of form input */
@@ -412,27 +421,12 @@ header {
     background-color: var(--light-color);
 }
 
-/* Login link on registration page styling */
-.login-link {
-    margin-top: 20px;
-    text-align: center;
-}
-
-/* Gradient background */
-.grad {
-    background-image: linear-gradient(var(--main-color), var(--light-color));
-}
-
-
-
-
-/* Toggle login 
-
-
-.container{
-    background-color: #fff;
+/* 8.2 Login/register page */
+.container {
+    background-color: var(--light-color);
     border-radius: 30px;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    color: var(--dark-color);
     position: relative;
     overflow: hidden;
     width: 768px;
@@ -440,27 +434,30 @@ header {
     min-height: 480px;
 }
 
-.container p{
-    font-size: 14px;
+.container p {
+    font-size: 16px;
     line-height: 20px;
     letter-spacing: 0.3px;
     margin: 20px 0;
 }
 
-.container span{
+.container span {
     font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0.3px;
+    margin: 14px 0;
 }
 
-.container a{
-    color: #333;
+.container a {
+    color: var(--main-color);
     font-size: 13px;
     text-decoration: none;
     margin: 15px 0 10px;
 }
 
-.container button{
-    background-color: #512da8;
-    color: #fff;
+.container button {
+    background-color: var(--main-color);
+    color: var(--light-color);
     font-size: 12px;
     padding: 10px 45px;
     border: 1px solid transparent;
@@ -472,13 +469,13 @@ header {
     cursor: pointer;
 }
 
-.container button.hidden{
+.container button.hidden {
     background-color: transparent;
-    border-color: #fff;
+    border-color: var(--light-color);
 }
 
-.container form{
-    background-color: #fff;
+.container form {
+    background-color: var(--light-color);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -487,49 +484,60 @@ header {
     height: 100%;
 }
 
-.container input{
+.container input {
     background-color: #eee;
     border: none;
     margin: 8px 0;
-    padding: 10px 15px;
+    padding: 10px 20px;
+    color: var(--accent-color);
     font-size: 13px;
     border-radius: 8px;
     width: 100%;
     outline: none;
 }
 
-.form-container{
+.form-container {
     position: absolute;
     top: 0;
     height: 100%;
     transition: all 0.6s ease-in-out;
 }
 
-.sign-in{
+.tick-box span, .tick-box input, .tick-box label {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.tick-box {
+    display: flex;
+    align-items: center;
+}
+
+.log-in {
     left: 0;
     width: 50%;
     z-index: 2;
 }
 
-.container.active .sign-in{
+.container.active .log-in {
     transform: translateX(100%);
 }
 
-.sign-up{
+.register {
     left: 0;
     width: 50%;
     opacity: 0;
     z-index: 1;
 }
 
-.container.active .sign-up{
+.container.active .register {
     transform: translateX(100%);
     opacity: 1;
     z-index: 5;
     animation: move 0.6s;
 }
 
-@keyframes move{
+@keyframes move {
     0%, 49.99%{
         opacity: 0;
         z-index: 1;
@@ -540,22 +548,20 @@ header {
     }
 }
 
-.social-icons{
+.social-icons {
     margin: 20px 0;
 }
 
-.social-icons a{
-    border: 1px solid #ccc;
-    border-radius: 20%;
+.social-icons a {
     display: inline-flex;
     justify-content: center;
     align-items: center;
-    margin: 0 3px;
+    margin: 0 1px;
     width: 40px;
     height: 40px;
 }
 
-.toggle-container{
+.toggle-container {
     position: absolute;
     top: 0;
     left: 50%;
@@ -563,20 +569,20 @@ header {
     height: 100%;
     overflow: hidden;
     transition: all 0.6s ease-in-out;
-    border-radius: 150px 0 0 100px;
+    border-radius: 150px 30px 30px 100px;
     z-index: 1000;
 }
 
-.container.active .toggle-container{
+.container.active .toggle-container {
     transform: translateX(-100%);
-    border-radius: 0 150px 100px 0;
+    border-radius: 30px 150px 100px 30px;
 }
 
-.toggle{
-    background-color: #512da8;
+.toggle {
+    background-color: var(--main-color);
     height: 100%;
-    background: linear-gradient(to right, #5c6bc0, #512da8);
-    color: #fff;
+    background: linear-gradient(to right, var(--link-color), var(--main-color));
+    color: var(--light-color);
     position: relative;
     left: -100%;
     height: 100%;
@@ -585,11 +591,11 @@ header {
     transition: all 0.6s ease-in-out;
 }
 
-.container.active .toggle{
+.container.active .toggle {
     transform: translateX(50%);
 }
 
-.toggle-panel{
+.toggle-panel {
     position: absolute;
     width: 50%;
     height: 100%;
@@ -604,21 +610,19 @@ header {
     transition: all 0.6s ease-in-out;
 }
 
-.toggle-left{
+.toggle-left {
     transform: translateX(-200%);
 }
 
-.container.active .toggle-left{
+.container.active .toggle-left {
     transform: translateX(0);
 }
 
-.toggle-right{
+.toggle-right {
     right: 0;
     transform: translateX(0);
 }
 
-.container.active .toggle-right{
+.container.active .toggle-right {
     transform: translateX(200%);
 }
-
-*/

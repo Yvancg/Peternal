@@ -5,58 +5,130 @@
 {% endblock %}
 
 {% block main %}
-<div class="container full-height-container">
-    <div class="row d-flex align-items-center">
-        <!-- Left Column -->
-        <div class="col-md-8">
-            <div class="headline">
-                <img src="/static/peternal-logo.svg" alt="Peternal Logo" class="logo-image">
-                <br>
-                <p>
-                    Create fond memories of your beloved furry friend, from its birth until the afterlife.<br> 
-                </p>
+<div class="container" id="container">
+    <div class="form-container register">
+        <!-- Register toggle -->
+        <form action="/register" method="post">
+            <div class="social-icons">
+                <a href="#" class="icon"><i class="bi bi-google fs-4"></i></a>
+                <a href="#" class="icon"><i class="bi bi-facebook fs-4"></i></a>
+                <a href="#" class="icon"><i class="bi bi-github fs-4"></i></a>
+                <a href="#" class="icon"><i class="bi bi-linkedin fs-4"></i></a>
             </div>
-        </div>
-
-        <!-- Right Column (login form) -->
-        <div class="col-md-4 mx-auto">
-            <h1>Log in</h1>
-            <br>
-            <br>
-            <form action="/login" method="post">
-                <div class="mb-3">
-                    <input autocomplete="off" autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'email' }}" 
+            <span>or use your email to register:</span>
+            <div class="mb-1">
+                <input autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'username' }}" 
                     id="username" name="username" 
-                    placeholder="Username or Email" 
-                    type="text" 
-                    value="{{ username or '' }}">
-                </div>
-                <div class="mb-3">
-                    <input class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
+                    value="{{ username or '' }}" 
+                    placeholder="Username" 
+                    type="text">
+            </div>
+            <div class="mb-1">
+                <input class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'email' }}" 
+                    id="email" name="email" 
+                    value="{{ email or '' }}" 
+                    placeholder="Email" 
+                    type="email">
+            </div>
+            <div class="mb-1">
+                <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
                     id="password" name="password" 
+                    value="{{ password or '' }}" 
                     placeholder="Password" 
-                    type="password">
+                    type="password"
+                    data-bs-toggle="tooltip" 
+                    data-bs-placement="top"
+                    data-bs-custom-class="custom-tooltip"
+                    data-bs-html="true"
+                    title="Password requirements: minimum 8 characters, at least one digit, uppercase letter(s), lowercase letter(s), and special character(s).">
+                
+                <div class="progress mx-auto progress-top">
+                    <div class="progress-bar" 
+                        id="password-strength-bar" 
+                        role="progressbar" 
+                        aria-valuenow="0" 
+                        aria-valuemin="0" 
+                        aria-valuemax="100" 
+                        title="Progress">
+                    </div>
                 </div>
-                <div class="mb-3">
-                    <button class="btn btn-fit" type="submit">Log In</button>
-                </div>
-                {% if not show_reset_password %}
-                    <div class="mb-3 grey-color">
+            </div>
+            <div class="mb-1">
+                <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'confirmation' }}" 
+                id="confirmation" name="confirmation" 
+                value="{{ confirmation or '' }}" 
+                placeholder="Confirm Password" 
+                type="password">
+            </div>
+            <button class="btn btn-fit" type="submit">Register</button>
+        </form>
+    </div>
+    <!-- Login toggle -->
+    <div class="form-container log-in">
+        <form action="/login" method="post">
+            <div class="social-icons">
+                <a href="#" class="icon"><i class="bi bi-google fs-4"></i></a>
+                <a href="#" class="icon"><i class="bi bi-facebook fs-4"></i></a>
+                <a href="#" class="icon"><i class="bi bi-github fs-4"></i></a>
+                <a href="#" class="icon"><i class="bi bi-linkedin fs-4"></i></a>
+            </div>
+            <span>or use your email/username to login:</span>
+            <div class="mb-1">
+                <input autocomplete="off" autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'email' }}" 
+                id="username" name="username" 
+                placeholder="Username or Email" 
+                type="text" 
+                value="{{ username or '' }}">
+            </div>
+            <div class="mb-1">
+                <input class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
+                id="password" name="password" 
+                placeholder="Password" 
+                type="password">
+            </div>
+            <!-- Reveal checkbox remember session -->
+            {% if not show_reset_password %}
+                <div class="mb-1 tick-box">
+                    <span>
                         <input type="checkbox" name="remember" id="remember">
-                        <label for="remember">Remember me for 30 days<br>
-                        </label>
-                        <br>
-                        <br>
-                    </div>
-                {% endif %}
-                <!-- If flashed error, display the following -->
-                {% if show_reset_password %}
-                    <div class="mb-3">
-                        Forgot your password? <br>
-                        <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>
-                    </div>
-                {% endif %}
-            </form>
+                        <label for="remember">Remember me for 30 days</label>
+                    </span>
+                </div>
+            {% endif %}
+            <!-- If flashed error, display the following -->
+            {% if show_reset_password %}
+                <div class="mb-1">
+                    Forgot your password? <br>
+                    <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>
+                </div>
+            {% endif %}
+            <div class="mb-3">
+                <button class="btn btn-fit" type="submit">Log In</button>
+            </div>
+        </form>
+    </div>
+    <div class="toggle-container">
+        <div class="toggle">
+            <!-- Toggle panel login -->
+            <div class="toggle-panel toggle-left">
+                <h1>Hello, Pet Owner!</h1>
+                <p>Join millions of grieving pet owners and dead puppies 🐶😵, today!<br>
+                <br>
+                Already have an account?<br>
+                <i class="bi bi-arrow-down fs-3"></i>
+                </p>
+                <button class="hidden" id="login">Log In</button>
+            </div>
+            <!-- Toggle panel register -->
+            <div class="toggle-panel toggle-right">
+                <h1>Welcome Back!</h1>
+                <p>Create fond memories of your beloved furry friend, from its birth until the afterlife.<br>
+                <br>
+                Not yet registered?<br>
+                <i class="bi bi-arrow-down fs-3"></i>
+                </p>
+                <button class="hidden" id="register">Register</button>
+            </div>
         </div>
     </div>
 </div>

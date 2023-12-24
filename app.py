@@ -87,7 +87,7 @@ def register():
     """Register new users"""
     # Render the html
     if request.method == "GET":
-        return render_template("register.html")
+        return render_template("login.html")
 
     username = sanitize_username(request.form.get("username"))
     email = sanitize_email(request.form.get("email"))
@@ -97,37 +97,37 @@ def register():
     # Check for username
     if not username:
         flash("Username required.", "danger")
-        return render_template("register.html", error_field="username")
+        return render_template("login.html", error_field="username")
 
     # Check for email
     if not email:
         flash("Email required.", "danger")
-        return render_template("register.html", error_field="email")
+        return render_template("login.html", error_field="email")
 
     # Check for if email is valid
     if not is_valid_email(email):
         flash("Invalid email format.", "danger")
-        return render_template("register.html", error_field="email")
+        return render_template("login.html", error_field="email")
 
     # Check for password
     if not password:
         flash("Password required.", "danger")
-        return render_template("register.html", error_field="password")
+        return render_template("login.html", error_field="password")
 
     # Check password strength
     if not is_password_strong(password)[0]:
         flash(f"Password must {is_password_strong(password)[1]}", "danger")
-        return render_template("register.html", error_field="password")
+        return render_template("login.html", error_field="password")
 
     # Check for confirmation
     if not confirmation:
         flash("Password confirmation required.", "danger")
-        return render_template("register.html", error_field="confirmation")
+        return render_template("login.html", error_field="confirmation")
 
     # Check password matches confirmation
     if password != confirmation:
         flash("Confirmation doesn't match password.", "danger")
-        return render_template("register.html", error_field="confirmation")
+        return render_template("login.html", error_field="confirmation")
 
     # Check if username or email already exists
     existing_user = check_user_exists(username, email)
@@ -135,12 +135,12 @@ def register():
     if existing_user["email_exists"]:
         # Email already exists
         flash("Email already registered. Please login.", "info")
-        return render_template("login.html")
+        return redirect(url_for('login'))
 
     if existing_user["username_exists"]:
         # Username already exists
         flash("Username already taken.", "danger")
-        return render_template("register.html", error_field="username")
+        return render_template("login.html", error_field="username")
 
     try:
         # Attempt to register user
@@ -154,7 +154,7 @@ def register():
         logging.error("Unexpected registration error: %s", e)
 
     # Return with show_resend_link as False if any validation fails
-    return render_template("register.html", show_resend_link=False)
+    return render_template("login.html", show_resend_link=False)
 
 def send_confirmation_email(email):
     """Send a confirmation email to the user."""
@@ -174,7 +174,7 @@ def send_confirmation_email(email):
         logging.error("Failed to send confirmation email: %s", e)
 
     # Return with show_resend_link as True since user is registered but needs to verify email
-    return render_template("register.html", show_resend_link=True, email=email)
+    return render_template("login.html", show_resend_link=True, email=email)
 
 # Route for email confirmation
 @app.route("/confirm_email/<token>")
@@ -185,7 +185,7 @@ def confirm_email(token, expiration=3600):
     except SignatureExpired as e:
         flash("The confirmation link has expired", "danger")
         logging.error("Confirmation link expired: %s", e)
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
 
     # Update the user's status in the database to mark the email as confirmed
     verify_user(email)
@@ -199,7 +199,7 @@ def confirm_email(token, expiration=3600):
     else:
         flash("Email verification failed. Please try registering again.", "danger")
         logging.error("Email verification failure: %s", e)
-        return redirect(url_for('register'))
+        return redirect(url_for('login'))
 
 # Route for resending the verification
 @app.route("/resend_verification_email", methods=["POST"])
@@ -224,7 +224,7 @@ def resend_verification_email():
     else:
         flash("Email not valid.", "danger")
 
-    return redirect(url_for('register'))
+    return render_template("login.html")
 
 # Route for user login
 @app.route("/login", methods=["GET", "POST"])
@@ -276,7 +276,7 @@ def login():
 
             # Redirect user to home page
             flash("Login successful.", "success")
-            return render_template("index.html")
+            return redirect(url_for('index'))
         else:
             flash("Please verify your email first.", "danger")
             return render_template("login.html")

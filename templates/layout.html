@@ -59,10 +59,12 @@
                             </ul>
                         </div>
                     {% else %}
+                    <!-- deactivated
                         <ul class="navbar-nav nav-pills ms-auto mt-2">
                             <li class="nav-item"><a class="nav-link" href="/register">Sign up</a></li>
                             <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
-                        </ul>
+                        </ul> 
+                    -->
                     {% endif %}
                 </div>
             </div>
@@ -83,12 +85,12 @@
 
     
 
-        <main class="container-fluid text-center">
+        <main class="container-fluid d-flex align-items-center full-height-container">
             {% block main %}{% endblock %}
         </main>
 
-        <footer class="footer mt-auto py-3 bg-footer text-center text-muted fixed-bottom">
-            <div class="container">
+        <footer class="footer mt-auto py-3 bg-footer text-center text-muted">
+            <div class="footer-container">
                 <span class="text-body-secondary">
                     Data provided by <a href="https://froggystyle.biz/">Pets of the World</a>
                 </span>
