@@ -60,7 +60,7 @@
                 placeholder="Confirm Password" 
                 type="password">
             </div>
-            <button class="btn btn-fit" type="submit">Register</button>
+            <button class="button" type="submit">Register</button>
         </form>
     </div>
     <!-- Login toggle -->
@@ -74,7 +74,7 @@
             </div>
             <span>or use your email/username to login:</span>
             <div class="mb-1">
-                <input autocomplete="off" autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'email' }}" 
+                <input autocomplete="off" autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'username' }}" 
                 id="username" name="username" 
                 placeholder="Username or Email" 
                 type="text" 
@@ -88,22 +88,22 @@
             </div>
             <!-- Reveal checkbox remember session -->
             {% if not show_reset_password %}
-                <div class="mb-1 tick-box">
-                    <span>
-                        <input type="checkbox" name="remember" id="remember">
-                        <label for="remember">Remember me for 30 days</label>
-                    </span>
-                </div>
+            <div class="mb-1 tick-box">
+                <span><input type="checkbox" name="remember" id="remember">
+                Remember me for 30 days</span>
+            </div>
             {% endif %}
             <!-- If flashed error, display the following -->
             {% if show_reset_password %}
                 <div class="mb-1">
+                    <span>
                     Forgot your password? <br>
                     <a href="{{ url_for('request_password_reset') }}">Click here to reset!</a>
+                    </span>
                 </div>
             {% endif %}
             <div class="mb-3">
-                <button class="btn btn-fit" type="submit">Log In</button>
+                <button class="button" type="submit">Log In</button>
             </div>
         </form>
     </div>
@@ -114,6 +114,7 @@
                 <h1>Hello, Pet Owner!</h1>
                 <p>Join millions of grieving pet owners and dead puppies 🐶😵, today!<br>
                 <br>
+                <br>
                 Already have an account?<br>
                 <i class="bi bi-arrow-down fs-3"></i>
                 </p>
@@ -123,6 +124,7 @@
             <div class="toggle-panel toggle-right">
                 <h1>Welcome Back!</h1>
                 <p>Create fond memories of your beloved furry friend, from its birth until the afterlife.<br>
+                <br>
                 <br>
                 Not yet registered?<br>
                 <i class="bi bi-arrow-down fs-3"></i>
