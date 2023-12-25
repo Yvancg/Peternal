@@ -232,13 +232,13 @@ button:hover {
 }
 
 /* 5.2. Forms */
-.form-control, text area, select {
+.form-control, text, select {
     border: 2px solid transparent; /* To compensate the shift from focus */
     outline: none; /* Removes default outline */
 }
 
 .form-control:focus, 
-textarea:focus,
+text:focus,
 select:focus {
     border: 2px solid var(--highlight-color); /* Your custom border */
     box-shadow: 0 0 2px var(--highlight-color); /* Custom glow effect */
@@ -257,8 +257,8 @@ select:focus {
 .container input {
     background-color: #eee;
     border: 2px solid transparent;
-    margin: 6px 0;
     padding: 10px 20px;
+    margin-bottom: 4px;
     color: var(--accent-color);
     font-size: 13px;
     border-radius: 8px;
@@ -301,7 +301,7 @@ select:focus {
 
 /* 5.3. Alerts */
 header {
-    min-height: 50px; /* blocking a space for alerts to avoid layout shifts */
+    min-height: 100px; /* blocking a space for alerts to avoid layout shifts */
     position: relative;
     z-index: 0;
 }

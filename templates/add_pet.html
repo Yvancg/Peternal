@@ -5,45 +5,46 @@
 {% endblock %}
 
 {% block main %}
-<div class="container-fluid full-height-container grad">
-    <div class="row d-flex justify-content-center mx-auto width: 400px">
-        <!-- Form -->
-        <div>
-        <h1>Add Your Pet</h1><br>
-        <!-- Spinner, initially hidden -->
+<div class="container-fluid full-height-container">
+    <div class="row justify-content-center align-items-center mx-auto">
+        <span><h1 class="text-center">Add Your Pet</h1><br></span>
+        <!--
+        Spinner, initially hidden
         <div class="d-flex justify-content-center spinner-container" id="spinner-container">
             <div id="spinner" class="spinner-border m-3 visually-hidden" role="status">
             </div>
         </div>
-        
-        <form action="/add_pet" method="post" enctype="multipart/form-data">
-            <div class="mb-3 input-group">
+        -->
+        <!-- Form -->
+        <div class="container d-flex justify-content-center align-items-center">
+        <form action="/add_pet" method="post" enctype="multipart/form-data" class="align-items-center">
+            <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="pet_type">Pet Type</label>
-                <select id="pet_type" name="pet_type" class="form-select">
+                <select id="pet_type" name="pet_type" class="form-control mx-auto w-fixed">
                     <option disabled selected>Choose...</option>
                     <option value="dog">Dog</option>
                     <option value="cat" disabled>Cat</option>
                 </select>
             </div>
-            <div class="mb-3 input-group">
+            <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="pet_name">Pet Name</label>
-                <input type="text" id="pet_name" name="pet_name" class="form-control" required">
+                <input type="text" id="pet_name" name="pet_name" class="form-control mx-auto w-fixed" required">
             </div>
-            <div class="mb-3 input-group">
+            <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="pet_sex">Pet Gender</label>
-                <select id="pet_sex" name="pet_sex" class="form-select">
+                <select id="pet_sex" name="pet_sex" class="form-control mx-auto w-fixed">
                     <option disabled selected>Choose...</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
                 </select>
             </div>
-            <div class="mb-3 input-group">
+            <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="pet_photo">Pet Photo</label>
-                <input type="file" id="pet_photo" name="pet_photo" class="form-control" accept="image/*">
+                <input type="file" id="pet_photo" name="pet_photo" class="form-control mx-auto w-fixed" accept="image/*">
             </div>
-            <div class="mb-3 input-group">
+            <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="breeds">Breed</label>
-                <select id="breeds" name="breeds" class="form-select js-example-basic-single">
+                <select id="breeds" name="breeds" class="form-control js-example-basic-single mx-auto w-fixed">
                     <!-- Options pulled from fci-breeds.csv -->
                     <option disabled selected>Choose...</option>
                     {% for breed in breeds %}
@@ -53,15 +54,15 @@
                     </select>
                 </select>
             </div>
-            <div class="mb-3 input-group">
-                <label class="input-group-text label-width" id="pet_dob">Date of Birth</label>
-                <input type="date" id="pet_dob" name="pet_dob" class="form-control">
+            <div class="mb-1 input-group">
+                <label class="input-group-text mx-auto label-width" id="pet_dob">Date of Birth</label>
+                <input type="date" id="pet_dob" name="pet_dob" class="form-control mx-auto w-fixed">
             </div>
-            <div class="mb-3 input-group">
-                <label class="input-group-text label-width" id="tracker">Tracker</label>
-                <input type="text" id="tracker" name="tracker" class="form-control">
+            <div class="mb-1 input-group">
+                <label class="input-group-text mx-auto label-width" id="tracker">Tracker</label>
+                <input type="text" id="tracker" name="tracker" class="form-control mx-auto w-fixed">
             </div>
-            <button type="submit" class="btn btn-fit">Add Pet</button>
+            <button type="submit" class="button">Add Pet</button>
         </form>
         </div>
     </div>
