@@ -5,19 +5,17 @@
 {% endblock %}
 
 {% block main %}
-    <div class="container full-height-container">
-        <div class="row d-flex align-items-center mx-auto">
-            <div class="col-md-12">
-                <h1>Change password</h1><br>
-                <br>
-                <br>
-                <form action="/change" method="post">
-                    <div class="mb-3">
+    <div class="container-fluid full-height-container">
+        <div class="row justify-content-center align-items-center mx-auto">
+                <span><h1 class="text-center">Change password</h1><br></span>
+                <div class="container container-change d-flex justify-content-center align-items-center">
+                    <form action="/change" method="post">
+                    <div class="mb-1">
                         <input class="form-control mx-auto w-fixed  {{ 'error-border' if error_field == 'old_password' }}" id="old_password" name="old_password" 
                         placeholder="Current Password" 
                         type="password">
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'new_password' }}" 
                         id="new_password" name="new_password" 
                         value="{{ password or '' }}" 
@@ -39,14 +37,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="mb-3">
+                    <div class="mb-1">
                         <input autocomplete="off" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'confirmation' }}" 
                         id="confirmation" name="confirmation" 
                         value="{{ confirmation or '' }}" 
                         placeholder="Confirm New Password" 
                         type="password">
                     </div>
-                    <button class="btn btn-fit" type="submit">Change</button>
+                    <button class="button" type="submit">Change</button>
                 </form>
             </div>
         </div>

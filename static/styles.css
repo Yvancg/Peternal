@@ -18,10 +18,12 @@
  *    5.7. Tooltip
  *    5.8. Social Icons
  * 6. Utilities
+ *    6.1. Container
  * 7. Media Queries
  * 8. Specific Pages
  *    8.1. Index Page
  *    8.2. Login/register Page
+ *    8.3. Change password Page
  */
 
 /* 1. General Settings */
@@ -415,6 +417,37 @@ header {
 }
 
 /* 6. Utilities */
+/* 6.1. Container */
+.container {
+    background-color: var(--light-color);
+    border-radius: 30px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
+    color: var(--dark-color);
+    position: relative;
+    overflow: hidden;
+    max-width: 100%;
+}
+
+.container p {
+    font-size: 16px;
+    line-height: 20px;
+    letter-spacing: 0.3px;
+    margin: 20px 0;
+}
+
+.container span {
+    font-size: 12px;
+    line-height: 14px;
+    letter-spacing: 0.3px;
+    margin: 14px 0;
+}
+
+.container a {
+    color: var(--main-color);
+    font-size: 13px;
+    text-decoration: none;
+    margin: 15px 0 10px;
+}
 
 /* 7. Media Queries */
 @media (min-width: 768px) {
@@ -461,38 +494,10 @@ header {
     right: 10px;
 }
 
-/* 8.2 Login/register page */
-.container {
-    background-color: var(--light-color);
-    border-radius: 30px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.35);
-    color: var(--dark-color);
-    position: relative;
-    overflow: hidden;
+/* 8.2. Login/register page */
+.container-login {
     width: 768px;
-    max-width: 100%;
     min-height: 480px;
-}
-
-.container p {
-    font-size: 16px;
-    line-height: 20px;
-    letter-spacing: 0.3px;
-    margin: 20px 0;
-}
-
-.container span {
-    font-size: 12px;
-    line-height: 14px;
-    letter-spacing: 0.3px;
-    margin: 14px 0;
-}
-
-.container a {
-    color: var(--main-color);
-    font-size: 13px;
-    text-decoration: none;
-    margin: 15px 0 10px;
 }
 
 .log-in {
@@ -594,4 +599,28 @@ header {
 
 .container.active .toggle-right {
     transform: translateX(200%);
+}
+
+/* 8.3. Change password page */
+.container-change {
+    width: 396px;
+    min-height: 320px;
+}
+
+/* 8.4. Add your pet page */
+.container-pet {
+    width: 660px;
+    min-height: 480px;
+}
+
+/* 8.5. Request Password Reset page */
+.container-request {
+    width: 396px;
+    min-height: 240px;
+}
+
+/* 8.6. Password Reset page */
+.container-reset {
+    width: 396px;
+    min-height: 280px;
 }
