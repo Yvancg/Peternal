@@ -113,8 +113,29 @@ loginBtn.addEventListener('click', () => {
 // Pet Dating
 function displaySelectedPet() {
     const petId = document.getElementById('petSelect').value;
-    // Fetch and display the selected pet
-    // Fetch and display potential matches
+    if (petId) {
+        // Fetch the pet details using an AJAX request
+        fetch(`/get_pet_details/${petId}`)
+            .then(response => response.json())
+            .then(pet => {
+                // Build and display the pet card
+                const petCardHTML = `
+                    <div class="card h-100">
+                        <img src="/static/${pet.photo_path}" class="card-img-top" alt="${pet.pet_name}">
+                        <div class="card-body">
+                            <h4 class="card-title">${pet.pet_name}</h4>
+                            <hr class="hr-card" />
+                            <p class="card-text">Sex: ${pet.pet_sex}</p>
+                            <p class="card-text">Breed: ${pet.breed}</p>
+                            <p class="card-text">Date of Birth: ${pet.pet_dob}</p>
+                        </div>
+                    </div>`;
+                document.getElementById('selectedPetCard').innerHTML = petCardHTML;
+            })
+            .catch(error => console.error('Error:', error));
+    } else {
+        document.getElementById('selectedPetCard').innerHTML = '';
+    }
 }
 
 function approveMatch(matchedPetId) {

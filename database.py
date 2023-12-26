@@ -11,6 +11,7 @@ Functions used:
     user_status
     insert_pet_data
     get_pets
+    get_pet_by_id
     update_pet_photo
     update_pet_tracker
 """
@@ -131,6 +132,13 @@ def get_pets(user_id):
         logging.error("Database error when fetching pets: %s", e)
         raise ValueError("Database error when fetching pets") from e
 
+def get_pet_by_id(pets_id):
+    """Retrieve a pet by its ID."""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT * FROM pets WHERE pets_id = ?", (pets_id,))
+        return cursor.fetchone()
+
 def update_pet_photo(pets_id, photo_path):
     """Update the photo path of a pet."""
     try:
@@ -160,10 +168,6 @@ def update_pet_tracker(pets_id, tracker):
     except sqlite3.IntegrityError as e:
         logging.error("Database error when updating pet tracker: %s", e)
         raise ValueError("Database error when updating pet tracker") from e
-
-def get_pet_by_id(pet_id):
-    """Retrieve pet details for the given pet_id."""
-    # Return pet details for the given pet_id
 
 def get_potential_matches(pet_sex, pet_breed):
     """Retrieve potential matches for the given pet."""

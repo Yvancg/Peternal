@@ -30,7 +30,7 @@ import logging
 # Loading .env automatically in the dev env
 from dotenv import load_dotenv
 
-from flask import Flask, flash, redirect, render_template, request, session, url_for
+from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
 from flask_mail import Mail
 from flask_session import Session
 from itsdangerous import SignatureExpired, URLSafeTimedSerializer
@@ -39,7 +39,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 # Importing config variables
 from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
-from database import (get_username_email, verify_user, update_password,
+from database import (get_username_email, verify_user, update_password, get_pet_by_id,
                       get_password, user_status, insert_pet_data, get_pets,
                       get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker)
 from utils import save_pet_photo, send_email, get_sorted_breeds, sanitize_email, sanitize_username
@@ -486,9 +486,24 @@ def edit_tracker():
 
     return redirect("/")
 
+# Route for dating
+@app.route('/dating')
+@login_required
+def dating():
+    """ Dating page """
+    user_id = session["user_id"]
+
+    try:
+        pets = get_pets(user_id)
+        return render_template('dating.html', user_pets=pets)
+    except ValueError as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('dating'))
+
 # Route for getting pet details for dating
-@app.route('/get_pet_details/<int:pet_id>')
+@app.route('/get_pet_details/<int:pets_id>')
 def get_pet_details(pets_id):
-    """ Get pet details for dating """
-    # Logic to get selected pet details and potential matches
-    # Return this data in JSON format
+    """ Getting pet details for dating """
+    pet = get_pet_by_id(pets_id)  # Implement this function in database.py
+    pet_dict = dict(pet) if pet else {}
+    return jsonify(pet_dict)
