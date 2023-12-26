@@ -12,6 +12,24 @@
 
     <div id="selectedPetCard" class="card">
         <!-- Selected pet card will be dynamically inserted here -->
+        <div class="card h-100">
+            <!-- Use the photo path from the pet data -->
+            <img src="{{ url_for('static', filename=pet.photo_path) }}" class="card-img-top" alt="{{ pet.pet_name }}">
+            <i class="bi bi-pencil-square edit-photo-icon" onclick="editPhoto('{{ pet.pets_id }}')"></i>
+            <div class="card-body d-flex flex-column">
+                <div class="content">
+                    <h4 class="card-title">{{ pet.pet_name }}</h4>
+                    <hr class="hr-card" />
+                    <!-- Add more pet details here if needed -->
+                    <p class="card-text">Sex: {{ pet.pet_sex }}</p>
+                    <p class="card-text">Breed: {{ pet.breed }}</p>
+                    <p class="card-text">Date of Birth: {{ pet.pet_dob }}</p>
+                    <p class="card-text">Tracker: {{ pet.tracker }} 
+                    <i class="bi bi-pencil-square edit-tracker-icon" onclick="editTracker('{{ pet.pets_id }}')"></i></p>
+                </div>
+                <a href="#" class="button">Go somewhere</a>
+            </div>
+        </div>
     </div>
 
     <div id="potentialMatches" class="pet-matches">

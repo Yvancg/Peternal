@@ -485,3 +485,10 @@ def edit_tracker():
         flash(str(e), "danger")
 
     return redirect("/")
+
+# Route for getting pet details for dating
+@app.route('/get_pet_details/<int:pet_id>')
+def get_pet_details(pets_id):
+    """ Get pet details for dating """
+    # Logic to get selected pet details and potential matches
+    # Return this data in JSON format
