@@ -1,0 +1,25 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="container">
+    <h2>Pet Dating</h2>
+    <select id="petSelect" onchange="displaySelectedPet();">
+        <option value="">Select Your Pet</option>
+        {% for pet in user_pets %}
+            <option value="{{ pet.pets_id }}">{{ pet.pet_name }}</option>
+        {% endfor %}
+    </select>
+
+    <div id="selectedPetCard" class="card">
+        <!-- Selected pet card will be dynamically inserted here -->
+    </div>
+
+    <div id="potentialMatches" class="pet-matches">
+        <!-- Potential matches will be dynamically inserted here -->
+    </div>
+
+    <div id="matchedPetsGrid" class="dates-grid">
+        <!-- Matched pets grid will be dynamically inserted here -->
+    </div>
+</div>
+{% endblock %}

@@ -82,11 +82,19 @@ $(document).ready(function() {
 
 // Replace photo and tracker info in pet cards
 function editPhoto(petId) {
-    // Logic to handle photo editing
+    // Set the petId in the hidden input
+    document.getElementById('editPhotoPetId').value = petId;
+    // Show the modal
+    var photoModal = new bootstrap.Modal(document.getElementById('photoEditModal'));
+    photoModal.show();
 }
 
 function editTracker(petId) {
-    // Logic to handle tracker editing
+    // Set the petId in the hidden input
+    document.getElementById('editTrackerPetId').value = petId;
+    // Show the modal
+    var trackerModal = new bootstrap.Modal(document.getElementById('trackerEditModal'));
+    trackerModal.show();
 }
 
 // Login toggle
@@ -101,3 +109,19 @@ registerBtn.addEventListener('click', () => {
 loginBtn.addEventListener('click', () => {
     container.classList.remove("active");
 });
+
+// Pet Dating
+function displaySelectedPet() {
+    const petId = document.getElementById('petSelect').value;
+    // Fetch and display the selected pet
+    // Fetch and display potential matches
+}
+
+function approveMatch(matchedPetId) {
+    // Add to matches grid
+    // Remove from potential matches
+}
+
+function rejectMatch(matchedPetId) {
+    // Remove from potential matches
+}

@@ -19,6 +19,8 @@ Here are the functions in the order they appear:
     def reset_password(token):
     def logout():
     def add_pet()
+    def edit_photo()
+    def edit_tracker()
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
 
@@ -39,7 +41,7 @@ from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
 from database import (get_username_email, verify_user, update_password,
                       get_password, user_status, insert_pet_data, get_pets,
-                      get_user_id_by_email, check_user_exists)
+                      get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker)
 from utils import save_pet_photo, send_email, get_sorted_breeds, sanitize_email, sanitize_username
 
 load_dotenv()
@@ -445,3 +447,41 @@ def add_pet():
         except ValueError as e:
             flash(str(e), 'danger')
             return redirect(url_for('add_pet'))
+
+# Route for editing pet profile pic
+@app.route('/edit_photo', methods=['POST'])
+def edit_photo():
+    """ Modal form for editing pet photo """
+    pets_id = request.form['petId']
+    pet_photo = request.files['petPhoto']
+
+    if pet_photo:
+        try:
+            photo_path = save_pet_photo(pet_photo)
+
+            if photo_path:
+                update_pet_photo(pets_id, photo_path)
+                flash("Pet photo updated successfully!", "success")
+            else:
+                flash("Photo upload failed. Please try again.", "danger")
+
+        except ValueError as e:
+            flash(str(e), "danger")
+
+    return redirect("/")
+
+# Route for editing the tracker
+@app.route('/edit_tracker', methods=['POST'])
+def edit_tracker():
+    """ Modal form for editing pet tracker """
+    pets_id = request.form['petId']
+    tracker = request.form['petTracker']
+
+    try:
+        update_pet_tracker(pets_id, tracker)
+        flash("Tracker information updated successfully!", "success")
+
+    except ValueError as e:
+        flash(str(e), "danger")
+
+    return redirect("/")

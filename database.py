@@ -11,6 +11,8 @@ Functions used:
     user_status
     insert_pet_data
     get_pets
+    update_pet_photo
+    update_pet_tracker
 """
 import sqlite3
 import logging
@@ -128,3 +130,33 @@ def get_pets(user_id):
     except sqlite3.IntegrityError as e:
         logging.error("Database error when fetching pets: %s", e)
         raise ValueError("Database error when fetching pets") from e
+
+def update_pet_photo(pets_id, photo_path):
+    """Update the photo path of a pet."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE pets SET photo_path = ? WHERE pets_id = ?",
+                (photo_path, pets_id,)
+            )
+            conn.commit()
+            return True
+    except sqlite3.IntegrityError as e:
+        logging.error("Database error when updating pet photo: %s", e)
+        raise ValueError("Database error when updating pet photo") from e
+
+def update_pet_tracker(pets_id, tracker):
+    """Update the tracker info of a pet."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "UPDATE pets SET tracker = ? WHERE pets_id = ?",
+                (tracker, pets_id)
+            )
+            conn.commit()
+            return True
+    except sqlite3.IntegrityError as e:
+        logging.error("Database error when updating pet tracker: %s", e)
+        raise ValueError("Database error when updating pet tracker") from e
