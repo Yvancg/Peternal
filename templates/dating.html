@@ -6,19 +6,23 @@
 
 {% block main %}
 <div class="container-fluid full-height-container">
-    <div class="row justify-content-center align-items-center mx-auto">
-        <div class="col-lg-4 col-md-6 col-12 mb-4">
-            <span><h1 class="text-center">Pet Dating</h1><br></span>
-            <select id="petSelect" onchange="displaySelectedPet();" class="button">
-                <option value="">Select Your Pet</option>
-                {% for pet in user_pets %}
-                    <option value="{{ pet['pets_id'] }}">{{ pet['pet_name'] }}</option>
-                {% endfor %}
-            </select>
-            <div id="selectedPetCard" class="card h-100">
+    <div class="row mx-auto justify-content-center">
+        <div class="col-12 mx-auto text-center">
+        <span><h1>Pet Dating</h1><br></span>
+        </div>
+        <div class="col-lg-6 col-md-6 col-12 mb-4 mx-auto text-center">
+            <div style="height: 80px;">
+                <select id="petSelect" onchange="displaySelectedPet();" class="button">
+                    <option value="">Select Your Pet</option>
+                    {% for pet in user_pets %}
+                        <option value="{{ pet['pets_id'] }}">{{ pet['pet_name'] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div id="selectedPetCard" class="card mx-auto" style="width: 18rem;">
                 <!-- Selected pet card will be dynamically inserted here -->
                 <!-- Empty placeholder -->
-                <div class="card">
+                <div class="card mx-auto">
                     <img src="/static/placeholder.jpg" class="card-img-top" alt="Placeholder">
                     <div class="card-body">
                         <h4 class="card-title">Pet Name</h4>
@@ -30,16 +34,33 @@
                 </div>
             </div>
         </div>
-        <div class="col-lg-4 col-md-6 col-12 mb-4">
-            <div id="potentialMatches" class="pet-matches">
-            <!-- Potential matches will be dynamically inserted here -->
+        <div class="col-lg-6 col-md-6 col-12 mb-4 mx-auto text-center">
+            <div style="height: 80px;">
+                <button class="button">Your Pet's Match</button>
+            </div>
+            <div id="potentialMatches" class="pet-matches card mx-auto" style="width: 18rem;">
+                <!-- Potential matches will be dynamically inserted here -->
+                <!-- Empty placeholder -->
+                <div class="card mx-auto">
+                    <img src="/static/placeholder.jpg" class="card-img-top" alt="Placeholder">
+                    <div class="card-body">
+                        <h4 class="card-title">Pet Name</h4>
+                        <hr class="hr-card" />
+                        <p class="card-text">Sex: N/A</p>
+                        <p class="card-text">Breed: N/A</p>
+                        <p class="card-text">Date of Birth: N/A</p>
+                    </div>
+                    <div class="card-footer text-center">
+                        <button class="btn btn-danger btn-lg mx-2" onclick="rejectMatch(petId)">
+                            <i class="bi bi-x-circle"></i> NO
+                        </button>
+                        <button class="btn btn-success btn-lg mx-2" onclick="selectMatch(petId)">
+                            <i class="bi bi-check-circle"></i> YES
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
-    <div class="row justify-content-center align-items-center mx-auto">
-        <div id="matchedPetsGrid" class="dates-grid">
-        <!-- Matched pets grid will be dynamically inserted here -->
-        </div>
-    </div>
-</div>
+</div>  
 {% endblock %}
