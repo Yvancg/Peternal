@@ -207,7 +207,7 @@ def reject_match(user_id, pet_id, matched_pet_id):
             cursor = conn.cursor()
             # Status can be 'rejected', 'accepted', or 'pending'
             cursor.execute("""
-                INSERT INTO match_status (user_id, pet_id, matched_pet_id, status)
+                INSERT INTO dating (user_id, pet_id, matched_pet_id, status)
                 VALUES (?, ?, ?, 'rejected')
                 ON CONFLICT(pet_id, matched_pet_id) DO UPDATE SET status = 'rejected'
             """, (user_id, pet_id, matched_pet_id))
@@ -223,7 +223,7 @@ def accept_match(user_id, pet_id, matched_pet_id):
         with get_db_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                INSERT INTO match_status (user_id, pet_id, matched_pet_id, status)
+                INSERT INTO dating (user_id, pet_id, matched_pet_id, status)
                 VALUES (?, ?, ?, 'accepted')
                 ON CONFLICT(pet_id, matched_pet_id) DO UPDATE SET status = 'accepted'
             """, (user_id, pet_id, matched_pet_id))

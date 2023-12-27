@@ -137,6 +137,7 @@ function displaySelectedPet() {
             })
             .catch(error => console.error('Error:', error));
     } else {
+        displayPlaceholderCard();
         document.getElementById('selectedPetCard').innerHTML = '';
         // Clear potential matches as well
         document.getElementById('potentialMatches').innerHTML = '';
@@ -207,23 +208,17 @@ function displayPlaceholderCard() {
     document.getElementById('potentialMatches').innerHTML = placeholderCardHTML;
 }
 
-function rejectMatch(petId) {
-    // Send rejection to server
-    fetch(`/reject_match/${petId}`, { method: 'POST' })
-        .then(() => {
-            fetchPotentialMatches(document.getElementById('petSelect').value);
-        })
-        .catch(error => console.error('Error:', error));
+function rejectMatch() {
+    // Logic to reject the current match
+    // Fetch the next potential match
+    fetchPotentialMatches(document.getElementById('petSelect').value);
 }
 
-function acceptMatch(petId) {
-    // Send acceptance to server
-    fetch(`/accept_match/${petId}`, { method: 'POST' })
-        .then(() => {
-            addToMatchesGrid(currentPotentialMatch);
-            fetchPotentialMatches(document.getElementById('petSelect').value);
-        })
-        .catch(error => console.error('Error:', error));
+function acceptMatch() {
+    // Logic to accept the current match
+    // For example, send data to server and then add to matches grid
+    addToMatchesGrid(currentPotentialMatch);
+    fetchPotentialMatches(document.getElementById('petSelect').value);
 }
 
 function addToMatchesGrid(match) {
@@ -237,15 +232,6 @@ function addToMatchesGrid(match) {
                            </div>
                        </div>`;
     document.getElementById('matchesGrid').innerHTML += matchHTML;
-}
-
-function approveMatch(matchedPetId) {
-    // Add to matches grid
-    // Remove from potential matches
-}
-
-function rejectMatch(matchedPetId) {
-    // Remove from potential matches
 }
 
 // Login with GitHub
