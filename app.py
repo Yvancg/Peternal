@@ -21,6 +21,9 @@ Here are the functions in the order they appear:
     def add_pet()
     def edit_photo()
     def edit_tracker()
+    def dating()
+    def get_pet_details()
+    def find_potential_matches()
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
 
@@ -40,9 +43,10 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from config import Config
 from auth import is_valid_email, login_required, register_user, is_password_strong
 from database import (get_username_email, verify_user, update_password, get_pet_by_id,
-                      get_password, user_status, insert_pet_data, get_pets,
+                      get_password, user_status, insert_pet_data, get_pets, find_potential_matches,
                       get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker)
 from utils import save_pet_photo, send_email, get_sorted_breeds, sanitize_email, sanitize_username
+from supabase_client import supabase, get_supabase
 
 load_dotenv()
 
@@ -285,6 +289,31 @@ def login():
 
     return render_template("login.html", username="", show_reset_password=False)
 
+@app.route("/login/github")
+def login_with_github():
+    """ Log in with GitHub """
+    res = supabase.auth.sign_in_with_oauth(
+        {
+            "provider": "github",
+            "options": {
+	            "redirect_to": f"{request.host_url}callback"
+	        },
+        }
+    )
+    return redirect(res.url)
+
+@app.route("/callback")
+def callback():
+    """ Callback route for GitHub login """
+    code = request.args.get("code")
+    next = request.args.get("next", "/")
+
+    if code:
+        res = supabase.auth.exchange_code_for_session({"auth_code": code})
+
+    return redirect(next)
+
+# Route for changing the password
 @app.route("/change", methods=["GET", "POST"])
 @login_required
 def change():
@@ -507,3 +536,18 @@ def get_pet_details(pets_id):
     pet = get_pet_by_id(pets_id)  # Implement this function in database.py
     pet_dict = dict(pet) if pet else {}
     return jsonify(pet_dict)
+
+@app.route('/get_potential_matches/<int:pets_id>')
+def get_potential_matches(pets_id):
+    """ Find potential matches based on pets_id """
+    try:
+        matches = find_potential_matches(pets_id)
+        matches_list = [dict(match) for match in matches]  # Convert to list of dicts
+        return jsonify(matches_list)
+    except ValueError as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/update_match_status', methods=['POST'])
+def update_match_status():
+    """ Modal form for updating match status """
+    # Update match status (accepted/rejected) in the database

@@ -38,7 +38,7 @@
             <div style="height: 80px;">
                 <button class="button">Your Pet's Match</button>
             </div>
-            <div id="potentialMatches" class="pet-matches card mx-auto" style="width: 18rem;">
+            <div id="potentialMatchCard" class="pet-matches card mx-auto" style="width: 18rem;">
                 <!-- Potential matches will be dynamically inserted here -->
                 <!-- Empty placeholder -->
                 <div class="card mx-auto">
@@ -54,12 +54,16 @@
                         <button class="btn btn-danger btn-lg mx-2" onclick="rejectMatch(petId)">
                             <i class="bi bi-x-circle"></i> NO
                         </button>
-                        <button class="btn btn-success btn-lg mx-2" onclick="selectMatch(petId)">
+                        <button class="btn btn-success btn-lg mx-2" onclick="acceptMatch(petId)">
                             <i class="bi bi-check-circle"></i> YES
                         </button>
                     </div>
                 </div>
             </div>
+        </div>
+        <!-- Section for Matches Grid -->
+        <div id="matchesGrid" class="row mt-4">
+            <!-- Accepted matches will be displayed here -->
         </div>
     </div>
 </div>  

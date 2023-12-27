@@ -169,6 +169,37 @@ def update_pet_tracker(pets_id, tracker):
         logging.error("Database error when updating pet tracker: %s", e)
         raise ValueError("Database error when updating pet tracker") from e
 
-def get_potential_matches(pet_sex, pet_breed):
-    """Retrieve potential matches for the given pet."""
-    # Return pets of the opposite sex and same breed
+def find_potential_matches(pets_id):
+    """ Retrieve potential matches for the given pet."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # First, get the breed and sex of the pet with pets_id
+            cursor.execute("SELECT pet_sex, breed FROM pets WHERE pets_id = ?", (pets_id,))
+            pet = cursor.fetchone()
+            
+            if pet:
+                pet_sex, pet_breed = pet["pet_sex"], pet["breed"]
+
+                # Determine the opposite sex
+                opposite_sex = "Female" if pet_sex == "Male" else "Male"
+
+                # Then find pets of the same breed but opposite sex
+                cursor.execute("""
+                    SELECT * FROM pets 
+                    WHERE breed = ? AND pet_sex = ? AND pets_id != ?
+                """, (pet_breed, opposite_sex, pets_id))
+
+                matches = cursor.fetchall()
+                return matches
+            else:
+                return []  # No pet found with given pets_id
+
+    except sqlite3.Error as e:
+            logging.error("Database error in find_potential_matches: %s", e)
+            raise ValueError("Error fetching potential matches from the database") from e
+
+def update_match_status(pets_id, status):
+    """ Update the match status of a pet."""
+    # Implement logic to update match status (accepted/rejected)

@@ -138,6 +138,66 @@ function displaySelectedPet() {
     }
 }
 
+function fetchPotentialMatches(petId) {
+    fetch(`/get_potential_matches/${petId}`)
+        .then(response => response.json())
+        .then(matches => {
+            if (matches.error) {
+                console.error('Error fetching matches:', matches.error);
+                // Handle error (e.g., show an alert to the user)
+            } else if (matches.length > 0) {
+                currentPotentialMatch = matches[0];
+                displayPotentialMatch(currentPotentialMatch);
+            } else {
+                // Handle no matches found
+            }
+        })
+        .catch(error => console.error('Error:', error));
+}
+
+function displayPotentialMatch(matches) {
+    // Display match details in potentialMatchCard
+    // For example:
+    const matchCardHTML = `
+            <div class="card h-100">
+            <img src="/static/${matches.photo_path}" class="card-img-top" alt="${matches.pet_name}">
+            <div class="card-body">
+                <h4 class="card-title">${matches.pet_name}</h4>
+                <hr class="hr-card" />
+                <p class="card-text">Sex: ${matches.pet_sex}</p>
+                <p class="card-text">Breed: ${matches.breed}</p>
+                <p class="card-text">Date of Birth: ${matches.pet_dob}</p>
+            </div>
+        </div>`;
+    document.getElementById('potentialMatchCard').innerHTML = matchCardHTML;
+}
+
+function rejectMatch() {
+    // Logic to reject the current match
+    // Fetch the next potential match
+    fetchPotentialMatches(document.getElementById('petSelect').value);
+}
+
+function acceptMatch() {
+    // Logic to accept the current match
+    // For example, send data to server and then add to matches grid
+    addToMatchesGrid(currentPotentialMatch);
+    fetchPotentialMatches(document.getElementById('petSelect').value);
+}
+
+function addToMatchesGrid(match) {
+    // Add match to matchesGrid
+    const matchHTML = `<div class="col-2">
+                           <div class="card">
+                               <img src="${match.thumbnail}" class="card-img-top" alt="${match.name}">
+                               <div class="card-body">
+                                   <h6 class="card-title">${match.name}</h6>
+                               </div>
+                           </div>
+                       </div>`;
+    document.getElementById('matchesGrid').innerHTML += matchHTML;
+}
+
 function approveMatch(matchedPetId) {
     // Add to matches grid
     // Remove from potential matches
@@ -146,3 +206,23 @@ function approveMatch(matchedPetId) {
 function rejectMatch(matchedPetId) {
     // Remove from potential matches
 }
+
+// Login with GitHub
+async function signInWithGithub() {
+    const { data, error } = await supabase.auth.signInWithOAuth({
+        provider: 'github',
+    });
+
+    if (error) {
+        console.error('Login failed:', error);
+        // Handle the error scenario
+    } else {
+        console.log('Login successful:', data);
+        // Redirect or perform actions upon successful login
+    }
+}
+
+async function signOut() {
+    const { error } = await supabase.auth.signOut()
+  }
+  
