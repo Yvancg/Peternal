@@ -200,6 +200,39 @@ def find_potential_matches(pets_id):
             logging.error("Database error in find_potential_matches: %s", e)
             raise ValueError("Error fetching potential matches from the database") from e
 
+def reject_match(user_id, pet_id, matched_pet_id):
+    """Mark a match as rejected."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            # Status can be 'rejected', 'accepted', or 'pending'
+            cursor.execute("""
+                INSERT INTO match_status (user_id, pet_id, matched_pet_id, status)
+                VALUES (?, ?, ?, 'rejected')
+                ON CONFLICT(pet_id, matched_pet_id) DO UPDATE SET status = 'rejected'
+            """, (user_id, pet_id, matched_pet_id))
+            conn.commit()
+            return True
+    except sqlite3.Error as e:
+        logging.error("Database error in reject_match: %s", e)
+        raise ValueError("Error updating match status to rejected") from e
+
+def accept_match(user_id, pet_id, matched_pet_id):
+    """Mark a match as accepted."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                INSERT INTO match_status (user_id, pet_id, matched_pet_id, status)
+                VALUES (?, ?, ?, 'accepted')
+                ON CONFLICT(pet_id, matched_pet_id) DO UPDATE SET status = 'accepted'
+            """, (user_id, pet_id, matched_pet_id))
+            conn.commit()
+            return True
+    except sqlite3.Error as e:
+        logging.error("Database error in accept_match: %s", e)
+        raise ValueError("Error updating match status to accepted") from e
+
 def update_match_status(pets_id, status):
     """ Update the match status of a pet."""
     # Implement logic to update match status (accepted/rejected)

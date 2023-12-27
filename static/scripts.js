@@ -131,10 +131,15 @@ function displaySelectedPet() {
                         </div>
                     </div>`;
                 document.getElementById('selectedPetCard').innerHTML = petCardHTML;
+
+                // Fetch and display potential matches
+                fetchPotentialMatches(petId);
             })
             .catch(error => console.error('Error:', error));
     } else {
         document.getElementById('selectedPetCard').innerHTML = '';
+        // Clear potential matches as well
+        document.getElementById('potentialMatches').innerHTML = '';
     }
 }
 
@@ -142,47 +147,83 @@ function fetchPotentialMatches(petId) {
     fetch(`/get_potential_matches/${petId}`)
         .then(response => response.json())
         .then(matches => {
-            if (matches.error) {
-                console.error('Error fetching matches:', matches.error);
-                // Handle error (e.g., show an alert to the user)
-            } else if (matches.length > 0) {
-                currentPotentialMatch = matches[0];
-                displayPotentialMatch(currentPotentialMatch);
+            if (matches.length > 0) {
+                displayPotentialMatch(matches[0]);
             } else {
-                // Handle no matches found
+                displayPlaceholderCard();
+                flashMessage('No match found');
             }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            flashMessage('An error occurred while fetching matches');
+        });
+}
+
+function displayPotentialMatch(match) {
+    // Display match details in potentialMatchCard
+    const matchCardHTML = `
+            <div class="card h-100">
+            <img src="/static/${match.photo_path}" class="card-img-top" alt="${match.pet_name}">
+            <div class="card-body">
+                <h4 class="card-title">${match.pet_name}</h4>
+                <hr class="hr-card" />
+                <p class="card-text">Sex: ${match.pet_sex}</p>
+                <p class="card-text">Breed: ${match.breed}</p>
+                <p class="card-text">Date of Birth: ${match.pet_dob}</p>
+            </div>
+            <div class="card-footer text-center">
+                <button class="btn btn-danger btn-lg mx-2" onclick="rejectMatch(petId)">
+                    <i class="bi bi-x-circle"></i> NO
+                </button>
+                <button class="btn btn-success btn-lg mx-2" onclick="acceptMatch(petId)">
+                    <i class="bi bi-check-circle"></i> YES
+                </button>
+            </div>
+        </div>`;
+    document.getElementById('potentialMatches').innerHTML = matchCardHTML;
+}
+
+function displayPlaceholderCard() {
+    const placeholderCardHTML = `
+        <div class="card">
+            <img src="/static/placeholder.jpg" class="card-img-top" alt="Placeholder">
+            <div class="card-body">
+                <h4 class="card-title">Pet Name</h4>
+                <hr class="hr-card" />
+                <p class="card-text">Sex: N/A</p>
+                <p class="card-text">Breed: N/A</p>
+                <p class="card-text">Date of Birth: N/A</p>
+            </div>
+            <div class="card-footer text-center">
+                <button class="btn btn-danger btn-lg mx-2" onclick="rejectMatch(petId)">
+                    <i class="bi bi-x-circle"></i> NO
+                </button>
+                <button class="btn btn-success btn-lg mx-2" onclick="acceptMatch(petId)">
+                    <i class="bi bi-check-circle"></i> YES
+                </button>
+            </div>
+        </div>`;
+    document.getElementById('potentialMatches').innerHTML = placeholderCardHTML;
+}
+
+function rejectMatch(petId) {
+    // Send rejection to server
+    fetch(`/reject_match/${petId}`, { method: 'POST' })
+        .then(() => {
+            fetchPotentialMatches(document.getElementById('petSelect').value);
         })
         .catch(error => console.error('Error:', error));
 }
 
-function displayPotentialMatch(matches) {
-    // Display match details in potentialMatchCard
-    // For example:
-    const matchCardHTML = `
-            <div class="card h-100">
-            <img src="/static/${matches.photo_path}" class="card-img-top" alt="${matches.pet_name}">
-            <div class="card-body">
-                <h4 class="card-title">${matches.pet_name}</h4>
-                <hr class="hr-card" />
-                <p class="card-text">Sex: ${matches.pet_sex}</p>
-                <p class="card-text">Breed: ${matches.breed}</p>
-                <p class="card-text">Date of Birth: ${matches.pet_dob}</p>
-            </div>
-        </div>`;
-    document.getElementById('potentialMatchCard').innerHTML = matchCardHTML;
-}
-
-function rejectMatch() {
-    // Logic to reject the current match
-    // Fetch the next potential match
-    fetchPotentialMatches(document.getElementById('petSelect').value);
-}
-
-function acceptMatch() {
-    // Logic to accept the current match
-    // For example, send data to server and then add to matches grid
-    addToMatchesGrid(currentPotentialMatch);
-    fetchPotentialMatches(document.getElementById('petSelect').value);
+function acceptMatch(petId) {
+    // Send acceptance to server
+    fetch(`/accept_match/${petId}`, { method: 'POST' })
+        .then(() => {
+            addToMatchesGrid(currentPotentialMatch);
+            fetchPotentialMatches(document.getElementById('petSelect').value);
+        })
+        .catch(error => console.error('Error:', error));
 }
 
 function addToMatchesGrid(match) {

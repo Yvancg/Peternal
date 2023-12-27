@@ -533,7 +533,7 @@ def dating():
 @app.route('/get_pet_details/<int:pets_id>')
 def get_pet_details(pets_id):
     """ Getting pet details for dating """
-    pet = get_pet_by_id(pets_id)  # Implement this function in database.py
+    pet = get_pet_by_id(pets_id)
     pet_dict = dict(pet) if pet else {}
     return jsonify(pet_dict)
 
@@ -546,6 +546,26 @@ def get_potential_matches(pets_id):
         return jsonify(matches_list)
     except ValueError as e:
         return jsonify({'error': str(e)}), 500
+
+@app.route('/reject_match/<int:pets_id>', methods=['POST'])
+@login_required
+def reject_match(pets_id):
+    """ Modal form for rejecting a match """
+    try:
+        # Logic to mark match as rejected in the database
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+@app.route('/accept_match/<int:pets_id>', methods=['POST'])
+@login_required
+def accept_match(pets_id):
+    """ Modal form for accepting a match """
+    try:
+        # Logic to mark match as accepted in the database
+        return jsonify({"status": "success"})
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 @app.route('/update_match_status', methods=['POST'])
 def update_match_status():
