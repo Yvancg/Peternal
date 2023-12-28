@@ -18,7 +18,7 @@
 
         <link href="/static/styles.css" rel="stylesheet">
 
-        <title>Peternal {% block title %}{% endblock %}</title>
+        <title>Peternal</title>
 
     </head>
 
@@ -49,6 +49,7 @@
                                 <a class="nav-link" href="/afterlife" title="Afterlife"><i class="bi bi-emoji-dizzy-fill"></i></a>
                             </li>
                         </ul>
+                        <div><h2 class="headline">{% block title %}{% endblock %}</h2></div>
                         <div class="nav-item dropdown ms-auto mt-2">
                             <a class="nav-link dropdown-toggle nav-user-icon" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
                                 <i class="bi bi-person-circle"></i>

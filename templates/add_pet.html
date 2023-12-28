@@ -1,13 +1,12 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Add Pet
+    Add Your Pet
 {% endblock %}
 
 {% block main %}
 <div class="container-fluid full-height-container">
     <div class="row justify-content-center align-items-center mx-auto">
-        <span><h1 class="text-center">Add Your Pet</h1><br></span>
         <!--
         Spinner, initially hidden
         <div class="d-flex justify-content-center spinner-container" id="spinner-container">
@@ -20,7 +19,7 @@
         <form action="/add_pet" method="post" enctype="multipart/form-data" class="align-items-center">
             <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="pet_type">Pet Type</label>
-                <select id="pet_type" name="pet_type" class="form-control mx-auto w-fixed">
+                <select id="pet_type" name="pet_type" class="form-control mx-auto w-fixed" required>
                     <option disabled selected>Choose...</option>
                     <option value="dog">Dog</option>
                     <option value="cat" disabled>Cat</option>
@@ -28,11 +27,11 @@
             </div>
             <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="pet_name">Pet Name</label>
-                <input type="text" id="pet_name" name="pet_name" class="form-control mx-auto w-fixed" required">
+                <input type="text" id="pet_name" name="pet_name" class="form-control mx-auto w-fixed" required>
             </div>
             <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="pet_sex">Pet Gender</label>
-                <select id="pet_sex" name="pet_sex" class="form-control mx-auto w-fixed">
+                <select id="pet_sex" name="pet_sex" class="form-control mx-auto w-fixed" required>
                     <option disabled selected>Choose...</option>
                     <option value="Male">Male</option>
                     <option value="Female">Female</option>
@@ -40,11 +39,11 @@
             </div>
             <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="pet_photo">Pet Photo</label>
-                <input type="file" id="pet_photo" name="pet_photo" class="form-control mx-auto w-fixed" accept="image/*">
+                <input type="file" id="pet_photo" name="pet_photo" class="form-control mx-auto w-fixed" accept="image/*" required>
             </div>
             <div class="mb-1 input-group">
                 <label class="input-group-text label-width" id="breeds">Breed</label>
-                <select id="breeds" name="breeds" class="form-control js-example-basic-single mx-auto w-fixed">
+                <select id="breeds" name="breeds" class="form-control js-example-basic-single mx-auto w-fixed" required>
                     <!-- Options pulled from fci-breeds.csv -->
                     <option disabled selected>Choose...</option>
                     {% for breed in breeds %}
@@ -56,11 +55,11 @@
             </div>
             <div class="mb-1 input-group">
                 <label class="input-group-text mx-auto label-width" id="pet_dob">Date of Birth</label>
-                <input type="date" id="pet_dob" name="pet_dob" class="form-control mx-auto w-fixed">
+                <input type="date" id="pet_dob" name="pet_dob" class="form-control mx-auto w-fixed" required>
             </div>
             <div class="mb-1 input-group">
                 <label class="input-group-text mx-auto label-width" id="tracker">Tracker</label>
-                <input type="text" id="tracker" name="tracker" class="form-control mx-auto w-fixed">
+                <input type="text" id="tracker" name="tracker" class="form-control mx-auto w-fixed" required>
             </div>
             <button type="submit" class="button">Add Pet</button>
         </form>

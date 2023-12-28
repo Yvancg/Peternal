@@ -111,6 +111,8 @@ loginBtn.addEventListener('click', () => {
 });
 
 // Pet Dating
+let currentMatchId = null;
+
 function displaySelectedPet() {
     const petId = document.getElementById('petSelect').value;
     if (petId) {
@@ -174,10 +176,10 @@ function displayPotentialMatch(match) {
                 <p class="card-text">Date of Birth: ${match.pet_dob}</p>
             </div>
             <div class="card-footer text-center">
-                <button class="btn btn-danger btn-lg mx-2" onclick="rejectMatch(petId)">
+                <button class="btn btn-danger btn-lg mx-2" data-matched-pet-id="${match.pets_id}" onclick="rejectMatch(this)">
                     <i class="bi bi-x-circle"></i> NO
                 </button>
-                <button class="btn btn-success btn-lg mx-2" onclick="acceptMatch(petId)">
+                <button class="btn btn-success btn-lg mx-2" data-matched-pet-id="${match.pets_id}" onclick="acceptMatch(this)">
                     <i class="bi bi-check-circle"></i> YES
                 </button>
             </div>
@@ -197,10 +199,10 @@ function displayPlaceholderCard() {
                 <p class="card-text">Date of Birth: N/A</p>
             </div>
             <div class="card-footer text-center">
-                <button class="btn btn-danger btn-lg mx-2" onclick="rejectMatch(petId)">
+                <button class="btn btn-danger btn-lg mx-2">
                     <i class="bi bi-x-circle"></i> NO
                 </button>
-                <button class="btn btn-success btn-lg mx-2" onclick="acceptMatch(petId)">
+                <button class="btn btn-success btn-lg mx-2">
                     <i class="bi bi-check-circle"></i> YES
                 </button>
             </div>
@@ -208,17 +210,37 @@ function displayPlaceholderCard() {
     document.getElementById('potentialMatches').innerHTML = placeholderCardHTML;
 }
 
-function rejectMatch() {
-    // Logic to reject the current match
-    // Fetch the next potential match
-    fetchPotentialMatches(document.getElementById('petSelect').value);
+function rejectMatch(buttonElement) {
+    const matchedPetId = buttonElement.getAttribute('data-matched-pet-id');
+    const selectedPetId = document.getElementById('petSelect').value;
+    fetch(`/reject_match/${selectedPetId}/${matchedPetId}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Match rejected');
+                fetchPotentialMatches(selectedPetId);
+            } else {
+                console.error('Error rejecting match');
+            }
+        })
+        .catch(error => console.error('Error:', error));
 }
 
-function acceptMatch() {
-    // Logic to accept the current match
-    // For example, send data to server and then add to matches grid
-    addToMatchesGrid(currentPotentialMatch);
-    fetchPotentialMatches(document.getElementById('petSelect').value);
+function acceptMatch(buttonElement) {
+    const matchedPetId = buttonElement.getAttribute('data-matched-pet-id');
+    const selectedPetId = document.getElementById('petSelect').value;
+    fetch(`/accept_match/${selectedPetId}/${matchedPetId}`, { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                console.log('Match accepted');
+                fetchPotentialMatches(selectedPetId);
+                // Add additional logic if needed to update UI
+            } else {
+                console.error('Error accepting match');
+            }
+        })
+        .catch(error => console.error('Error:', error));
 }
 
 function addToMatchesGrid(match) {

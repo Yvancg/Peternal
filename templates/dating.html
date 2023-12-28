@@ -1,14 +1,13 @@
 {% extends "layout.html" %}
 
 {% block title %}
-    Dating
+    Pet Dating
 {% endblock %}
 
 {% block main %}
 <div class="container-fluid full-height-container">
     <div class="row mx-auto justify-content-center">
         <div class="col-12 mx-auto text-center">
-        <span><h1>Pet Dating</h1><br></span>
         </div>
         <div class="col-lg-6 col-md-6 col-12 mb-4 mx-auto text-center">
             <div style="height: 80px;">
@@ -51,10 +50,10 @@
                         <p class="card-text">Date of Birth: N/A</p>
                     </div>
                     <div class="card-footer text-center">
-                        <button class="btn btn-danger btn-lg mx-2" onclick="rejectMatch(petId)">
+                        <button class="btn btn-danger btn-lg mx-2" onclick="rejectMatch(petId, matchedPetId)">
                             <i class="bi bi-x-circle"></i> NO
                         </button>
-                        <button class="btn btn-success btn-lg mx-2" onclick="acceptMatch(petId)">
+                        <button class="btn btn-success btn-lg mx-2" onclick="acceptMatch(petId, matchedPetId)">
                             <i class="bi bi-check-circle"></i> YES
                         </button>
                     </div>

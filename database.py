@@ -178,7 +178,7 @@ def find_potential_matches(pets_id):
             # First, get the breed and sex of the pet with pets_id
             cursor.execute("SELECT pet_sex, breed FROM pets WHERE pets_id = ?", (pets_id,))
             pet = cursor.fetchone()
-            
+
             if pet:
                 pet_sex, pet_breed = pet["pet_sex"], pet["breed"]
 
@@ -191,8 +191,8 @@ def find_potential_matches(pets_id):
                     WHERE breed = ? AND pet_sex = ? AND pets_id != ?
                 """, (pet_breed, opposite_sex, pets_id))
 
-                matches = cursor.fetchall()
-                return matches
+                match = cursor.fetchall()
+                return match
             else:
                 return []  # No pet found with given pets_id
 
@@ -235,4 +235,19 @@ def accept_match(user_id, pet_id, matched_pet_id):
 
 def update_match_status(pets_id, status):
     """ Update the match status of a pet."""
-    # Implement logic to update match status (accepted/rejected)
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+
+            # Update the status of the match in the dating table
+            cursor.execute("""
+                UPDATE dating 
+                SET status = ? 
+                WHERE pet_id = ? OR matched_pet_id = ?
+            """, (status, pets_id, pets_id))
+
+            conn.commit()
+            return True
+    except sqlite3.Error as e:
+        logging.error("Database error in update_match_status: %s", e)
+        raise ValueError("Error updating match status") from e
