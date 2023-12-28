@@ -553,20 +553,26 @@ def get_potential_matches(pets_id):
 def reject_match_route(pet_id, matched_pet_id):
     """ Reject a match """
     user_id = session["user_id"]
-    if reject_match(user_id, pet_id, matched_pet_id):
-        return jsonify({"status": "success"})
-    else:
-        return jsonify({"error": "Failed to reject match"}), 500
+    try:
+        if reject_match(user_id, pet_id, matched_pet_id):
+            return jsonify({"status": "success"})
+        else:
+            return jsonify({"error": "Failed to reject match"}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/accept_match/<int:pet_id>/<int:matched_pet_id>', methods=['POST'])
 @login_required
 def accept_match_route(pet_id, matched_pet_id):
     """ Accept a match """
     user_id = session["user_id"]
-    if accept_match(user_id, pet_id, matched_pet_id):
-        return jsonify({"status": "success"})
-    else:
-        return jsonify({"error": "Failed to accept match"}), 500
+    try:
+        if accept_match(user_id, pet_id, matched_pet_id):
+            return jsonify({"status": "success"})
+        else:
+            return jsonify({"error": "Failed to accept match"}), 500
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
 
 @app.route('/update_match_status', methods=['POST'])
 @login_required

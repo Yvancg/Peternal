@@ -205,12 +205,24 @@ def reject_match(user_id, pet_id, matched_pet_id):
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
-            # Status can be 'rejected', 'accepted', or 'pending'
+            # Check if the match already exists
             cursor.execute("""
-                INSERT INTO dating (user_id, pet_id, matched_pet_id, status)
-                VALUES (?, ?, ?, 'rejected')
-                ON CONFLICT(pet_id, matched_pet_id) DO UPDATE SET status = 'rejected'
-            """, (user_id, pet_id, matched_pet_id))
+                SELECT * FROM dating WHERE pet_id = ? AND matched_pet_id = ?
+            """, (pet_id, matched_pet_id))
+            match = cursor.fetchone()
+
+            if match:
+                # Update existing match
+                cursor.execute("""
+                    UPDATE dating SET status = 'rejected' WHERE pet_id = ? AND matched_pet_id = ?
+                """, (pet_id, matched_pet_id))
+            else:
+                # Insert new match
+                cursor.execute("""
+                    INSERT INTO dating (user_id, pet_id, matched_pet_id, status)
+                    VALUES (?, ?, ?, 'rejected')
+                """, (user_id, pet_id, matched_pet_id))
+
             conn.commit()
             return True
     except sqlite3.Error as e:
@@ -222,11 +234,24 @@ def accept_match(user_id, pet_id, matched_pet_id):
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
+            # Check if the match already exists
             cursor.execute("""
-                INSERT INTO dating (user_id, pet_id, matched_pet_id, status)
-                VALUES (?, ?, ?, 'accepted')
-                ON CONFLICT(pet_id, matched_pet_id) DO UPDATE SET status = 'accepted'
-            """, (user_id, pet_id, matched_pet_id))
+                SELECT * FROM dating WHERE pet_id = ? AND matched_pet_id = ?
+            """, (pet_id, matched_pet_id))
+            match = cursor.fetchone()
+
+            if match:
+                # Update existing match
+                cursor.execute("""
+                    UPDATE dating SET status = 'accepted' WHERE pet_id = ? AND matched_pet_id = ?
+                """, (pet_id, matched_pet_id))
+            else:
+                # Insert new match
+                cursor.execute("""
+                    INSERT INTO dating (user_id, pet_id, matched_pet_id, status)
+                    VALUES (?, ?, ?, 'accepted')
+                """, (user_id, pet_id, matched_pet_id))
+
             conn.commit()
             return True
     except sqlite3.Error as e:
