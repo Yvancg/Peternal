@@ -45,7 +45,7 @@ from auth import is_valid_email, login_required, register_user, is_password_stro
 from database import (get_username_email, verify_user, update_password, get_pet_by_id,
                       get_password, user_status, insert_pet_data, get_pets, find_potential_matches,
                       get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker,
-                      reject_match, accept_match, update_match_status)
+                      reject_match, accept_match, update_match_status, get_username_by_user_id)
 from utils import save_pet_photo, send_email, get_sorted_breeds, sanitize_email, sanitize_username
 from supabase_client import supabase
 
@@ -72,6 +72,16 @@ def after_request(response):
     response.headers["Expires"] = 0
     response.headers["Pragma"] = "no-cache"
     return response
+
+# Route for username display for the session
+@app.context_processor
+def get_username_info():
+    """Inject user info into the template"""
+    if "user_id" in session:
+        user_id = session["user_id"]
+        username_info = get_username_by_user_id(user_id)  # Function to get user info from DB
+        return {'logged_in_user': username_info}  # 'user_info' should have username
+    return {'logged_in_user': None}
 
 # Route for the main page
 @app.route("/")

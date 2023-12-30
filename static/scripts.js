@@ -1,3 +1,7 @@
+// Global declaration of variables
+let matchedPets = [];
+let matchIndex = 0;
+
 // Fading effect of the alert messages
 $(document).ready(function() {
     setTimeout(function() {
@@ -113,6 +117,7 @@ loginBtn.addEventListener('click', () => {
 // Pet Dating
 let currentMatchId = null;
 
+
 function displaySelectedPet() {
     const petId = document.getElementById('petSelect').value;
     if (petId) {
@@ -149,9 +154,13 @@ function displaySelectedPet() {
 function fetchPotentialMatches(petId) {
     fetch(`/get_potential_matches/${petId}`)
         .then(response => response.json())
-        .then(matches => {
-            if (matches.length > 0) {
-                displayPotentialMatch(matches[0]);
+        .then(fetchedMatches => {
+            matchedPets = fetchedMatches;
+            matchIndex = 0; // Reset the index
+
+            if (matchedPets.length > 0) {
+                displayNextMatch();
+                matchIndex++; // Increment for the next match
             } else {
                 displayPlaceholderCard();
                 flashMessage('No match found');
@@ -161,6 +170,16 @@ function fetchPotentialMatches(petId) {
             console.error('Error:', error);
             flashMessage('An error occurred while fetching matches');
         });
+}
+
+function displayNextMatch() {
+    if (matchIndex < matchedPets.length) {
+        displayPotentialMatch(matchedPets[matchIndex]);
+        matchIndex++;
+    } else {
+        displayPlaceholderCard();
+        flashMessage('No more matches');
+    }
 }
 
 function displayPotentialMatch(match) {
@@ -219,6 +238,7 @@ function rejectMatch(buttonElement) {
             if (data.status === 'success') {
                 console.log('Match rejected');
                 fetchPotentialMatches(selectedPetId);
+                displayNextMatch();
             } else {
                 console.error('Error rejecting match');
             }
@@ -235,6 +255,7 @@ function acceptMatch(buttonElement) {
             if (data.status === 'success') {
                 console.log('Match accepted');
                 fetchPotentialMatches(selectedPetId);
+                displayNextMatch();
                 // Add additional logic if needed to update UI
             } else {
                 console.error('Error accepting match');
@@ -255,6 +276,12 @@ function addToMatchesGrid(match) {
                        </div>`;
     document.getElementById('matchesGrid').innerHTML += matchHTML;
 }
+
+function flashMessage(message) {
+    // Simple implementation - log to console
+    console.log("Message:", message);
+}
+
 
 // Login with GitHub
 async function signInWithGithub() {

@@ -45,6 +45,14 @@ def get_user_id_by_email(email):
         user = cursor.fetchone()
         return user[0] if user else None
 
+def get_username_by_user_id(user_id):
+    """ Get the username based on the user ID"""
+    with get_db_connection() as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT username FROM users WHERE user_id = ?", (user_id,))
+        username_info = cursor.fetchone()
+        return username_info
+    
 def check_user_exists(username, email):
     """Check if a user with the given username or email already exists."""
     with get_db_connection() as conn:
