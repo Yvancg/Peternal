@@ -117,7 +117,6 @@ loginBtn.addEventListener('click', () => {
 // Pet Dating
 let currentMatchId = null;
 
-
 function displaySelectedPet() {
     const petId = document.getElementById('petSelect').value;
     if (petId) {
@@ -236,9 +235,8 @@ function rejectMatch(buttonElement) {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                console.log('Match rejected');
-                fetchPotentialMatches(selectedPetId);
                 displayNextMatch();
+                console.log('Match rejected');
             } else {
                 console.error('Error rejecting match');
             }
@@ -253,10 +251,8 @@ function acceptMatch(buttonElement) {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                console.log('Match accepted');
-                fetchPotentialMatches(selectedPetId);
                 displayNextMatch();
-                // Add additional logic if needed to update UI
+                console.log('Match accepted');
             } else {
                 console.error('Error accepting match');
             }
