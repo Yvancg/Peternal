@@ -251,8 +251,15 @@ function acceptMatch(buttonElement) {
         .then(response => response.json())
         .then(data => {
             if (data.status === 'success') {
-                displayNextMatch();
                 console.log('Match accepted');
+                
+                // Find the matched pet information
+                const matchedPet = matchedPets.find(pet => pet.pets_id.toString() === matchedPetId);
+                if (matchedPet) {
+                    addToMatchesGrid(matchedPet);  // Add to the matches grid
+                }
+
+                displayNextMatch();
             } else {
                 console.error('Error accepting match');
             }
@@ -271,6 +278,20 @@ function addToMatchesGrid(match) {
                            </div>
                        </div>`;
     document.getElementById('matchesGrid').innerHTML += matchHTML;
+}
+
+function addToMatchesGrid(matchedPet) {
+    const matchesGrid = document.getElementById('matchesGrid');
+    const petCardHTML = `
+        <div class="col-2">
+            <div class="card">
+                <img src="/static/${matchedPet.photo_path}" class="card-img-top" alt="${matchedPet.pet_name}">
+                <div class="card-body">
+                    <h6 class="card-title">${matchedPet.pet_name}</h6>
+                </div>
+            </div>
+        </div>`;
+    matchesGrid.innerHTML += petCardHTML;
 }
 
 function flashMessage(message) {
