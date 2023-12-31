@@ -142,6 +142,28 @@ function displaySelectedPet() {
                 fetchPotentialMatches(petId);
             })
             .catch(error => console.error('Error:', error));
+
+        fetch(`/get_accepted_matches/${petId}`)
+            .then(response => response.json())
+            .then(matches => {
+                const matchesGrid = document.getElementById('matchesGrid');
+                matchesGrid.innerHTML = '';  // Clear existing matches
+                matches.forEach(match => {
+                    // Add each match to the grid
+                        // Add match to matchesGrid
+                    const matchHTML = `
+                        <div class="col-2">
+                        <div class="card">
+                            <img src="/static/${match.thumbnail}" class="card-img-top" alt="${match.name}">
+                            <div class="card-body">
+                                <h6 class="card-title">${match.name}</h6>
+                            </div>
+                        </div>
+                    </div>`;
+                    document.getElementById('matchesGrid').innerHTML += matchHTML;
+                });
+            })
+            .catch(error => console.error('Error:', error));
     } else {
         displayPlaceholderCard();
         document.getElementById('selectedPetCard').innerHTML = '';

@@ -266,7 +266,7 @@ def accept_match(user_id, pet_id, matched_pet_id):
         logging.error("Database error in accept_match: %s", e)
         raise ValueError("Error updating match status to accepted") from e
 
-def update_match_status(pets_id, status):
+def update_match_status(pet_id, matched_pet_id, status):
     """ Update the match status of a pet."""
     try:
         with get_db_connection() as conn:
@@ -277,10 +277,25 @@ def update_match_status(pets_id, status):
                 UPDATE dating 
                 SET status = ? 
                 WHERE pet_id = ? OR matched_pet_id = ?
-            """, (status, pets_id, pets_id))
+            """, (status, pet_id, matched_pet_id))
 
             conn.commit()
             return True
     except sqlite3.Error as e:
         logging.error("Database error in update_match_status: %s", e)
         raise ValueError("Error updating match status") from e
+
+def get_accepted_matches(pet_id):
+    """Retrieve all accepted matches for a specific pet."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute("""
+                SELECT * FROM dating 
+                WHERE (pet_id = ? OR matched_pet_id = ?) AND status = 'accepted'
+            """, (pet_id, pet_id))
+            matches = cursor.fetchall()
+            return matches
+    except sqlite3.Error as e:
+        logging.error("Database error in get_accepted_matches_for_pet: %s", e)
+        raise ValueError("Error retrieving matches for pet") from e

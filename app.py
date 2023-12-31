@@ -45,7 +45,7 @@ from auth import is_valid_email, login_required, register_user, is_password_stro
 from database import (get_username_email, verify_user, update_password, get_pet_by_id,
                       get_password, user_status, insert_pet_data, get_pets, find_potential_matches,
                       get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker,
-                      reject_match, accept_match, update_match_status, get_username_by_user_id)
+                      reject_match, accept_match, get_accepted_matches, get_username_by_user_id)
 from utils import save_pet_photo, send_email, get_sorted_breeds, sanitize_email, sanitize_username
 from supabase_client import supabase
 
@@ -568,7 +568,7 @@ def reject_match_route(pet_id, matched_pet_id):
             return jsonify({"status": "success"})
         else:
             return jsonify({"error": "Failed to reject match"}), 500
-    except Exception as e:
+    except ValueError as e:
         return jsonify({'error': str(e)}), 500
 
 @app.route('/accept_match/<int:pet_id>/<int:matched_pet_id>', methods=['POST'])
@@ -581,24 +581,15 @@ def accept_match_route(pet_id, matched_pet_id):
             return jsonify({"status": "success"})
         else:
             return jsonify({"error": "Failed to accept match"}), 500
-    except Exception as e:
+    except ValueError as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route('/update_match_status', methods=['POST'])
+@app.route('/get_accepted_matches/<int:pet_id>')
 @login_required
-def update_match_status_route():
-    """Route to update match status in the database."""
-    data = request.json
-    pet_id = data.get('pet_id')
-    status = data.get('status')
-
-    if not pet_id or not status:
-        return jsonify({'error': 'Missing data'}), 400
-
+def get_accepted_matches_route(pet_id):
+    """ Get accepted matches for a specific pet """
     try:
-        if update_match_status(pet_id, status):
-            return jsonify({'status': 'success'})
-        else:
-            return jsonify({'error': 'Failed to update match status'}), 500
-    except Exception as e:
+        matches = get_accepted_matches(pet_id)
+        return jsonify(matches)
+    except ValueError as e:
         return jsonify({'error': str(e)}), 500
