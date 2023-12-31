@@ -3,6 +3,7 @@ Functions used:
     get_db_connection
     get_username_email
     get_user_id_by_email
+    get_username_by_user_id
     check_user_exists
     create_user
     verify_user
@@ -14,10 +15,14 @@ Functions used:
     get_pet_by_id
     update_pet_photo
     update_pet_tracker
+    find_potential_matches
+    reject_match
+    accept_match
+    update_match_status
+    get_accepted_matches
 """
 import sqlite3
 import logging
-import contextlib
 
 DATABASE = "petlife.db"
 
@@ -297,5 +302,5 @@ def get_accepted_matches(pet_id):
             matches = cursor.fetchall()
             return matches
     except sqlite3.Error as e:
-        logging.error("Database error in get_accepted_matches_for_pet: %s", e)
+        logging.error("Database error in get_accepted_matches: %s", e)
         raise ValueError("Error retrieving matches for pet") from e

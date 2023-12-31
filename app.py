@@ -7,23 +7,29 @@ Database connections are imported from the 'database' module. Functions for user
 registration, password validation, and session handling are imported from the 'auth' module.
 Here are the functions in the order they appear:
     def after_request(response):
+    get_username_info():
     def index():
     def register():
     def send_confirmation_email(email):
     def confirm_email(token, expiration=3600):
     def resend_verification_email():
     def login():
+    def login_with_github():
+    def callback():
     def change():
     def request_password_reset():
     def send_password_reset_email(email):
     def reset_password(token):
     def logout():
-    def add_pet()
-    def edit_photo()
-    def edit_tracker()
-    def dating()
-    def get_pet_details()
-    def find_potential_matches()
+    def add_pet():
+    def edit_photo():
+    def edit_tracker():
+    def dating():
+    def get_pet_details(pets_id):
+    def get_potential_matches(pets_id):
+    def reject_match_route(pet_id, matched_pet_id):
+    def accept_match_route(pet_id, matched_pet_id):
+    def get_accepted_matches_route(pet_id):
 The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 """
 
