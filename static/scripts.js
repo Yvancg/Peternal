@@ -156,7 +156,7 @@ function displaySelectedPet() {
                         <div class="card">
                             <img src="/static/${match.photo_path}" class="card-img-top" alt="${match.pet_name}">
                             <div class="card-body">
-                                <h6 class="card-title">${match.name}</h6>
+                                <h6 class="card-title">${match.pet_name}</h6>
                             </div>
                         </div>
                     </div>`;

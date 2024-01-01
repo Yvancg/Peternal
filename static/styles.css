@@ -188,7 +188,7 @@ main {
 .bg-footer {
     background-color: var(--light-color);
     color: var(--dark-color);
-    padding-top: 50px;
+    padding-top: 100px;
 }
 
 .footer-container {
@@ -424,8 +424,6 @@ header {
     color: var(--main-color);
 }
 
-
-
 /* 6. Utilities */
 /* 6.1. Container */
 .container {
@@ -501,6 +499,13 @@ header {
     position: absolute;
     top: 10px;
     right: 10px;
+}
+
+#matchesGrid {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 50px;
 }
 
 /* 8.2. Login/register page */
