@@ -6,8 +6,10 @@
 
 {% block main %}
 <div class="container-fluid full-height-container">
+    <!-- Row for Pet Cards -->
     <div class="row mx-auto justify-content-center">
         <div class="col-lg-6 col-md-6 col-12 mb-4 mx-auto text-center">
+            <!-- Pet Selector -->
             <div style="height: 80px;">
                 <select id="petSelect" onchange="displaySelectedPet();" class="button">
                     <option value="">Select Your Pet</option>
@@ -58,9 +60,14 @@
                 </div>
             </div>
         </div>
-        <!-- Section for Matches Grid -->
-        <div id="matchesGrid" class="row mt-4">
-            <!-- Accepted matches will be displayed here -->
+    </div>
+    <!-- Row for Matches Cards -->
+    <div class="row mx-auto justify-content-center">
+        <div class="col-12 mb-4 mx-auto text-center">
+            <!-- Section for Matches Grid -->
+            <div id="matchesGrid" class="row mt-4">
+                <!-- Accepted matches will be displayed here -->
+            </div>
         </div>
     </div>
 </div>  

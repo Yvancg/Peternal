@@ -24,6 +24,8 @@ Functions used:
 import sqlite3
 import logging
 
+from utils import row_to_dict
+
 DATABASE = "petlife.db"
 
 def get_db_connection():
@@ -300,7 +302,7 @@ def get_accepted_matches(pet_id):
                 WHERE (pet_id = ? OR matched_pet_id = ?) AND status = 'accepted'
             """, (pet_id, pet_id))
             matches = cursor.fetchall()
-            return matches
+            return [row_to_dict(match) for match in matches]
     except sqlite3.Error as e:
         logging.error("Database error in get_accepted_matches: %s", e)
         raise ValueError("Error retrieving matches for pet") from e

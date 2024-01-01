@@ -106,8 +106,8 @@ main {
 }
 
 .full-height-container {
-    display: flex;
-    align-items: center;
+/*    display: flex;*/
+/*    align-items: center; */
     height: 100%;
     padding-bottom: 50px; /* counters the 50px we blocked at the top for the flash messages */
 }

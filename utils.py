@@ -70,3 +70,8 @@ def sanitize_email(email):
 def sanitize_username(username):
     """ Sanitize usernames """
     return username.strip()
+
+# Convert rows to dict
+def row_to_dict(row):
+    """ Convert rows to dict """
+    return {key: row[key] for key in row.keys()}
