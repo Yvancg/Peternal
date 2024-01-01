@@ -154,7 +154,7 @@ function displaySelectedPet() {
                     const matchHTML = `
                         <div class="col-2">
                         <div class="card">
-                            <img src="/static/${match.thumbnail}" class="card-img-top" alt="${match.name}">
+                            <img src="/static/${match.photo_path}" class="card-img-top" alt="${match.pet_name}">
                             <div class="card-body">
                                 <h6 class="card-title">${match.name}</h6>
                             </div>

@@ -298,9 +298,10 @@ def get_accepted_matches(pet_id):
         with get_db_connection() as conn:
             cursor = conn.cursor()
             cursor.execute("""
-                SELECT * FROM dating 
-                WHERE (pet_id = ? OR matched_pet_id = ?) AND status = 'accepted'
-            """, (pet_id, pet_id))
+                SELECT p.pets_id, p.pet_name, p.photo_path FROM dating d
+                JOIN pets p ON p.pets_id = d.matched_pet_id
+                WHERE d.pet_id = ? AND d.status = 'accepted'
+            """, (pet_id,))
             matches = cursor.fetchall()
             return [row_to_dict(match) for match in matches]
     except sqlite3.Error as e:
