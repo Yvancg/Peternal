@@ -59,7 +59,7 @@ def get_username_by_user_id(user_id):
         cursor.execute("SELECT username FROM users WHERE user_id = ?", (user_id,))
         username_info = cursor.fetchone()
         return username_info
-    
+
 def check_user_exists(username, email):
     """Check if a user with the given username or email already exists."""
     with get_db_connection() as conn:
@@ -185,7 +185,7 @@ def update_pet_tracker(pets_id, tracker):
         raise ValueError("Database error when updating pet tracker") from e
 
 def find_potential_matches(pets_id):
-    """ Retrieve potential matches for the given pet."""
+    """ Retrieve potential matches for the given pet, excluding already accepted matches."""
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
@@ -200,20 +200,23 @@ def find_potential_matches(pets_id):
                 # Determine the opposite sex
                 opposite_sex = "Female" if pet_sex == "Male" else "Male"
 
-                # Then find pets of the same breed but opposite sex
+                # Then find pets of the same breed but opposite sex, excluding accepted matches
                 cursor.execute("""
                     SELECT * FROM pets 
                     WHERE breed = ? AND pet_sex = ? AND pets_id != ?
-                """, (pet_breed, opposite_sex, pets_id))
+                    AND pets_id NOT IN (
+                        SELECT matched_pet_id FROM dating 
+                        WHERE pet_id = ? AND status = 'accepted'
+                    )
+                """, (pet_breed, opposite_sex, pets_id, pets_id))
 
                 match = cursor.fetchall()
                 return match
             else:
                 return []  # No pet found with given pets_id
-
-    except sqlite3.Error as e:
-            logging.error("Database error in find_potential_matches: %s", e)
-            raise ValueError("Error fetching potential matches from the database") from e
+    except sqlite3.IntegrityError as e:
+        logging.error("Database error in find_potential_matches: %s", e)
+        raise ValueError("Error fetching potential matches") from e
 
 def reject_match(user_id, pet_id, matched_pet_id):
     """Mark a match as rejected."""
@@ -240,7 +243,7 @@ def reject_match(user_id, pet_id, matched_pet_id):
 
             conn.commit()
             return True
-    except sqlite3.Error as e:
+    except sqlite3.IntegrityError as e:
         logging.error("Database error in reject_match: %s", e)
         raise ValueError("Error updating match status to rejected") from e
 
@@ -269,7 +272,7 @@ def accept_match(user_id, pet_id, matched_pet_id):
 
             conn.commit()
             return True
-    except sqlite3.Error as e:
+    except sqlite3.IntegrityError as e:
         logging.error("Database error in accept_match: %s", e)
         raise ValueError("Error updating match status to accepted") from e
 
@@ -288,7 +291,7 @@ def update_match_status(pet_id, matched_pet_id, status):
 
             conn.commit()
             return True
-    except sqlite3.Error as e:
+    except sqlite3.IntegrityError as e:
         logging.error("Database error in update_match_status: %s", e)
         raise ValueError("Error updating match status") from e
 
@@ -304,6 +307,6 @@ def get_accepted_matches(pet_id):
             """, (pet_id,))
             matches = cursor.fetchall()
             return [row_to_dict(match) for match in matches]
-    except sqlite3.Error as e:
+    except sqlite3.IntegrityError as e:
         logging.error("Database error in get_accepted_matches: %s", e)
         raise ValueError("Error retrieving matches for pet") from e

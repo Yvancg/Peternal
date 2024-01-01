@@ -120,6 +120,148 @@ let currentMatchId = null;
 function displaySelectedPet() {
     const petId = document.getElementById('petSelect').value;
     if (petId) {
+        Promise.all([
+            fetchPetDetails(petId),
+            fetchAcceptedMatches(petId)
+        ]).catch(error => {
+            console.error('Error:', error);
+            displayErrorMessage('An error occurred while fetching pet data');
+        });
+    } else {
+        window.location.reload();
+    }
+}
+
+function fetchPetDetails(petId) {
+    return fetch(`/get_pet_details/${petId}`)
+        .then(handleResponse)
+        .then(pet => {
+            displayPetCard(pet);
+            fetchPotentialMatches(petId);
+        })
+        .catch(error => {
+            console.error('Error fetching pet details:', error);
+            displayErrorMessage('Failed to load pet details');
+        });
+}
+
+function fetchAcceptedMatches(petId) {
+    return fetch(`/get_accepted_matches/${petId}`)
+        .then(handleResponse)
+        .then(matches => displayMatchesGrid(matches))
+        .catch(error => {
+            console.error('Error fetching accepted matches:', error);
+            displayErrorMessage('Failed to load accepted matches');
+        });
+}
+
+function handleResponse(response) {
+    if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    return response.json();
+}
+
+function displayPetCard(pet) {
+    const petCardHTML = `
+        <div class="card h-100">
+            <img src="/static/${pet.photo_path || 'default.jpg'}" class="card-img-top" alt="${pet.pet_name || 'Unknown Pet'}">
+            <div class="card-body">
+                <h4 class="card-title">${pet.pet_name || 'Unknown'}</h4>
+                <hr class="hr-card" />
+                <p class="card-text">Sex: ${pet.pet_sex || 'N/A'}</p>
+                <p class="card-text">Breed: ${pet.breed || 'N/A'}</p>
+                <p class="card-text">Date of Birth: ${pet.pet_dob || 'N/A'}</p>
+            </div>
+        </div>`;
+    document.getElementById('selectedPetCard').innerHTML = petCardHTML;
+}
+
+function displayMatchesGrid(matches) {
+    const matchesGrid = document.getElementById('matchesGrid');
+    const matchesTitle = document.getElementById('matchesGridTitle');
+
+    matchesGrid.innerHTML = '';
+    if (matches.length > 0) {
+        matchesTitle.style.display = 'block';
+        matches.forEach(match => {
+            const matchHTML = `
+                <div class="col-2">
+                <div class="card">
+                    <img src="/static/${match.photo_path || 'default.jpg'}" class="card-img-top" alt="${match.pet_name || 'Unknown'}">
+                    <div class="card-body">
+                        <h6 class="card-title">${match.pet_name || 'Unknown'}</h6>
+                    </div>
+                </div>
+            </div>`;
+            matchesGrid.innerHTML += matchHTML;
+        });
+    } else {
+        matchesTitle.style.display = 'none';
+    }
+}
+
+function clearPetDetails() {
+    document.getElementById('selectedPetCard').innerHTML = '';
+    document.getElementById('potentialMatches').innerHTML = '';
+}
+
+function displayErrorMessage(message) {
+    document.querySelector('#errorModal .modal-body').textContent = message;
+    new bootstrap.Modal(document.getElementById('errorModal')).show();
+}
+
+function fetchPotentialMatches(petId) {
+    fetch(`/get_potential_matches/${petId}`)
+        .then(response => response.json())
+        .then(fetchedMatches => {
+            matchedPets = fetchedMatches;
+            matchIndex = 0; // Reset the index
+
+            if (matchedPets.length > 0) {
+                displayNextMatch();
+                matchIndex++; // Increment for the next match
+            } else {
+                displayPlaceholderCard();
+                flashMessage('No match found');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            flashMessage('An error occurred while fetching matches');
+        });
+}
+
+function displayPlaceholderCard() {
+    const placeholderCardHTML = `
+        <div class="card">
+            <img src="/static/placeholder.jpg" class="card-img-top" alt="Placeholder">
+            <div class="card-body">
+                <h4 class="card-title">No More Matches</h4>
+                <hr class="hr-card" />
+                <p class="card-text"> </p>
+                <p class="card-text"> </p>
+                <p class="card-text"> </p>
+            </div>
+            <div class="card-footer text-center">
+                <button class="btn btn-danger btn-lg mx-2">
+                    <i class="bi bi-x-circle"></i> NO
+                </button>
+                <button class="btn btn-success btn-lg mx-2">
+                    <i class="bi bi-check-circle"></i> YES
+                </button>
+            </div>
+        </div>`;
+    document.getElementById('potentialMatches').innerHTML = placeholderCardHTML;
+}
+
+/*
+// Pet Dating
+let currentMatchId = null;
+
+function displaySelectedPet() {
+    const petId = document.getElementById('petSelect').value;
+    if (petId) {
         // Fetch the pet details using an AJAX request
         fetch(`/get_pet_details/${petId}`)
             .then(response => response.json())
@@ -147,21 +289,25 @@ function displaySelectedPet() {
             .then(response => response.json())
             .then(matches => {
                 const matchesGrid = document.getElementById('matchesGrid');
+                const matchesTitle = document.getElementById('matchesGridTitle');
                 matchesGrid.innerHTML = '';  // Clear existing matches
-                matches.forEach(match => {
+                if (matches.length > 0) {
+                    // Show the title if there are matches
+                    matchesTitle.style.display = 'block';
                     // Add each match to the grid
+                    matches.forEach(match => {
                         // Add match to matchesGrid
-                    const matchHTML = `
-                        <div class="col-2">
-                        <div class="card">
-                            <img src="/static/${match.photo_path}" class="card-img-top" alt="${match.pet_name}">
-                            <div class="card-body">
-                                <h6 class="card-title">${match.pet_name}</h6>
+                        const matchHTML = `
+                            <div class="col-2">
+                            <div class="card">
+                                <img src="/static/${match.photo_path}" class="card-img-top" alt="${match.pet_name}">
+                                <div class="card-body">
+                                    <h6 class="card-title">${match.pet_name}</h6>
+                                </div>
                             </div>
-                        </div>
-                    </div>`;
-                    document.getElementById('matchesGrid').innerHTML += matchHTML;
-                });
+                        </div>`;
+                        document.getElementById('matchesGrid').innerHTML += matchHTML;
+                    });
             })
             .catch(error => console.error('Error:', error));
     } else {
@@ -232,11 +378,11 @@ function displayPlaceholderCard() {
         <div class="card">
             <img src="/static/placeholder.jpg" class="card-img-top" alt="Placeholder">
             <div class="card-body">
-                <h4 class="card-title">Pet Name</h4>
+                <h4 class="card-title">No More Matches</h4>
                 <hr class="hr-card" />
-                <p class="card-text">Sex: N/A</p>
-                <p class="card-text">Breed: N/A</p>
-                <p class="card-text">Date of Birth: N/A</p>
+                <p class="card-text"> </p>
+                <p class="card-text"> </p>
+                <p class="card-text"> </p>
             </div>
             <div class="card-footer text-center">
                 <button class="btn btn-danger btn-lg mx-2">
@@ -289,19 +435,6 @@ function acceptMatch(buttonElement) {
         .catch(error => console.error('Error:', error));
 }
 
-function addToMatchesGrid(match) {
-    // Add match to matchesGrid
-    const matchHTML = `<div class="col-2">
-                           <div class="card">
-                               <img src="${match.thumbnail}" class="card-img-top" alt="${match.name}">
-                               <div class="card-body">
-                                   <h6 class="card-title">${match.name}</h6>
-                               </div>
-                           </div>
-                       </div>`;
-    document.getElementById('matchesGrid').innerHTML += matchHTML;
-}
-
 function addToMatchesGrid(matchedPet) {
     const matchesGrid = document.getElementById('matchesGrid');
     const petCardHTML = `
@@ -320,7 +453,7 @@ function flashMessage(message) {
     // Simple implementation - log to console
     console.log("Message:", message);
 }
-
+*/
 
 // Login with GitHub
 async function signInWithGithub() {
