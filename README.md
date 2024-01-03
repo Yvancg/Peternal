@@ -177,6 +177,7 @@ We welcome contributions! Please submit pull requests or issues on GitHub. Follo
 ### Acknowledgements
 
 Special thanks to the CS50x 2023 course team (namely the legendary David J. Malan, Carter Zenke and all others who contributed to make this course so goddam captivating) and contributors who provided invaluable resources and support. A big thanks to the ddb Cyber Duck, and other virtual assistants, which not only provided great support, always answering multiple questions with a smile, but also gave me the idea for this virtual pet project.
+I also want to thank Mayank Singh, who was also taking this course, and with whom we have met on a weekly basis like clockwork for the past few months to keep encouraging one another on this exciting venture. Accountability ios a great driver, and it definitely helped keeping the momentum and creating a positive competitive spirit.
 
 ### Contact
 
