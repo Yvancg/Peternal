@@ -1,0 +1,10 @@
+Flask==2.1.2
+Jinja2==3.1.1
+Werkzeug==2.1.1
+itsdangerous==2.1.2
+click==8.0.3
+Flask-Session==0.4.0
+Flask-Mail==0.9.1
+python-dotenv==0.19.2
+sqlite3  # Usually included in Python's standard library
+email-validator==1.1.3

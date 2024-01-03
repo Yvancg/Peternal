@@ -3,7 +3,11 @@ The functions are:
     save_pet_photo
     send_email
     get_sorted_breeds
+    sanitize_email
+    sanitize_username
+    row_to_dict
 """
+
 import os
 import csv
 from smtplib import SMTPAuthenticationError
