@@ -111,33 +111,35 @@ Ensure Python and Flask are installed on your machine.
 - `.gitignore`: Specifies files to be ignored by Git.
 - `petlife.db`: SQLite database file.
 >here is the schema of the database:
->CREATE TABLE users
->    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
->    username TEXT NOT NULL UNIQUE,
->    hash TEXT NOT NULL,
->    email TEXT NOT NULL UNIQUE,
->    email_verified INTEGER DEFAULT 0
->CREATE TABLE pets
->    pets_id INTEGER PRIMARY KEY AUTOINCREMENT,
->    user_id INTEGER,
->    pet_type TEXT NOT NULL,
->    pet_sex TEXT NOT NULL,
->    pet_name TEXT NOT NULL,
->    photo_path TEXT,
->    breed TEXT,
->    pet_dob DATE,
->    tracker TEXT,
->    FOREIGN KEY(user_id) REFERENCES users(user_id)
->CREATE TABLE dating
->    dating_id INTEGER PRIMARY KEY AUTOINCREMENT,
->    pet_id INTEGER,
->    matched_pet_id INTEGER,
->    status TEXT,
->    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
->    user_id INTEGER,
->    FOREIGN KEY (pet_id) REFERENCES pets(pets_id),
->    FOREIGN KEY (matched_pet_id) REFERENCES pets(pets_id),
->    FOREIGN KEY (user_id) REFERENCES users(user_id)
+```
+CREATE TABLE users
+    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    username TEXT NOT NULL UNIQUE,
+    hash TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    email_verified INTEGER DEFAULT 0
+CREATE TABLE pets
+    pets_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    pet_type TEXT NOT NULL,
+    pet_sex TEXT NOT NULL,
+    pet_name TEXT NOT NULL,
+    photo_path TEXT,
+    breed TEXT,
+    pet_dob DATE,
+    tracker TEXT,
+    FOREIGN KEY(user_id) REFERENCES users(user_id)
+CREATE TABLE dating
+    dating_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    pet_id INTEGER,
+    matched_pet_id INTEGER,
+    status TEXT,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    user_id INTEGER,
+    FOREIGN KEY (pet_id) REFERENCES pets(pets_id),
+    FOREIGN KEY (matched_pet_id) REFERENCES pets(pets_id),
+    FOREIGN KEY (user_id) REFERENCES users(user_id)
+```
 - `templates/`: HTML templates for web pages.
 > **Note:** Some files are just placeholders, like tracking.html or afterlife.html for instance, as the functions have not yet been created.
 - `static/`: Static files including JavaScript, CSS, images.
