@@ -94,6 +94,7 @@ Ensure Python and Flask are installed on your machine.
 >-    def reject_match_route(pet_id, matched_pet_id):
 >-    def accept_match_route(pet_id, matched_pet_id):
 >-    def get_accepted_matches_route(pet_id):
+>
 >The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 - `auth.py`: Handles user authentication processes.
 - `database.py`: Manages database interactions.
@@ -110,13 +111,13 @@ Ensure Python and Flask are installed on your machine.
 - `.gitignore`: Specifies files to be ignored by Git.
 - `petlife.db`: SQLite database file.
 >here is the schema of the database:
->CREATE TABLE users (
+>CREATE TABLE users
 >    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
 >    username TEXT NOT NULL UNIQUE,
 >    hash TEXT NOT NULL,
 >    email TEXT NOT NULL UNIQUE,
 >    email_verified INTEGER DEFAULT 0
->CREATE TABLE pets (
+>CREATE TABLE pets
 >    pets_id INTEGER PRIMARY KEY AUTOINCREMENT,
 >    user_id INTEGER,
 >    pet_type TEXT NOT NULL,
@@ -127,7 +128,7 @@ Ensure Python and Flask are installed on your machine.
 >    pet_dob DATE,
 >    tracker TEXT,
 >    FOREIGN KEY(user_id) REFERENCES users(user_id)
->CREATE TABLE dating (
+>CREATE TABLE dating
 >    dating_id INTEGER PRIMARY KEY AUTOINCREMENT,
 >    pet_id INTEGER,
 >    matched_pet_id INTEGER,
@@ -155,7 +156,6 @@ Special thanks to the CS50x 2023 course team (namely the legendary David J. Mala
 
 For inquiries or collaboration, reach out via [GitHub](https://github.com/yvancg).
 
-> **Note:** Seeking angel investors recognizing the potential of Peternal.
 > [!IMPORTANT]
 > If you are a co-founder with a solid experience in AI-generated avatars
 > or an angel investor who see the value of this project, please reach out to me directly on GitHub.
