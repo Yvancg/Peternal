@@ -33,6 +33,7 @@ Location: Bangkok, Thailand
 - **Backend:** Python with Flask framework
 - **Database:** SQLite for data management
 - **Frontend:** HTML, CSS, JavaScript for dynamic and responsive design
+- **SMTP Server:** mailtrap.io for sending and receiving test emails
 
 ## Getting Started
 
