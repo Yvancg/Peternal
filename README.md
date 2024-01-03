@@ -14,6 +14,24 @@ Location: Bangkok, Thailand
 
 **Project Vision:** Merging affection for pets with cutting-edge technology, Peternal aims to offer a holistic and engaging experience for pet owners. It provides a space for sharing, caring, and even immortalizing the memories of beloved pets.
 
+### Current functionalities
+
+At the date of submission, the project allows for the following:
+
+- registering a new user, with a cool password-strength progress bar, checks and sanitization on form entries, and email confirmation.
+- logging in by username or email
+- a reset password feature if the user enters a correct email but wrong password at log in
+- a 30 day "remember me" feature, which stores the user's login session in the browser
+- a login redirection if the user tries to register with an already registered email
+- relevant flash messages for user actions
+- a password reset feature, with a token-based password reset link
+- a password change feature, with a password strength progress bar
+- an "add pet" feature, to let the user add all of their pets (for now only dogs, sorry cat lovers)
+- an "edit pet" feature, to let the user edit their pet's photo and tracker
+- a tinder-like pet matching feature, to let the user find other pets that match their pet's characteristics
+- a grid that displays all of the matches
+- the ability to switch between all of the user's pets
+
 ### Key Features
 
 - **User-Friendly Registration:** Streamlined sign-up process for quick access.
@@ -24,6 +42,7 @@ Location: Bangkok, Thailand
 ### Future Enhancements
 
 - **Social Sharing:** Options to post and share pet memories with adjustable privacy settings, like a furry Muzzlebook.
+- **Social Login:** Options to register and login through social media accounts.
 - **Pet Tracking:** Integration of physical trackers for real-time pet location updates.
 - **Health Management:** Tools for tracking pet health records, setting reminders, and more.
 - **Eternal Life Technology:** Advanced AI to create lifelike, interactive pet avatars for lasting memories.
@@ -177,7 +196,10 @@ We welcome contributions! Please submit pull requests or issues on GitHub. Follo
 
 ### Acknowledgements
 
-Special thanks to the CS50x 2023 course team (namely the legendary David J. Malan, Carter Zenke and all others who contributed to make this course so goddam captivating) and contributors who provided invaluable resources and support. A big thanks to the ddb Cyber Duck, and other virtual assistants, which not only provided great support, always answering multiple questions with a smile, but also gave me the idea for this virtual pet project.
+Special thanks to the CS50x 2023 course team (namely the legendary David J. Malan, Carter Zenke and all others who contributed to make this course so goddam captivating) and contributors who provided invaluable resources and support. 
+
+A big thanks to the ddb Cyber Duck, and other virtual assistants, which not only provided great support, always answering multiple questions with a smile, but also gave me the idea for this virtual pet project.
+
 I also want to thank Mayank Singh, who was also taking this course, and with whom we have met on a weekly basis like clockwork for the past few months to keep encouraging one another on this exciting venture. Accountability ios a great driver, and it definitely helped keeping the momentum and creating a positive competitive spirit.
 
 ### Contact
