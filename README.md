@@ -70,42 +70,78 @@ Ensure Python and Flask are installed on your machine.
 >Database connections are imported from the 'database' module. Functions for user authentication, 
 >registration, password validation, and session handling are imported from the 'auth' module.
 >Here are the functions in the order they appear:
->     def after_request(response):
->     get_username_info():
->     def index():
->     def register():
->     def send_confirmation_email(email):
->     def confirm_email(token, expiration=3600):
->     def resend_verification_email():
->     def login():
->     def login_with_github():
->     def callback():
->     def change():
->     def request_password_reset():
->     def send_password_reset_email(email):
->     def reset_password(token):
->     def logout():
->     def add_pet():
->     def edit_photo():
->     def edit_tracker():
->     def dating():
->     def get_pet_details(pets_id):
->     def get_potential_matches(pets_id):
->     def reject_match_route(pet_id, matched_pet_id):
->     def accept_match_route(pet_id, matched_pet_id):
->     def get_accepted_matches_route(pet_id):
+>-    def after_request(response):
+>-    get_username_info():
+>-    def index():
+>-    def register():
+>-    def send_confirmation_email(email):
+>-    def confirm_email(token, expiration=3600):
+>-    def resend_verification_email():
+>-    def login():
+>-    def login_with_github():
+>-    def callback():
+>-    def change():
+>-    def request_password_reset():
+>-    def send_password_reset_email(email):
+>-    def reset_password(token):
+>-    def logout():
+>-    def add_pet():
+>-    def edit_photo():
+>-    def edit_tracker():
+>-    def dating():
+>-    def get_pet_details(pets_id):
+>-    def get_potential_matches(pets_id):
+>-    def reject_match_route(pet_id, matched_pet_id):
+>-    def accept_match_route(pet_id, matched_pet_id):
+>-    def get_accepted_matches_route(pet_id):
 >The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 - `auth.py`: Handles user authentication processes.
 - `database.py`: Manages database interactions.
 - `config.py`: Contains configuration settings.
 - `utils.py`: Utility functions for various tasks.
+>The functions are:
+>-    save_pet_photo
+>-    send_email
+>-    get_sorted_breeds
+>-    sanitize_email
+>-    sanitize_username
+>-    row_to_dict
 - `.env`: Environment variables for secure configuration.
 - `.gitignore`: Specifies files to be ignored by Git.
 - `petlife.db`: SQLite database file.
+>here is the schema of the database:
+>CREATE TABLE users (
+>    user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+>    username TEXT NOT NULL UNIQUE,
+>    hash TEXT NOT NULL,
+>    email TEXT NOT NULL UNIQUE,
+>    email_verified INTEGER DEFAULT 0
+>CREATE TABLE pets (
+>    pets_id INTEGER PRIMARY KEY AUTOINCREMENT,
+>    user_id INTEGER,
+>    pet_type TEXT NOT NULL,
+>    pet_sex TEXT NOT NULL,
+>    pet_name TEXT NOT NULL,
+>    photo_path TEXT,
+>    breed TEXT,
+>    pet_dob DATE,
+>    tracker TEXT,
+>    FOREIGN KEY(user_id) REFERENCES users(user_id)
+>CREATE TABLE dating (
+>    dating_id INTEGER PRIMARY KEY AUTOINCREMENT,
+>    pet_id INTEGER,
+>    matched_pet_id INTEGER,
+>    status TEXT,
+>    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+>    user_id INTEGER,
+>    FOREIGN KEY (pet_id) REFERENCES pets(pets_id),
+>    FOREIGN KEY (matched_pet_id) REFERENCES pets(pets_id),
+>    FOREIGN KEY (user_id) REFERENCES users(user_id)
 - `templates/`: HTML templates for web pages.
+> **Note:** Some files are just placeholders, like tracking.html or afterlife.html for instance, as the functions have not yet been created.
 - `static/`: Static files including JavaScript, CSS, images.
 
-> **Note:** Some files are just placeholders, like tracking.html or afterlife.html for instance. Other files, for example those used by sign in with GitHub, have not yet been activated.
+Other files, for example those used by sign in with GitHub, are present, but the process has not yet been finalized.
 
 ### Contributing
 
