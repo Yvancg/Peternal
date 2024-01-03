@@ -70,31 +70,31 @@ Ensure Python and Flask are installed on your machine.
 >Database connections are imported from the 'database' module. Functions for user authentication, 
 >registration, password validation, and session handling are imported from the 'auth' module.
 >Here are the functions in the order they appear:
->- [x]     def after_request(response):
->- [x]     get_username_info():
-- [x]     def index():
-- [x]     def register():
-- [x]     def send_confirmation_email(email):
-- [x]     def confirm_email(token, expiration=3600):
-- [x]     def resend_verification_email():
-- [x]     def login():
-- [x]     def login_with_github():
-- [x]     def callback():
-- [x]     def change():
-- [x]     def request_password_reset():
-- [x]     def send_password_reset_email(email):
-- [x]     def reset_password(token):
-- [x]     def logout():
-- [x]     def add_pet():
-- [x]     def edit_photo():
-- [x]     def edit_tracker():
-- [x]     def dating():
-- [x]     def get_pet_details(pets_id):
-- [x]     def get_potential_matches(pets_id):
-- [x]     def reject_match_route(pet_id, matched_pet_id):
-- [x]     def accept_match_route(pet_id, matched_pet_id):
-- [x]     def get_accepted_matches_route(pet_id):
-The app uses SQLite for database operations and Werkzeug for password hashing and verification.
+>     def after_request(response):
+>     get_username_info():
+>     def index():
+>     def register():
+>     def send_confirmation_email(email):
+>     def confirm_email(token, expiration=3600):
+>     def resend_verification_email():
+>     def login():
+>     def login_with_github():
+>     def callback():
+>     def change():
+>     def request_password_reset():
+>     def send_password_reset_email(email):
+>     def reset_password(token):
+>     def logout():
+>     def add_pet():
+>     def edit_photo():
+>     def edit_tracker():
+>     def dating():
+>     def get_pet_details(pets_id):
+>     def get_potential_matches(pets_id):
+>     def reject_match_route(pet_id, matched_pet_id):
+>     def accept_match_route(pet_id, matched_pet_id):
+>     def get_accepted_matches_route(pet_id):
+>The app uses SQLite for database operations and Werkzeug for password hashing and verification.
 - `auth.py`: Handles user authentication processes.
 - `database.py`: Manages database interactions.
 - `config.py`: Contains configuration settings.
