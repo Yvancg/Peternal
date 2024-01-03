@@ -112,7 +112,7 @@ def register():
     if request.method == "GET":
         return render_template("login.html")
 
-    username = sanitize_username(request.form.get("username"))
+    username = sanitize_username(request.form.get("username").lower())
     email = sanitize_email(request.form.get("email"))
     password = request.form.get("password")
     confirmation = request.form.get("confirmation")
@@ -258,7 +258,7 @@ def login():
 
     # User reached route via POST
     if request.method == "POST":
-        username_email = request.form.get("username")
+        username_email = request.form.get("username").lower()
         password = request.form.get("password")
         remember = request.form.get("remember") == 'on'
 
@@ -441,7 +441,7 @@ def reset_password(token):
     # Set up user session after password reset
     session["user_id"] = user_id
     flash("Your password has been reset. You are now logged in.", "success")
-    return render_template("index.html")
+    return redirect(url_for('index'))
 
 # Route for user logout
 @app.route("/logout")

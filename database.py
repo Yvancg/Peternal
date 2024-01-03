@@ -214,7 +214,7 @@ def find_potential_matches(pets_id):
                 return match
             else:
                 return []  # No pet found with given pets_id
-    except sqlite3.IntegrityError as e:
+    except sqlite3.Error as e:
         logging.error("Database error in find_potential_matches: %s", e)
         raise ValueError("Error fetching potential matches") from e
 

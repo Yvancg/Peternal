@@ -23,8 +23,8 @@
             <div class="row">
                 <!-- Loop through pets and create cards -->
                 {% for pet in pets %}
-                <div class="col-lg-4 col-md-6 col-12 mb-4">
-                    <div class="card h-100">
+                <div class="col-lg-4 col-md-6 col-12 mb-5">
+                    <div class="card h-100 m-4">
                         <!-- Use the photo path from the pet data -->
                         <img src="{{ url_for('static', filename=pet.photo_path) }}" class="card-img-top" alt="{{ pet.pet_name }}">
                         <i class="bi bi-pencil-square edit-photo-icon" onclick="editPhoto('{{ pet.pets_id }}')"></i>

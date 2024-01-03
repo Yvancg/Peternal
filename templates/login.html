@@ -8,7 +8,7 @@
 <div class="container container-login" id="container">
     <div class="form-container register">
         <!-- Register toggle -->
-        <form action="/register" method="post">
+        <form id="register-form" action="/register" method="post">
             <div class="social-icons">
                 <a href="#" class="icon"><i class="bi bi-google fs-4"></i></a>
                 <a href="#" class="icon"><i class="bi bi-facebook fs-4"></i></a>
@@ -60,12 +60,12 @@
                 placeholder="Confirm Password" 
                 type="password">
             </div>
-            <button class="button" type="submit">Register</button>
+            <button id="registerButton" class="button" type="submit">Register</button>
         </form>
     </div>
     <!-- Login toggle -->
     <div class="form-container log-in">
-        <form action="/login" method="post">
+        <form id="login-form" action="/login" method="post">
             <div class="social-icons">
                 <a href="#" class="icon"><i class="bi bi-google fs-4"></i></a>
                 <a href="#" class="icon"><i class="bi bi-facebook fs-4"></i></a>
@@ -74,14 +74,14 @@
             </div>
             <span>or use your email/username to login:</span>
             <div class="mb-1">
-                <input autocomplete="off" autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'username' }}" 
+                <input autocomplete="on" autofocus class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'username' }}" 
                 id="username" name="username" 
                 placeholder="Username or Email" 
                 type="text" 
                 value="{{ username or '' }}">
             </div>
             <div class="mb-1">
-                <input class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
+                <input autocomplete="on" class="form-control mx-auto w-fixed {{ 'error-border' if error_field == 'password' }}" 
                 id="password" name="password" 
                 placeholder="Password" 
                 type="password">

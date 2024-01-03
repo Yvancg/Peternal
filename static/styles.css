@@ -19,6 +19,7 @@
  *    5.8. Social Icons
  * 6. Utilities
  *    6.1. Container
+ *    6.2. Visually Hidden
  * 7. Media Queries
  * 8. Specific Pages
  *    8.1. Index Page
@@ -379,13 +380,18 @@ header {
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 60px;
+    position: fixed;
+    top: 0;
+    left: 0;
     width: 100%;
+    height: 100%;
+    z-index: 1050;
+    background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent background */
 }
 
 .spinner-border {
-    height: 2rem;
-    width: 2rem;
+    height: 12px;
+    width: 12px;
 }
 
 /* 5.7. Tooltip */
@@ -455,6 +461,11 @@ header {
     font-size: 13px;
     text-decoration: none;
     margin: 15px 0 10px;
+}
+
+/* 6.2. Visually Hidden */
+.visually-hidden {
+    display: none;
 }
 
 /* 7. Media Queries */
