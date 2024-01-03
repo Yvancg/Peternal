@@ -147,23 +147,14 @@ CREATE TABLE pets
     FOREIGN KEY(user_id) REFERENCES users(user_id)
 
 CREATE TABLE dating
-
     dating_id INTEGER PRIMARY KEY AUTOINCREMENT,
-
     pet_id INTEGER,
-
     matched_pet_id INTEGER,
-
     status TEXT,
-
     timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
-
     user_id INTEGER,
-
     FOREIGN KEY (pet_id) REFERENCES pets(pets_id),
-
     FOREIGN KEY (matched_pet_id) REFERENCES pets(pets_id),
-    
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 ```
 - `templates/`: HTML templates for web pages.
