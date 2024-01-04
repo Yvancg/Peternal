@@ -10,7 +10,7 @@
         <!-- Register toggle -->
         <form id="register-form" action="/register" method="post">
             <div class="social-icons">
-                <a href="#" class="icon"><i class="bi bi-google fs-4"></i></a>
+                <a href="{{ url_for('login_with_google') }}" class="icon"><i class="bi bi-google fs-4"></i></a>
                 <a href="#" class="icon"><i class="bi bi-facebook fs-4"></i></a>
                 <a href="#" class="icon"><i class="bi bi-github fs-4"></i></a>
                 <a href="#" class="icon"><i class="bi bi-linkedin fs-4"></i></a>
@@ -67,7 +67,7 @@
     <div class="form-container log-in">
         <form id="login-form" action="/login" method="post">
             <div class="social-icons">
-                <a href="#" class="icon"><i class="bi bi-google fs-4"></i></a>
+                <a href="{{ url_for('login_with_google') }}" class="icon"><i class="bi bi-google fs-4"></i></a>
                 <a href="#" class="icon"><i class="bi bi-facebook fs-4"></i></a>
                 <a href="#" class="icon" onclick="event.preventDefault(); signInWithGithub();"><i class="bi bi-github fs-4"></i></a>
                 <a href="#" class="icon"><i class="bi bi-linkedin fs-4"></i></a>
