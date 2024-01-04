@@ -6,5 +6,4 @@ click==8.1.7
 Flask-Session==0.5.0
 Flask-Mail==0.9.1
 python-dotenv==1.0.0
-sqlite3  # Usually included in Python's standard library
 email-validator==2.1.0.post1
