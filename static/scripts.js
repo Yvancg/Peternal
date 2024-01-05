@@ -329,23 +329,4 @@ function addToMatchesGrid(matchedPet) {
         matchesGridTitle.style.display = 'block';
     }
 }
-
-// Login with GitHub
-async function signInWithGithub() {
-    const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: 'github',
-    });
-
-    if (error) {
-        console.error('Login failed:', error);
-        // Handle the error scenario
-    } else {
-        console.log('Login successful:', data);
-        // Redirect or perform actions upon successful login
-    }
-}
-
-async function signOut() {
-    const { error } = await supabase.auth.signOut()
-  }
   

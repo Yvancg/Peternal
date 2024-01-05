@@ -43,6 +43,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 from flask_mail import Mail
 from flask_session import Session
 from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.contrib.github import make_github_blueprint, github
 from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
 
@@ -54,7 +55,6 @@ from database import (get_username_email, verify_user, update_password, get_pet_
                       get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker,
                       reject_match, accept_match, get_accepted_matches, get_username_by_user_id)
 from utils import save_pet_photo, send_email, get_sorted_breeds, sanitize_email, sanitize_username
-from supabase_client import supabase
 
 load_dotenv()
 
@@ -77,6 +77,15 @@ google_blueprint = make_google_blueprint(
     redirect_url='http://127.0.0.1:5000/login/google/callback'
 )
 app.register_blueprint(google_blueprint, url_prefix="/login")
+
+# Initialize Github OAuth Blueprint
+github_blueprint = make_github_blueprint(
+    client_id=app.config['GITHUB_CLIENT_ID'],
+    client_secret=app.config['GITHUB_CLIENT_SECRET'],
+    scope=["read:user", "user:email"],
+    redirect_url='http://127.0.0.1:5000/login/github/callback'
+)
+app.register_blueprint(github_blueprint, url_prefix="/login/github")
 
 # Securely signing emails
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -317,31 +326,6 @@ def login():
 
     return render_template("login.html", username="", show_reset_password=False)
 
-# Login with GitHub
-@app.route("/login/github")
-def login_with_github():
-    """ Log in with GitHub """
-    res = supabase.auth.sign_in_with_oauth(
-        {
-            "provider": "github",
-            "options": {
-	            "redirect_to": f"{request.host_url}callback"
-	        },
-        }
-    )
-    return redirect(res.url)
-
-@app.route("/login/github/callback")
-def callback():
-    """ Callback route for GitHub login """
-    code = request.args.get("code")
-    next = request.args.get("next", "/")
-
-    if code:
-        res = supabase.auth.exchange_code_for_session({"auth_code": code})
-
-    return redirect(next)
-
 # Login with Google
 @app.route('/login/google')
 def login_with_google():
@@ -349,7 +333,7 @@ def login_with_google():
     return redirect(url_for("google.login"))
 
 @app.route('/login/google/callback')
-def authorize():
+def google_callback():
     """ Callback route for Google login """
     if not google_blueprint.session.authorized:
         flash("Failed to authenticate with Google.", "danger")
@@ -372,6 +356,50 @@ def authorize():
     else:
         flash("Failed to fetch user info from Google.", "danger")
         return redirect(url_for('login'))
+
+if __name__ == "__main__":
+    app.run()
+
+# Login with GitHub
+@app.route("/login/github")
+def login_with_github():
+    """ Log in with GitHub """
+    if not github.authorized:
+        return redirect(url_for('github.login'))
+    return redirect(url_for('github_callback'))
+
+@app.route("/login/github/callback")
+def github_callback():
+    """ Callback route for GitHub login """
+    if not github_blueprint.session.authorized:
+        flash("Failed to authenticate with GitHub.", "danger")
+        return redirect(url_for("index"))
+    
+    resp = github_blueprint.session.get("/user")
+    if resp.ok:
+        user_info = resp.json()
+        email = user_info["email"]
+        username = user_info.get("name", email.split('@')[0])
+
+        user_exists = check_user_exists(username, email)
+        if not user_exists['email_exists']:
+            create_user(username, email, 'password')
+            flash("Account created successfully.", "success")
+        else:
+            flash("Account already exists.", "danger")
+            return redirect(url_for('login'))
+        
+        # Remember which user has logged in
+        session["user_id"] = user_exists['user_id']
+
+        # Set session permanence based on the 'Remember Me' checkbox
+        session.permanent = True
+
+        # Redirect user to home page
+        return redirect(url_for('index'))
+    else:
+        flash("Failed to authenticate with GitHub.", "danger")
+        return redirect(url_for("index"))
 
 if __name__ == "__main__":
     app.run()

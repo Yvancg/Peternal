@@ -53,22 +53,3 @@ def is_password_strong(password):
     if not re.search(r"[^\w]", password):
         return False, "contain a special character."
     return True, "Password is strong."
-
-# Function to handle Google login
-def handle_google_login(user_info):
-    """Handle Google login."""
-    email = user_info['email']
-    username = user_info['username']
-
-    user_exists = check_user_exists(username, email)
-    if not user_exists['email_exists']:
-        # If user does not exist, create a new user
-        create_user(username, email, 'password')
-        flash("Account created successfully.", "success")
-    else:
-        flash("Welcome back!", "success")
-
-    # Set user_id in session
-    session["user_id"] = get_user_id_by_email(email)
-
-    return redirect(url_for('index'))
