@@ -42,13 +42,13 @@ from dotenv import load_dotenv
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
 from flask_mail import Mail
 from flask_session import Session
-from flask_oauthlib.client import OAuth
+from flask_dance.contrib.google import make_google_blueprint, google
 from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
 
 # Importing config variables
 from config import Config
-from auth import is_valid_email, login_required, register_user, is_password_strong, create_google_oauth_client
+from auth import is_valid_email, login_required, register_user, is_password_strong
 from database import (get_username_email, verify_user, update_password, get_pet_by_id, create_user,
                       get_password, user_status, insert_pet_data, get_pets, find_potential_matches,
                       get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker,
@@ -67,9 +67,16 @@ app = Flask(__name__)
 app.config.from_object(Config)
 Session(app)
 mail = Mail(app)
-app.config.from_object('config.Config')
-oauth = OAuth(app)
-google = create_google_oauth_client(app)
+app.config.from_object(Config)
+
+# Initialize Google OAuth Blueprint
+google_blueprint = make_google_blueprint(
+    client_id=app.config['GOOGLE_CLIENT_ID'],
+    client_secret=app.config['GOOGLE_CLIENT_SECRET'],
+    scope=['openid', 'https://www.googleapis.com/auth/userinfo.email', 'https://www.googleapis.com/auth/userinfo.profile'],
+    redirect_url='http://127.0.0.1:5000/login/google/callback'
+)
+app.register_blueprint(google_blueprint, url_prefix="/login")
 
 # Securely signing emails
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -324,7 +331,7 @@ def login_with_github():
     )
     return redirect(res.url)
 
-@app.route("/callback")
+@app.route("/login/github/callback")
 def callback():
     """ Callback route for GitHub login """
     code = request.args.get("code")
@@ -339,44 +346,35 @@ def callback():
 @app.route('/login/google')
 def login_with_google():
     """ Log in with Google """
-    # Start Google login process
-    return google.authorize(callback=url_for('authorize', _external=True))
+    return redirect(url_for("google.login"))
 
-@app.route('/login/callback')
+@app.route('/login/google/callback')
 def authorize():
     """ Callback route for Google login """
-    resp = google.authorized_response()
-    if resp is None or resp.get('access_token') is None:
-        return 'Access denied: reason={} error={}'.format(
-            request.args['error_reason'],
-            request.args['error_description']
-        )
-    session['google_token'] = (resp['access_token'], '')
-    me = google.get('userinfo')
-    user_data = me.data
-    
-    # Extract user info from the response
-    email = user_data['email']
-    username = user_data.get('name', email.split('@')[0])  # Default to part of email if name isn't provided
+    if not google_blueprint.session.authorized:
+        flash("Failed to authenticate with Google.", "danger")
+        return redirect(url_for("index"))
 
-    # Check if the user exists and handle accordingly
-    existing_user = check_user_exists(username, email)
-    if existing_user:
-        user_id = get_user_id_by_email(email)
-        session["user_id"] = user_id
+    resp = google_blueprint.session.get("/oauth2/v2/userinfo")
+    if resp.ok:
+        user_info = resp.json()
+        email = user_info["email"]
+        username = user_info.get("name", email.split('@')[0])
+
+        user_exists = check_user_exists(username, email)
+        if not user_exists['email_exists']:
+            create_user(username, email, 'password')
+            flash("Account created successfully.", "success")
+        else:
+            session["user_id"] = get_user_id_by_email(email)
+            flash("Welcome back!", "success")
+        return redirect(url_for('index'))
     else:
-        # Generate a random password or handle it accordingly
-        random_password = "SomeRandomPassword"
-        user_id = create_user(username, email, random_password)
-        session["user_id"] = user_id
-        flash("Account created successfully.", "success")
+        flash("Failed to fetch user info from Google.", "danger")
+        return redirect(url_for('login'))
 
-    return redirect(url_for('index'))
-
-# Ensure session is set up to store the OAuth token
-@google.tokengetter
-def get_google_oauth_token():
-    return session.get('google_token')
+if __name__ == "__main__":
+    app.run()
 
 # Route for changing the password
 @app.route("/change", methods=["GET", "POST"])
