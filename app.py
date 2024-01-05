@@ -401,9 +401,6 @@ def github_callback():
         flash("Failed to authenticate with GitHub.", "danger")
         return redirect(url_for("index"))
 
-if __name__ == "__main__":
-    app.run()
-
 # Route for changing the password
 @app.route("/change", methods=["GET", "POST"])
 @login_required
@@ -673,3 +670,6 @@ def get_accepted_matches_route(pet_id):
         return jsonify(matches)
     except ValueError as e:
         return jsonify({'error': str(e)}), 500
+
+if __name__ == "__main__":
+    app.run()
