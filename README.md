@@ -85,10 +85,10 @@ Ensure Python and Flask are installed on your machine.
 
 - `app.py`: Main application file with Flask routes.
 > [!NOTE]
->This module initializes and configures the Flask application for the Peternal platform. 
->It sets up necessary configurations for session management and security. The application 
->provides users with features related to pets tracking, pets memories, and afterlife. 
->Database connections are imported from the 'database' module. Functions for user authentication, 
+>This module initializes and configures the Flask application for the Peternal platform.
+>It sets up necessary configurations for session management and security. The application
+>provides users with features related to pets tracking, pets memories, and afterlife.
+>Database connections are imported from the 'database' module. Functions for user authentication,
 >registration, password validation, and session handling are imported from the 'auth' module.
 >Here are the functions in the order they appear:
 >-    def after_request(response):
@@ -165,6 +165,7 @@ CREATE TABLE dating
     FOREIGN KEY (matched_pet_id) REFERENCES pets(pets_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
 ```
+![Peternal](/petlife.db.svg)
 - `templates/`: HTML templates for web pages.
 > [!NOTE]
 >Some files are just placeholders, like tracking.html or afterlife.html for instance, as the functions have not yet been created.
@@ -196,7 +197,7 @@ We welcome contributions! Please submit pull requests or issues on GitHub. Follo
 
 ### Acknowledgements
 
-Special thanks to the CS50x 2023 course team (namely the legendary David J. Malan, Carter Zenke and all others who contributed to make this course so goddam captivating) and contributors who provided invaluable resources and support. 
+Special thanks to the CS50x 2023 course team (namely the legendary David J. Malan, Carter Zenke and all others who contributed to make this course so goddam captivating) and contributors who provided invaluable resources and support.
 
 A big thanks to the ddb Cyber Duck, and other virtual assistants, which not only provided great support, always answering multiple questions with a smile, but also gave me the idea for this virtual pet project.
 

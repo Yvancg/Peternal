@@ -82,10 +82,9 @@ app.register_blueprint(google_blueprint, url_prefix="/login")
 github_blueprint = make_github_blueprint(
     client_id=app.config['GITHUB_CLIENT_ID'],
     client_secret=app.config['GITHUB_CLIENT_SECRET'],
-    scope=["read:user", "user:email"],
-    redirect_url='http://127.0.0.1:5000/login/github/callback'
+    scope=['user:email', 'read:user']
 )
-app.register_blueprint(github_blueprint, url_prefix="/login/github")
+app.register_blueprint(github_blueprint, url_prefix="/login")
 
 # Securely signing emails
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -357,9 +356,6 @@ def google_callback():
         flash("Failed to fetch user info from Google.", "danger")
         return redirect(url_for('login'))
 
-if __name__ == "__main__":
-    app.run()
-
 # Login with GitHub
 @app.route("/login/github")
 def login_with_github():
@@ -373,14 +369,21 @@ def github_callback():
     """ Callback route for GitHub login """
     if not github_blueprint.session.authorized:
         flash("Failed to authenticate with GitHub.", "danger")
-        return redirect(url_for("index"))
+        return redirect(url_for('index'))
     
     resp = github_blueprint.session.get("/user")
     if resp.ok:
         user_info = resp.json()
-        email = user_info["email"]
-        username = user_info.get("name", email.split('@')[0])
+        username = user_info.get("login")
 
+        email_resp = github_blueprint.session.get("/user/emails")
+        if email_resp.ok:
+            emails = email_resp.json()
+            email = next(e['email'] for e in emails if e['primary'])
+        else:
+            flash("Failed to fetch email from GitHub.", "danger")
+            return redirect(url_for('index'))
+        
         user_exists = check_user_exists(username, email)
         if not user_exists['email_exists']:
             create_user(username, email, 'password')
@@ -673,3 +676,4 @@ def get_accepted_matches_route(pet_id):
 
 if __name__ == "__main__":
     app.run()
+    
