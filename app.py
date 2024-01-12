@@ -67,7 +67,6 @@ app = Flask(__name__)
 app.config.from_object(Config)
 Session(app)
 mail = Mail(app)
-app.config.from_object(Config)
 
 # Initialize Google OAuth Blueprint
 google_blueprint = make_google_blueprint(
@@ -675,5 +674,4 @@ def get_accepted_matches_route(pet_id):
         return jsonify({'error': str(e)}), 500
 
 if __name__ == "__main__":
-    app.run()
-    
+    app.run(ssl_context='adhoc')
