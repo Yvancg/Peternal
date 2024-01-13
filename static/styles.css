@@ -463,6 +463,11 @@ header {
     margin: 15px 0 10px;
 }
 
+.text-container {
+    margin: 50px auto;
+    padding: 5%;
+}
+
 /* 6.2. Visually Hidden */
 .visually-hidden {
     display: none;

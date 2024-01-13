@@ -706,3 +706,8 @@ def get_accepted_matches_route(pet_id):
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
+
+@app.route("/privacy-policy")
+def privacy_policy():
+    """ Privacy policy page """
+    return render_template("privacy_policy.html")
