@@ -43,6 +43,7 @@ from flask import Flask, flash, redirect, render_template, request, session, url
 from flask_mail import Mail
 from flask_session import Session
 from flask_dance.contrib.google import make_google_blueprint, google
+from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
 from flask_dance.contrib.github import make_github_blueprint, github
 from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
@@ -76,6 +77,15 @@ google_blueprint = make_google_blueprint(
     redirect_url='http://127.0.0.1:5000/login/google/callback'
 )
 app.register_blueprint(google_blueprint, url_prefix="/login")
+
+facebook_blueprint = make_facebook_blueprint(
+    client_id="FACEBOOK_APP_ID",
+    client_secret="FACEBOOK_APP_SECRET",
+    scope="email",
+    redirect_to="facebook_login"
+)
+
+app.register_blueprint(facebook_blueprint, url_prefix="/login/facebook")
 
 # Initialize Github OAuth Blueprint
 github_blueprint = make_github_blueprint(
@@ -355,6 +365,22 @@ def google_callback():
         flash("Failed to fetch user info from Google.", "danger")
         return redirect(url_for('login'))
 
+# Login with Facebook
+@app.route("/login/facebook")
+def login_with_facebook():
+    """ Log in with Facebook """
+    if not facebook_blueprint.session.authorized:
+        return redirect(url_for("facebook.login"))
+
+    resp = facebook_blueprint.session.get("/me?fields=id,name,email")
+    if resp.ok:
+        facebook_info = resp.json()
+        # Process the Facebook info (e.g., store in database, create session)
+        return "Facebook login successful!"  # Redirect as necessary
+    else:
+        return "Failed to fetch user info from Facebook."
+
+
 # Login with GitHub
 @app.route("/login/github")
 def login_with_github():
@@ -370,37 +396,42 @@ def github_callback():
         flash("Failed to authenticate with GitHub.", "danger")
         return redirect(url_for('index'))
     
-    resp = github_blueprint.session.get("/user")
-    if resp.ok:
-        user_info = resp.json()
-        username = user_info.get("login")
+    try:
+        resp = github_blueprint.session.get("/user")
+        if resp.ok:
+            user_info = resp.json()
+            username = user_info.get("login")
 
-        email_resp = github_blueprint.session.get("/user/emails")
-        if email_resp.ok:
-            emails = email_resp.json()
-            email = next(e['email'] for e in emails if e['primary'])
+            email_resp = github_blueprint.session.get("/user/emails")
+            if email_resp.ok:
+                emails = email_resp.json()
+                try:
+                    email = next(e['email'] for e in emails if e['primary'])
+                except StopIteration:
+                    flash("No primary email found.", "danger")
+                    return redirect(url_for('index'))
+
+                user_exists = check_user_exists(username, email)
+                if user_exists and not user_exists['email_exists']:
+                    create_user(username, email, 'password')
+                    flash("Account created successfully.", "success")
+                elif user_exists:
+                    flash("Account already exists.", "danger")
+                    return redirect(url_for('login'))
+                
+                # Remember which user has logged in
+                session["user_id"] = user_exists['user_id']
+                session.permanent = True
+
+                return redirect(url_for('index'))
+            else:
+                flash("Failed to fetch email from GitHub.", "danger")
+                return redirect(url_for('index'))
         else:
-            flash("Failed to fetch email from GitHub.", "danger")
-            return redirect(url_for('index'))
-        
-        user_exists = check_user_exists(username, email)
-        if not user_exists['email_exists']:
-            create_user(username, email, 'password')
-            flash("Account created successfully.", "success")
-        else:
-            flash("Account already exists.", "danger")
-            return redirect(url_for('login'))
-        
-        # Remember which user has logged in
-        session["user_id"] = user_exists['user_id']
-
-        # Set session permanence based on the 'Remember Me' checkbox
-        session.permanent = True
-
-        # Redirect user to home page
-        return redirect(url_for('index'))
-    else:
-        flash("Failed to authenticate with GitHub.", "danger")
+            flash("Failed to authenticate with GitHub.", "danger")
+            return redirect(url_for("index"))
+    except Exception as e:
+        flash(f"An error occurred: {e}", "danger")
         return redirect(url_for("index"))
 
 # Route for changing the password
