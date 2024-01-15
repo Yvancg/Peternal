@@ -1,0 +1,68 @@
+{% extends "layout.html" %}
+
+{% block title %}
+    Muzzlebook
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2>Muzzlebook</h2>
+
+    <!-- Form for creating a new post -->
+    <div class="new-post-form">
+        <form action="{{ url_for('create_post') }}" method="post" enctype="multipart/form-data">
+            <div class="form-group">
+                <label for="content">What's on your mind?</label>
+                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+            </div>
+
+            <!-- Dropdown for selecting pet (optional) -->
+            <div class="form-group">
+                <label for="pet_id">Select Pet (optional):
+                </label>
+                <select class="form-control" id="pet_id" name="pet_id">
+                    <option value="">None</option>
+                    {% for pet in pets %}
+                        <option value="{{ pet.pets_id }}">{{ pet.pet_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+                    <!-- Option to upload media (optional) -->
+        <div class="form-group">
+            <label for="media">Upload Photo/Video (optional):</label>
+            <input type="file" class="form-control-file" id="media" name="media">
+        </div>
+
+        <!-- Visibility selection -->
+        <div class="form-group">
+            <label for="visibility">Visibility:</label>
+            <select class="form-control" id="visibility" name="visibility">
+                <option value="public">Public</option>
+                <option value="private">Private</option>
+            </select>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Post</button>
+    </form>
+</div>
+
+<!-- Displaying posts -->
+<div class="posts-display">
+    {% for post in posts %}
+        <div class="post">
+            <p>{{ post.content }}</p>
+            {% if post.media_path %}
+            <div class="media">
+                <img src="{{ url_for('static', filename=post.media_path) }}" alt="Media content">
+            </div>
+        {% endif %}
+        <small>Posted on {{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+        {% if post.pet_id %}
+            <small> - Pet: {{ post.pet.pet_name }}</small>
+        {% endif %}
+    </div>
+{% else %}
+    <p>No posts to show.</p>
+{% endfor %}
+</div>
+{% endblock %}

@@ -39,6 +39,7 @@ import logging
 # Loading .env automatically in the dev env
 from dotenv import load_dotenv
 
+from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
 from flask_mail import Mail
 from flask_session import Session
@@ -707,6 +708,52 @@ def get_accepted_matches_route(pet_id):
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
 
+# Route for the social feed
+@app.route('/muzzlebook')
+def muzzlebook():
+    """ Muzzlebook page """
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    # Fetch posts from the database
+    posts = Post.query.filter_by(user_id=user_id).order_by(Post.timestamp.desc()).all()
+    return render_template('muzzlebook.html', posts=posts)
+
+@app.route('/create_post', methods=['POST'])
+def create_post():
+    """ Create a new post """
+    user_id = session.get('user_id')
+    if not user_id:
+        return redirect(url_for('login'))
+
+    content = request.form['content']
+    pet_id = request.form.get('pet_id')  # Optional, can be None
+    visibility = request.form['visibility']
+    media_path = None  # Implement logic to handle media upload and store the path
+
+    new_post = Post(user_id=user_id, pet_id=pet_id, content=content, media_path=media_path, visibility=visibility)
+    db.session.add(new_post)
+    db.session.commit()
+    return redirect(url_for('muzzlebook'))
+
+@app.route('/api/posts', methods=['GET'])
+def get_posts():
+    """ Get all posts """
+    user_id = session.get('user_id')
+    if not user_id:
+        return jsonify({'error': 'Unauthorized'}), 401
+
+    pet_id = request.args.get('pet_id')
+    if pet_id:
+        posts = Post.query.filter_by(user_id=user_id, pet_id=pet_id).order_by(Post.timestamp.desc()).all()
+    else:
+        posts = Post.query.filter_by(user_id=user_id).order_by(Post.timestamp.desc()).all()
+
+    posts_data = [{'post_id': post.post_id, 'content': post.content, 'timestamp': post.timestamp.isoformat()} for post in posts]
+    return jsonify(posts_data)
+
+# Footer links
 @app.route("/privacy-policy")
 def privacy_policy():
     """ Privacy policy page """

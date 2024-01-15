@@ -164,6 +164,17 @@ CREATE TABLE dating
     FOREIGN KEY (pet_id) REFERENCES pets(pets_id),
     FOREIGN KEY (matched_pet_id) REFERENCES pets(pets_id),
     FOREIGN KEY (user_id) REFERENCES users(user_id)
+
+CREATE TABLE posts 
+    post_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id INTEGER,
+    pet_id INTEGER,
+    content TEXT NOT NULL,
+    media_path TEXT,
+    visibility TEXT CHECK(visibility IN ('public', 'private')) NOT NULL,
+    timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(user_id) ON DELETE CASCADE,
+    FOREIGN KEY (pet_id) REFERENCES pets(pets_id) ON DELETE SET NULL
 ```
 ![Peternal](/petlife.db.svg)
 - `templates/`: HTML templates for web pages.
