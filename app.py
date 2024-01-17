@@ -55,7 +55,8 @@ from auth import is_valid_email, login_required, register_user, is_password_stro
 from database import (get_username_email, verify_user, update_password, get_pet_by_id, create_user,
                       get_password, user_status, insert_pet_data, get_pets, find_potential_matches,
                       get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker,
-                      reject_match, accept_match, get_accepted_matches, get_username_by_user_id)
+                      reject_match, accept_match, get_accepted_matches, get_username_by_user_id,
+                      create_post, get_posts)
 from utils import save_pet_photo, send_email, get_sorted_breeds, sanitize_email, sanitize_username
 
 load_dotenv()
@@ -396,7 +397,7 @@ def github_callback():
     if not github_blueprint.session.authorized:
         flash("Failed to authenticate with GitHub.", "danger")
         return redirect(url_for('index'))
-    
+
     try:
         resp = github_blueprint.session.get("/user")
         if resp.ok:
@@ -419,7 +420,7 @@ def github_callback():
                 elif user_exists:
                     flash("Account already exists.", "danger")
                     return redirect(url_for('login'))
-                
+
                 # Remember which user has logged in
                 session["user_id"] = user_exists['user_id']
                 session.permanent = True
@@ -721,7 +722,7 @@ def muzzlebook():
     return render_template('muzzlebook.html', posts=posts)
 
 @app.route('/create_post', methods=['POST'])
-def create_post():
+def create_post_feed():
     """ Create a new post """
     user_id = session.get('user_id')
     if not user_id:
@@ -732,23 +733,18 @@ def create_post():
     visibility = request.form['visibility']
     media_path = None  # Implement logic to handle media upload and store the path
 
-    new_post = Post(user_id=user_id, pet_id=pet_id, content=content, media_path=media_path, visibility=visibility)
-    db.session.add(new_post)
-    db.session.commit()
+    create_post(user_id, pet_id, content, media_path, visibility)  # Use the new function
     return redirect(url_for('muzzlebook'))
 
 @app.route('/api/posts', methods=['GET'])
-def get_posts():
-    """ Get all posts """
+def get_posts_feed():
+    """ Get posts for a specific user """
     user_id = session.get('user_id')
     if not user_id:
         return jsonify({'error': 'Unauthorized'}), 401
 
     pet_id = request.args.get('pet_id')
-    if pet_id:
-        posts = Post.query.filter_by(user_id=user_id, pet_id=pet_id).order_by(Post.timestamp.desc()).all()
-    else:
-        posts = Post.query.filter_by(user_id=user_id).order_by(Post.timestamp.desc()).all()
+    posts = get_posts(user_id, pet_id)  # Use the new function
 
     posts_data = [{'post_id': post.post_id, 'content': post.content, 'timestamp': post.timestamp.isoformat()} for post in posts]
     return jsonify(posts_data)

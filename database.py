@@ -25,6 +25,7 @@ import sqlite3
 import logging
 
 from utils import row_to_dict
+from models import db, User, Pet, Post
 
 DATABASE = "petlife.db"
 
@@ -281,7 +282,6 @@ def update_match_status(pet_id, matched_pet_id, status):
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()
-
             # Update the status of the match in the dating table
             cursor.execute("""
                 UPDATE dating 
@@ -310,3 +310,34 @@ def get_accepted_matches(pet_id):
     except sqlite3.IntegrityError as e:
         logging.error("Database error in get_accepted_matches: %s", e)
         raise ValueError("Error retrieving matches for pet") from e
+
+def create_post(user_id, pet_id, content, media_path, visibility):
+    """Create a new post for a specific user."""
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(
+                "INSERT INTO posts (user_id, pet_id, content, media_path, visibility) VALUES (?, ?, ?, ?, ?)",
+                (user_id, pet_id, content, media_path, visibility)
+            )
+            conn.commit()
+    except sqlite3.Error as e:
+        logging.error("Database error in create_post: %s", e)
+        raise ValueError("Error creating new post") from e
+
+def get_posts(user_id, pet_id=None):
+    """Retrieve all posts for a specific user."""
+    query = "SELECT * FROM posts WHERE user_id = ?"
+    params = [user_id]
+    if pet_id:
+        query += " AND pet_id = ?"
+        params.append(pet_id)
+    query += " ORDER BY timestamp DESC"
+    try:
+        with get_db_connection() as conn:
+            cursor = conn.cursor()
+            cursor.execute(query, params)
+            return cursor.fetchall()
+    except sqlite3.Error as e:
+        logging.error("Database error in get_posts: %s", e)
+        raise ValueError("Error retrieving posts") from e
