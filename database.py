@@ -20,6 +20,8 @@ Functions used:
     accept_match
     update_match_status
     get_accepted_matches
+    create_post
+    get_posts
 """
 import sqlite3
 import logging

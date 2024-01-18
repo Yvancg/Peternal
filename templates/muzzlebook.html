@@ -15,7 +15,7 @@
             <div style="height: 80px;">
                 <select id="petSelect" onchange="displaySelectedPet();" class="button">
                     <option value="">Select Your Pet</option>
-                    {% for pet in user_pets %}
+                    {% for pet in pets %}
                         <option value="{{ pet['pets_id'] }}">{{ pet['pet_name'] }}</option>
                     {% endfor %}
                 </select>

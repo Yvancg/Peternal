@@ -713,10 +713,15 @@ def muzzlebook():
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('login'))
-
-    # Fetch posts from the database
-    posts = get_posts(user_id)
-    return render_template('muzzlebook.html', posts=posts)
+    try:
+        # Get the list of pets
+        pets = get_pets(user_id)
+        # Fetch posts from the database
+        posts = get_posts(user_id)
+        return render_template('muzzlebook.html', posts=posts, pets=pets)
+    except ValueError as e:
+        flash(str(e), 'danger')
+        return redirect(url_for('index'))
 
 @app.route('/create_post_feed', methods=['POST'])
 def create_post_feed():
@@ -754,4 +759,3 @@ def privacy_policy():
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
-    
