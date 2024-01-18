@@ -706,10 +706,7 @@ def get_accepted_matches_route(pet_id):
     except ValueError as e:
         return jsonify({'error': str(e)}), 500
 
-if __name__ == "__main__":
-    app.run(ssl_context='adhoc')
-
-# Route for the social feed
+# Route for Social Media feed
 @app.route('/muzzlebook')
 def muzzlebook():
     """ Muzzlebook page """
@@ -718,22 +715,22 @@ def muzzlebook():
         return redirect(url_for('login'))
 
     # Fetch posts from the database
-    posts = Post.query.filter_by(user_id=user_id).order_by(Post.timestamp.desc()).all()
+    posts = get_posts(user_id)
     return render_template('muzzlebook.html', posts=posts)
 
 @app.route('/create_post', methods=['POST'])
-def create_post_feed():
+def create_post():
     """ Create a new post """
     user_id = session.get('user_id')
     if not user_id:
         return redirect(url_for('login'))
 
     content = request.form['content']
-    pet_id = request.form.get('pet_id')  # Optional, can be None
+    pet_id = request.form.get('pet_id')
     visibility = request.form['visibility']
     media_path = None  # Implement logic to handle media upload and store the path
 
-    create_post(user_id, pet_id, content, media_path, visibility)  # Use the new function
+    create_post(user_id, pet_id, content, media_path, visibility)
     return redirect(url_for('muzzlebook'))
 
 @app.route('/api/posts', methods=['GET'])
@@ -744,9 +741,9 @@ def get_posts_feed():
         return jsonify({'error': 'Unauthorized'}), 401
 
     pet_id = request.args.get('pet_id')
-    posts = get_posts(user_id, pet_id)  # Use the new function
+    posts = get_posts(user_id, pet_id)
 
-    posts_data = [{'post_id': post.post_id, 'content': post.content, 'timestamp': post.timestamp.isoformat()} for post in posts]
+    posts_data = [{'post_id': post['post_id'], 'content': post['content'], 'timestamp': post['timestamp']} for post in posts]
     return jsonify(posts_data)
 
 # Footer links
@@ -754,3 +751,6 @@ def get_posts_feed():
 def privacy_policy():
     """ Privacy policy page """
     return render_template("privacy_policy.html")
+
+if __name__ == "__main__":
+    app.run(ssl_context='adhoc')

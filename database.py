@@ -25,7 +25,6 @@ import sqlite3
 import logging
 
 from utils import row_to_dict
-from models import db, User, Pet, Post
 
 DATABASE = "petlife.db"
 
