@@ -718,8 +718,8 @@ def muzzlebook():
     posts = get_posts(user_id)
     return render_template('muzzlebook.html', posts=posts)
 
-@app.route('/create_post', methods=['POST'])
-def create_post():
+@app.route('/create_post_feed', methods=['POST'])
+def create_post_feed():
     """ Create a new post """
     user_id = session.get('user_id')
     if not user_id:
@@ -754,3 +754,4 @@ def privacy_policy():
 
 if __name__ == "__main__":
     app.run(ssl_context='adhoc')
+    

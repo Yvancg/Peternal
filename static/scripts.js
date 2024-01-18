@@ -66,9 +66,6 @@ document.addEventListener('DOMContentLoaded', function () {
     const registerButton = document.getElementById('registerButton');
     const flashMessage = document.querySelector('.alert');
 
-    // Debugging - log elements to console
-    console.log({ form, registerButton, flashMessage });
-
     if (form && registerButton) {
         form.addEventListener('submit', function () {
             // Change button to spinner on submit

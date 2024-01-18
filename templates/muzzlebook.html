@@ -10,39 +10,36 @@
 
     <!-- Form for creating a new post -->
     <div class="new-post-form">
-        <form action="{{ url_for('create_post') }}" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label for="content">What's on your mind?</label>
-                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
-            </div>
-
-            <!-- Dropdown for selecting pet (optional) -->
-            <div class="form-group">
-                <label for="pet_id">Select Pet:
-                </label>
-                <select class="form-control" id="pet_id" name="pet_id">
-                    <option value="">None</option>
-                    {% for pet in pets %}
-                        <option value="{{ pet.pets_id }}">{{ pet.pet_name }}</option>
+        <form action="{{ url_for('create_post_feed') }}" method="post" enctype="multipart/form-data">
+            <!-- Pet Selector -->
+            <div style="height: 80px;">
+                <select id="petSelect" onchange="displaySelectedPet();" class="button">
+                    <option value="">Select Your Pet</option>
+                    {% for pet in user_pets %}
+                        <option value="{{ pet['pets_id'] }}">{{ pet['pet_name'] }}</option>
                     {% endfor %}
                 </select>
             </div>
-                    <!-- Option to upload media (optional) -->
-        <div class="form-group">
-            <label for="media">Upload Photo/Video (optional):</label>
-            <input type="file" class="form-control-file" id="media" name="media">
-        </div>
-
-        <!-- Visibility selection -->
-        <div class="form-group">
-            <label for="visibility">Visibility:</label>
-            <select class="form-control" id="visibility" name="visibility">
-                <option value="public">Public</option>
-                <option value="private">Private</option>
-            </select>
-        </div>
-
-        <button type="submit" class="btn btn-primary">Post</button>
+            <!-- Post textbox with photo icon -->
+            <div class="form-group textarea-container">
+                <label for="content">What's on your mind?</label>
+                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                <!-- Icon inside the textarea -->
+                <div class="textarea-icon" onclick="document.getElementById('media').click();">
+                    <i class="bi bi-image"></i>
+                </div>
+            </div>
+            <!-- Hidden file input for photo upload -->
+            <input type="file" class="form-control-file" id="media" name="media" style="display: none;">
+            <!-- Visibility toggle radio -->
+            <div class="form-group visibility-toggle">
+                <input type="radio" id="public" name="visibility" value="public" checked>
+                <label for="public">Public</label>
+                <input type="radio" id="private" name="visibility" value="private">
+                <label for="private">Private</label>
+            </div>
+            <!-- Submit button -->
+        <button type="submit" class="btn button">Post</button>
     </form>
 </div>
 
@@ -56,7 +53,7 @@
                 <img src="{{ url_for('static', filename=post.media_path) }}" alt="Media content">
             </div>
         {% endif %}
-        <small>Posted on {{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
+            <small>Posted on {{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
         {% if post.pet_id %}
             <small> - Pet: {{ post.pet.pet_name }}</small>
         {% endif %}
