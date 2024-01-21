@@ -39,6 +39,8 @@ import logging
 # Loading .env automatically in the dev env
 from dotenv import load_dotenv
 
+import os
+
 from datetime import datetime
 from flask import Flask, flash, redirect, render_template, request, session, url_for, jsonify
 from flask_mail import Mail
@@ -48,6 +50,7 @@ from flask_dance.contrib.facebook import make_facebook_blueprint, facebook
 from flask_dance.contrib.github import make_github_blueprint, github
 from itsdangerous import SignatureExpired, URLSafeTimedSerializer
 from werkzeug.security import check_password_hash, generate_password_hash
+from werkzeug.utils import secure_filename
 
 # Importing config variables
 from config import Config
@@ -714,14 +717,25 @@ def muzzlebook():
     if not user_id:
         return redirect(url_for('login'))
     try:
-        # Get the list of pets
-        pets = get_pets(user_id)
-        # Fetch posts from the database
         posts = get_posts(user_id)
-        return render_template('muzzlebook.html', posts=posts, pets=pets)
+        formatted_posts = []
+        for post in posts:
+            post_dict = dict(post)  # Convert sqlite3.Row to dict
+            if post_dict['timestamp']:
+                post_dict['timestamp'] = datetime.strptime(post_dict['timestamp'], '%Y-%m-%d %H:%M:%S').strftime('%Y-%m-%d %H:%M')
+            formatted_posts.append(post_dict)
+        pets = get_pets(user_id)
+        return render_template('muzzlebook.html', posts=formatted_posts, pets=pets)
     except ValueError as e:
         flash(str(e), 'danger')
         return redirect(url_for('index'))
+
+UPLOAD_FOLDER = app.config['UPLOAD_FOLDER']
+ALLOWED_EXTENSIONS = app.config['ALLOWED_EXTENSIONS']
+
+def allowed_file(filename):
+    """ Check if file is allowed to be uploaded """
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/create_post_feed', methods=['POST'])
 def create_post_feed():
@@ -730,12 +744,21 @@ def create_post_feed():
     if not user_id:
         return redirect(url_for('login'))
 
+    file = request.files.get('media')
     content = request.form['content']
     pet_id = request.form.get('pet_id')
     visibility = request.form['visibility']
-    media_path = None  # Implement logic to handle media upload and store the path
 
-    create_post(user_id, pet_id, content, media_path, visibility)
+    if file and allowed_file(file.filename):
+        filename = secure_filename(file.filename)
+        # Save only the part relative to 'static'
+        relative_media_path = os.path.join('posts', filename)
+        media_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+        file.save(media_path)
+    else:
+        relative_media_path = None
+
+    create_post(user_id, pet_id,content, relative_media_path, visibility)
     return redirect(url_for('muzzlebook'))
 
 @app.route('/api/posts', methods=['GET'])
@@ -748,7 +771,14 @@ def get_posts_feed():
     pet_id = request.args.get('pet_id')
     posts = get_posts(user_id, pet_id)
 
-    posts_data = [{'post_id': post['post_id'], 'content': post['content'], 'timestamp': post['timestamp']} for post in posts]
+    posts_data = [
+        {
+            'post_id': post['post_id'],
+            'content': post['content'],
+            'timestamp': post['timestamp'],
+            'pet_name': post['pet_name']
+        } for post in posts
+    ]
     return jsonify(posts_data)
 
 # Footer links

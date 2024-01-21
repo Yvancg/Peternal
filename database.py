@@ -327,13 +327,20 @@ def create_post(user_id, pet_id, content, media_path, visibility):
         raise ValueError("Error creating new post") from e
 
 def get_posts(user_id, pet_id=None):
-    """Retrieve all posts for a specific user."""
-    query = "SELECT * FROM posts WHERE user_id = ?"
+    """Retrieve all posts for a specific user, including pet name."""
+    # Join the posts table with the pets table to get the pet name
+    query = """
+    SELECT posts.*, pets.pet_name
+    FROM posts
+    INNER JOIN pets ON posts.pet_id = pets.pets_id
+    WHERE posts.user_id = ?
+    """
     params = [user_id]
     if pet_id:
-        query += " AND pet_id = ?"
+        query += " AND posts.pet_id = ?"
         params.append(pet_id)
-    query += " ORDER BY timestamp DESC"
+    query += " ORDER BY posts.timestamp DESC"
+
     try:
         with get_db_connection() as conn:
             cursor = conn.cursor()

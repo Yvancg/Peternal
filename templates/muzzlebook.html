@@ -6,60 +6,65 @@
 
 {% block main %}
 <div class="container-fluid">
-    <h2>Muzzlebook</h2>
+    <section>
+        <h2>Muzzlebook</h2>
 
-    <!-- Form for creating a new post -->
-    <div class="new-post-form">
-        <form action="{{ url_for('create_post_feed') }}" method="post" enctype="multipart/form-data">
-            <!-- Pet Selector -->
-            <div style="height: 80px;">
-                <select id="petSelect" onchange="displaySelectedPet();" class="button">
-                    <option value="">Select Your Pet</option>
-                    {% for pet in pets %}
-                        <option value="{{ pet['pets_id'] }}">{{ pet['pet_name'] }}</option>
-                    {% endfor %}
-                </select>
-            </div>
-            <!-- Post textbox with photo icon -->
-            <div class="form-group textarea-container">
-                <label for="content">What's on your mind?</label>
-                <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
-                <!-- Icon inside the textarea -->
-                <div class="textarea-icon" onclick="document.getElementById('media').click();">
-                    <i class="bi bi-image"></i>
+        <!-- Form for creating a new post -->
+        <div class="new-post-form">
+            <form action="{{ url_for('create_post_feed') }}" method="post" enctype="multipart/form-data">
+                <!-- Pet Selector -->
+                <div class="form-group">
+                    <select id="petSelect" name="pet_id" class="button" required>
+                        <option value="">Select Your Pet</option>
+                        {% for pet in pets %}
+                            <option value="{{ pet['pets_id'] }}">{{ pet['pet_name'] }}</option>
+                        {% endfor %}
+                    </select>
                 </div>
-            </div>
-            <!-- Hidden file input for photo upload -->
-            <input type="file" class="form-control-file" id="media" name="media" style="display: none;">
-            <!-- Visibility toggle radio -->
-            <div class="form-group visibility-toggle">
-                <input type="radio" id="public" name="visibility" value="public" checked>
-                <label for="public">Public</label>
-                <input type="radio" id="private" name="visibility" value="private">
-                <label for="private">Private</label>
-            </div>
-            <!-- Submit button -->
-        <button type="submit" class="btn button">Post</button>
-    </form>
-</div>
+                <br>
+                <!-- Post textbox with photo icon -->
+                <div class="form-group textarea-container">
+                    <label for="content">What's on your mind?</label>
+                    <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+                    <!-- Icon inside the textarea -->
+                    <div class="textarea-icon" onclick="document.getElementById('media').click();">
+                        <i class="bi bi-image"></i>
+                    </div>
+                </div>
+                <!-- Hidden file input for photo upload -->
+                <input type="file" class="form-control-file hidden" id="media" name="media">
+                <!-- Visibility toggle radio -->
+                <div class="form-group visibility-toggle">
+                    <input type="radio" id="public" name="visibility" value="public" checked>
+                    <label for="public">Public</label>
+                    <input type="radio" id="private" name="visibility" value="private">
+                    <label for="private">Private</label>
+                </div>
+                <!-- Submit button -->
+            <button type="submit" class="btn button">Post</button>
+        </form>
+    </div>
 
 <!-- Displaying posts -->
-<div class="posts-display">
-    {% for post in posts %}
-        <div class="post">
-            <p>{{ post.content }}</p>
-            {% if post.media_path %}
-            <div class="media">
-                <img src="{{ url_for('static', filename=post.media_path) }}" alt="Media content">
-            </div>
-        {% endif %}
-            <small>Posted on {{ post.timestamp.strftime('%Y-%m-%d %H:%M') }}</small>
-        {% if post.pet_id %}
-            <small> - Pet: {{ post.pet.pet_name }}</small>
-        {% endif %}
+    {% if posts %}
+    <div class="post-display">
+        {% for post in posts %}
+            <article class="post">
+                <hr>
+                <h3> {{ post.pet_name }}</h3> 
+                <p>{{ post.content }}</p>
+                {% if post.media_path %}
+                    <div class="media">
+                        <img src="{{ url_for('static', filename=post.media_path) }}" alt="Media content" class="feed-image">
+                    </div>
+                {% endif %}
+                <small>Posted on {{ post.timestamp }}</small>
+                </article>
+        {% endfor %}
     </div>
-{% else %}
-    <p>No posts to show.</p>
-{% endfor %}
+    {% else %}
+        <p>No posts to show.</p>
+    {% endif %}
+    </section>
 </div>
 {% endblock %}

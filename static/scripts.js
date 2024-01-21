@@ -326,4 +326,16 @@ function addToMatchesGrid(matchedPet) {
         matchesGridTitle.style.display = 'block';
     }
 }
-  
+
+// Social feed adding an image 
+/* document.addEventListener('DOMContentLoaded', (event) => {
+    const photoIcon = document.querySelector('.textarea-icon');
+    const mediaInput = document.getElementById('media');
+
+    if (photoIcon && mediaInput) {
+        photoIcon.addEventListener('click', () => {
+            mediaInput.click();
+        });
+    }
+});
+*/

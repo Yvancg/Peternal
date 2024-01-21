@@ -28,6 +28,7 @@
  *    8.4. Add your pet page
  *    8.5. Request Password Reset page
  *    8.6. Password Reset page
+ *    8.7. Feed page
  */
 
 /* 1. General Settings */
@@ -49,6 +50,11 @@ html, body {
     --highlight-color: #FFD700;
     --link-color: #DAA520;
 }
+
+.hidden {
+    display: none;
+}
+
 
 /* 3. Base Styles */
 body {
@@ -107,8 +113,8 @@ main {
 }
 
 .full-height-container {
-    height: 100%;
     padding-bottom: 50px; /* counters the 50px we blocked at the top for the flash messages */
+    margin-bottom: 50px;
 }
 
 /* 4.2. Navigation Bar */
@@ -713,4 +719,10 @@ header {
 .container-reset {
     width: 396px;
     min-height: 280px;
+}
+
+/* 8.7. Feed page */
+.feed-image {
+    max-height: 516px;
+    width: auto;  /* This ensures the aspect ratio is maintained */
 }
