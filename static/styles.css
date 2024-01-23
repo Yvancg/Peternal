@@ -113,8 +113,9 @@ main {
 }
 
 .full-height-container {
-    padding-bottom: 50px; /* counters the 50px we blocked at the top for the flash messages */
-    margin-bottom: 50px;
+    padding-bottom: 60px; /* counters the 50px we blocked at the top for the flash messages */
+    padding-left: 5%;
+    padding-right: 5%;
 }
 
 /* 4.2. Navigation Bar */
