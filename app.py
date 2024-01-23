@@ -647,7 +647,6 @@ def edit_tracker():
 def dating():
     """ Dating page """
     user_id = session["user_id"]
-
     try:
         pets = get_pets(user_id)
         return render_template('dating.html', user_pets=pets)
