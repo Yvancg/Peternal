@@ -11,7 +11,7 @@ certifi @ file:///private/tmp/python-certifi-20231117-4919-2f0o9m/certifi-2023.1
 cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
-cryptography==41.0.7
+cryptography==42.0.4
 cs50==9.3.4
 decorator==5.1.1
 defusedxml==0.7.1
