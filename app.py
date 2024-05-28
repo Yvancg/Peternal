@@ -54,7 +54,7 @@ from werkzeug.utils import secure_filename
 
 # Importing config variables
 from config import Config
-from auth import is_valid_email, login_required, register_user, is_password_strong
+from auth import is_valid_email, login_required, register_user, is_password_strong, auth_bp
 from database import (get_username_email, verify_user, update_password, get_pet_by_id, create_user,
                       get_password, user_status, insert_pet_data, get_pets, find_potential_matches,
                       get_user_id_by_email, check_user_exists, update_pet_photo, update_pet_tracker,
@@ -73,7 +73,9 @@ app = Flask(__name__)
 app.config.from_object(Config)
 Session(app)
 mail = Mail(app)
+app.register_blueprint(auth_bp)
 
+"""
 # Initialize Google OAuth Blueprint
 google_blueprint = make_google_blueprint(
     client_id=app.config['GOOGLE_CLIENT_ID'],
@@ -91,14 +93,8 @@ facebook_blueprint = make_facebook_blueprint(
 )
 
 app.register_blueprint(facebook_blueprint, url_prefix="/login/facebook")
+"""
 
-# Initialize Github OAuth Blueprint
-github_blueprint = make_github_blueprint(
-    client_id=app.config['GITHUB_CLIENT_ID'],
-    client_secret=app.config['GITHUB_CLIENT_SECRET'],
-    scope=['user:email', 'read:user']
-)
-app.register_blueprint(github_blueprint, url_prefix="/login")
 
 # Securely signing emails
 s = URLSafeTimedSerializer(app.config['SECRET_KEY'])
@@ -343,7 +339,7 @@ def login():
 @app.route('/login/google')
 def login_with_google():
     """ Log in with Google """
-    return redirect(url_for("google.login"))
+    return redirect(url_for("auth.google.login"))
 
 @app.route('/login/google/callback')
 def google_callback():
@@ -394,7 +390,7 @@ def login_with_github():
         return redirect(url_for('github.login'))
     return redirect(url_for('github_callback'))
 
-@app.route("/login/github/callback")
+@app.route("/login/github/authorized")
 def github_callback():
     """ Callback route for GitHub login """
     if not github_blueprint.session.authorized:
