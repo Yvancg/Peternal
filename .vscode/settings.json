@@ -3,5 +3,6 @@
         "flask_session"
     ],
     "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true
+    "python.testing.pytestEnabled": true,
+    "git.ignoreLimitWarning": true
 }
