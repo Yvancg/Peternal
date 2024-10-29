@@ -11,7 +11,7 @@ certifi
 cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
-cryptography==42.0.4
+cryptography==43.0.1
 cs50==9.3.4
 decorator==5.1.1
 defusedxml==0.7.1
@@ -106,6 +106,6 @@ URLObject==2.4.3
 wcwidth==0.2.12
 webencodings==0.5.1
 websockets==11.0.3
-Werkzeug==3.0.3
+Werkzeug==3.0.6
 wrapt==1.16.0
 zxcvbn==4.4.28
